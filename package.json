@@ -4,13 +4,22 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --hot public/index.html"
+    "dev": "bun --hot public/index.html",
+    "build": "",
+    "typecheck": "tsc --noEmit",
+    "format": "biome format",
+    "lint": "biome lint",
+    "check": "bun run typecheck && bun run lint && bun run format",
+    "check:fix": "bun run typecheck && bun run lint --write --unsafe && bun run format --write && git update-index --again",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.4.6",
     "@types/bun": "latest",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "bun-plugin-tailwind": "^0.1.2",
+    "husky": "^9.1.7",
     "tailwindcss": "^4.2.1"
   },
   "peerDependencies": {
