@@ -1,15 +1,23 @@
-# front
+# Frontend AGES RFID
 
-To install dependencies:
+### Tecnologias
+- Typescript
+- React
+- TailwindCSS
+- Bun
 
-```bash
+
+### Quickstart
+Para iniciar a aplicação, você vai precisar instalar o [Bun](https://bun.sh/docs/installation).
+
+Com o Bun configurado na sua máquina, instale as dependências do projeto:
+
+```sh
 bun install
 ```
 
-To run:
+Após instalar as dependências, execute o projeto e acesse o seu navegador em http://localhost:3000
 
-```bash
-bun run index.ts
+```sh
+bun dev
 ```
-
-This project was created using `bun init` in bun v1.3.10. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
