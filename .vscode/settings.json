@@ -1,0 +1,5 @@
+{
+  "tailwindCSS.classFunctions": ["cva", "cn", "cx", "clsx"],
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true
+}

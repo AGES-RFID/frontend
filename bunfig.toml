@@ -1,2 +1,8 @@
 [serve.static]
 plugins = ["bun-plugin-tailwind"]
+
+[test]
+preload = ["./test/components/setup.ts"]
+
+[resolve]
+alias = { "@" = "./src" }
