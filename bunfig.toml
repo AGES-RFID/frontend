@@ -4,5 +4,9 @@ plugins = ["bun-plugin-tailwind"]
 [test]
 preload = ["./test/components/setup.ts"]
 
+coverage = true
+coverageThreshold = 0.8
+coverageSkipTestFiles = true
+
 [resolve]
 alias = { "@" = "./src" }

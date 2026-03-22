@@ -1,0 +1,11 @@
+bunx --no -- commitlint --edit "$1" || {
+  echo "\n==================== ❌ ERRO: MENSAGEM DE COMMIT INVÁLIDA ===================="
+  echo "Sua mensagem de commit não segue o padrão 'Conventional Commits'."
+  echo "Padrão esperado: <tipo>(<escopo opcional>): <descrição>"
+  echo "\nExemplos válidos:"
+  echo "  feat: adiciona componente de botao"
+  echo "  fix(api): corrige timeout na rota rfid"
+  echo "  chore: atualiza pacotes do bun"
+  echo "==============================================================================\n"
+  exit 1
+}

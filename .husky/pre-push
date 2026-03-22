@@ -1,0 +1,9 @@
+echo "\n=============================== 🔍 PRE-PUSH CHECK ==============================="
+
+echo "\n > 🛡️ Executing Security Audit"
+bun audit || { echo "\n > ❌ Error: Security vulnerabilities found!\n"; exit 1; }
+
+echo "\n > 🧪 Executing Tests"
+bun test || { echo "\n > ❌ Error: Tests failed!\n"; exit 1; }
+
+echo "\n > ✅ Success: All checks passed!\n"
