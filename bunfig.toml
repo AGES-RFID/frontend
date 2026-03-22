@@ -1,5 +1,6 @@
 [serve.static]
 plugins = ["bun-plugin-tailwind"]
+env = 'PUBLIC_*'
 
 [test]
 preload = ["./test/components/setup.ts"]
