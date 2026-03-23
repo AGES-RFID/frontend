@@ -1,8 +1,13 @@
 [serve.static]
 plugins = ["bun-plugin-tailwind"]
+env = 'PUBLIC_*'
 
 [test]
 preload = ["./test/components/setup.ts"]
+
+coverage = true
+coverageThreshold = 0.8
+coverageSkipTestFiles = true
 
 [resolve]
 alias = { "@" = "./src" }

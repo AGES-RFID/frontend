@@ -1,1 +1,6 @@
-bun check
+echo "\n=============================== 🔍 PRE-COMMIT CHECK ==============================="
+
+echo "\n > 🛠️  Executing Check Fixes"
+bun run check:fix || { echo "\n > ❌ Error: Auto-fix failed. Check your code.\n"; exit 1; }
+
+echo "\n > ✅ Success: All checks passed!\n"
