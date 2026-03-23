@@ -1,4 +1,4 @@
-name: PR to Trunk
+name: Continuous Integration
 
 on:
   pull_request:
@@ -13,91 +13,129 @@ permissions:
   pull-requests: read
 
 jobs:
-  # ==========================================
-  # ENTRY GATE
-  # ==========================================
-  entry-gate:
-    name: 🚪 Entry Gate
+  validate:
+    name: Continuous Integration
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout
+      # ==========================================
+      # ENTRY GATE
+      # ==========================================
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 🏷️ Validate Branch Name
+      - name: Validate Branch Name
+        id: validate-branch
         run: |
-          BRANCH_NAME="${{ github.head_ref }}"
-          if [[ ! "$BRANCH_NAME" =~ ^(feat|fix|chore|docs|refactor)\/[0-9]+-[a-z0-9-]+$ ]]; then
-            echo "❌ ERRO: Nome da branch '$BRANCH_NAME' fora do padrão."
-            echo "💡 Padrão: <tipo>/<id>-<descricao>"
+          echo "[INFO] Validating branch name: '${{ github.head_ref }}'"
+          
+          if [[ ! "${{ github.head_ref }}" =~ ^(feat|fix|chore|docs|refactor)\/[0-9]+-[a-z0-9-]+$ ]]; then
+            echo "[ERROR] Non-compliant branch naming convention."
+            echo "[INFO] Expected format: <type>/<id>-<kebab-case-description>"
             exit 1
           fi
+          
+          echo "[INFO] Branch name validation passed."
 
-      - name: 💬 Validate PR Title (Semantic)
+      - name: Validate PR Title
+        id: validate-pr-title
         uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # ==========================================
-  # SECURITY GATE
-  # ==========================================
-  security-gate:
-    name: 🔐 Security Gate
-    needs: [entry-gate]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
-      - run: bun install --frozen-lockfile
-      
-      - name: 📦 Vulnerability Scan (Bun Audit)
-        run: bun audit
-
-  # ==========================================
-  # QUALITY GATE
-  # ==========================================
-  quality-gate:
-    name: 💎 Quality Gate
-    needs: [security-gate]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
-      - run: bun install --frozen-lockfile
-
-      - name: 🧹 Quality Check (Lint & Format)
-        run: bun run check
-
-      - name: 🧪 Unit Tests (Coverage)
-        run: bun run test:cov
-
-  # ==========================================
-  # BUILD GATE
-  # ==========================================
-  build-gate:
-    name: 🏗️ Build Gate
-    needs: [quality-gate]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
-      - run: bun install --frozen-lockfile
-
-      - name: 📦 Build Application
-        run: bun run build
-
-  # ==========================================
-  # EXIT GATE
-  # ==========================================
-  exit-gate:
-    name: 🏁 Exit Gate
-    if: always()
-    needs: [entry-gate, security-gate, quality-gate, build-gate]
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📊 DevEx Report
+      # ==========================================
+      # SETUP GATE
+      # ==========================================
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        
+      - name: Install Dependencies
+        id: install-deps
         run: |
-          echo "## 🏁 Resumo da Validação do PR" >> $GITHUB_STEP_SUMMARY
-          echo "- **🚪 Entry Gate:** ${{ needs.entry-gate.result == 'success' && '✅ Aprovado' || '❌ Falhou' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **🔐 Security Gate:** ${{ needs.security-gate.result == 'success' && '✅ Seguro' || '❌ Falhou' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **💎 Quality Gate:** ${{ needs.quality-gate.result == 'success' && '✅ Código Limpo' || '❌ Falhou' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **🏗️ Build Gate:** ${{ needs.build-gate.result == 'success' && '✅ Compilado' || '❌ Falhou' }}" >> $GITHUB_STEP_SUMMARY
+          echo "[INFO] Installing dependencies..."
+          bun install --frozen-lockfile
+          echo "[INFO] Dependencies installed successfully."
+
+      # ==========================================
+      # SECURITY GATE
+      # ==========================================
+      - name: Security Audit
+        id: security-audit
+        run: |
+          echo "[INFO] Running security audit..."
+          
+          if ! bun audit; then
+            echo "[ERROR] Vulnerabilities found in dependencies."
+            exit 1
+          fi
+          
+          echo "[INFO] Security audit passed. No vulnerabilities detected."
+
+      # ==========================================
+      # QUALITY GATE
+      # ==========================================
+      - name: Lint & Format
+        id: lint-format
+        run: |
+          echo "[INFO] Running lint and format checks..."
+          
+          if ! bun run check; then
+            echo "[ERROR] Code quality checks failed (Lint/Typecheck)."
+            exit 1
+          fi
+          
+          echo "[INFO] Code quality checks passed."
+
+      - name: Unit Tests
+        id: unit-tests
+        run: |
+          echo "[INFO] Running unit tests..."
+          
+          if ! bun run test:cov; then
+            echo "[ERROR] Unit tests failed or coverage threshold not met."
+            exit 1
+          fi
+          
+          echo "[INFO] Unit tests passed."
+
+      # ==========================================
+      # BUILD GATE
+      # ==========================================
+      - name: Build Application
+        id: build-app
+        run: |
+          echo "[INFO] Compiling application..."
+          
+          if ! bun run build; then
+            echo "[ERROR] Application build failed."
+            exit 1
+          fi
+          
+          echo "[INFO] Application build passed."
+
+      # ==========================================
+      # EXIT GATE
+      # ==========================================
+      - name: DevEx Report
+        if: always()
+        run: |
+          cat << EOF >> $GITHUB_STEP_SUMMARY
+          ## Pipeline Exit Summary
+
+          Status: **${{ job.status }}**
+
+          | Component | Status |
+          | :--- | :--- |
+          | Branch Name | \`${{ steps.validate-branch.conclusion }}\` |
+          | PR Title | \`${{ steps.validate-pr-title.conclusion }}\` |
+          | Security Audit | \`${{ steps.security-audit.conclusion }}\` |
+          | Lint & Format | \`${{ steps.lint-format.conclusion }}\` |
+          | Unit Tests | \`${{ steps.unit-tests.conclusion }}\` |
+          | Build | \`${{ steps.build-app.conclusion }}\` |
+          EOF
+          
+          if [ "${{ job.status }}" != "success" ]; then
+            cat << EOF >> $GITHUB_STEP_SUMMARY
+          
+          > [ERROR] Execution halted due to a failed compliance gate. Identify the component marked as \`failure\` above and review the standard output logs.
+          EOF
+          fi
