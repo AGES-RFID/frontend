@@ -16,6 +16,8 @@ export function UserList() {
 
   return (
     <div className="space-y-2">
+      {users.length === 0 && <p>Nenhum usuário encontrado :(</p>}
+
       {users.map((user) => (
         <UserCard key={user.userId} user={user} />
       ))}

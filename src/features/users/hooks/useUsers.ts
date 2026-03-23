@@ -3,7 +3,7 @@ import { userService } from "../UserService";
 
 export function useUsers() {
   return useQuery({
-    queryFn: userService.listUsers,
+    queryFn: () => userService.listUsers(),
     queryKey: ["users"],
   });
 }
