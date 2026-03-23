@@ -26,15 +26,11 @@ jobs:
       - name: Validate Branch Name
         id: validate-branch
         run: |
-          echo "[INFO] Validating branch name: '${{ github.head_ref }}'"
-          
           if [[ ! "${{ github.head_ref }}" =~ ^(feat|fix|chore|docs|refactor)\/[0-9]+-[a-z0-9-]+$ ]]; then
-            echo "[ERROR] Non-compliant branch naming convention."
-            echo "[INFO] Expected format: <type>/<id>-<kebab-case-description>"
+            echo "[ERROR] Nomenclatura da branch fora do padrão: ${{ github.head_ref }}"
+            echo "[ERROR] Formato esperado: <tipo>/<id>-<descricao-em-kebab-case>"
             exit 1
           fi
-          
-          echo "[INFO] Branch name validation passed."
 
       - name: Validate PR Title
         id: validate-pr-title
@@ -50,67 +46,32 @@ jobs:
         
       - name: Install Dependencies
         id: install-deps
-        run: |
-          echo "[INFO] Installing dependencies..."
-          bun install --frozen-lockfile
-          echo "[INFO] Dependencies installed successfully."
+        run: bun install --frozen-lockfile
 
       # ==========================================
       # SECURITY GATE
       # ==========================================
       - name: Security Audit
         id: security-audit
-        run: |
-          echo "[INFO] Running security audit..."
-          
-          if ! bun audit; then
-            echo "[ERROR] Vulnerabilities found in dependencies."
-            exit 1
-          fi
-          
-          echo "[INFO] Security audit passed. No vulnerabilities detected."
+        run: bun audit
 
       # ==========================================
       # QUALITY GATE
       # ==========================================
       - name: Lint & Format
         id: lint-format
-        run: |
-          echo "[INFO] Running lint and format checks..."
-          
-          if ! bun run check; then
-            echo "[ERROR] Code quality checks failed (Lint/Typecheck)."
-            exit 1
-          fi
-          
-          echo "[INFO] Code quality checks passed."
+        run: bun run check
 
       - name: Unit Tests
         id: unit-tests
-        run: |
-          echo "[INFO] Running unit tests..."
-          
-          if ! bun run test:cov; then
-            echo "[ERROR] Unit tests failed or coverage threshold not met."
-            exit 1
-          fi
-          
-          echo "[INFO] Unit tests passed."
+        run: bun run test:cov
 
       # ==========================================
       # BUILD GATE
       # ==========================================
-      - name: Build Application
-        id: build-app
-        run: |
-          echo "[INFO] Compiling application..."
-          
-          if ! bun run build; then
-            echo "[ERROR] Application build failed."
-            exit 1
-          fi
-          
-          echo "[INFO] Application build passed."
+      - name: Build
+        id: build
+        run: bun run build
 
       # ==========================================
       # EXIT GATE
@@ -119,23 +80,18 @@ jobs:
         if: always()
         run: |
           cat << EOF >> $GITHUB_STEP_SUMMARY
-          ## Pipeline Exit Summary
-
-          Status: **${{ job.status }}**
-
-          | Component | Status |
+          ## Resumo da Validação do PR
+          
+          Job Status: **${{ job.status }}**
+          
+          | Step | Status |
           | :--- | :--- |
           | Branch Name | \`${{ steps.validate-branch.conclusion }}\` |
           | PR Title | \`${{ steps.validate-pr-title.conclusion }}\` |
           | Security Audit | \`${{ steps.security-audit.conclusion }}\` |
           | Lint & Format | \`${{ steps.lint-format.conclusion }}\` |
           | Unit Tests | \`${{ steps.unit-tests.conclusion }}\` |
-          | Build | \`${{ steps.build-app.conclusion }}\` |
-          EOF
+          | Build | \`${{ steps.build.conclusion }}\` |
           
-          if [ "${{ job.status }}" != "success" ]; then
-            cat << EOF >> $GITHUB_STEP_SUMMARY
-          
-          > [ERROR] Execution halted due to a failed compliance gate. Identify the component marked as \`failure\` above and review the standard output logs.
+          > Em caso de falha, consulte os logs do step correspondente acima para análise técnica.
           EOF
-          fi
