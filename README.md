@@ -25,6 +25,15 @@ bun dev
 
 A aplicação estará disponível em `http://localhost:3000`.
 
+### Organização do projeto
+
+Todo o código fonte está na pasta `src`. Dentro dela, temos as seguintes pastas:
+
+- `components`: Componentes reutilizáveis da aplicação, como botões, inputs, modais, etc.
+- `routes`: Páginas da aplicação, cada arquivo representa uma rota. Rotas são registradas no arquivo `src/router.tsx`.
+- `features`: Funcionalidades específicas da aplicação, como autenticação, gerenciamento de usuários, etc. Cada funcionalidade tem sua própria pasta, que pode conter componentes, hooks, serviços, etc. Mais sobre as features [aqui](src/features/README.md).
+- `lib`, `config` e `utils`: Configuração de bibliotecas, arquivos de configuração e funções utilitárias, respectivamente.
+
 ### Testes
 
 A aplicação possue testes unitários e de componentes. Eles ficam na mesma pasta dos arquivos que testam, com a extensão `.spec.ts` ou `.spec.tsx`. A nossa meta é manter uma cobertura de testes acima de 80%.
