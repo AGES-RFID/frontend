@@ -26,12 +26,31 @@ export class UserService {
     return users;
   }
 
+  async getUserById(userId: string): Promise<UserDto> {
+    const user = userSchema.parse(
+      await this.apiClient.get(`users/${userId}`).json(),
+    );
+
+    return user;
+  }
+
   async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
     const user = userSchema.parse(
       await this.apiClient.post("users", { json: createUserDto }).json(),
     );
 
     return user;
+  }
+
+  async editUser(
+    userId: string,
+    updateUserDto: Partial<CreateUserDto>,
+  ): Promise<void> {
+    await this.apiClient.put(`users/${userId}`, { json: updateUserDto }).json();
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await this.apiClient.delete(`users/${userId}`);
   }
 }
 

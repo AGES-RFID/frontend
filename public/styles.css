@@ -1,1 +1,57 @@
 @import "tailwindcss";
+
+@theme {
+  --color-*: initial;
+
+  /* Primary */
+  --color-dark-blue: #173f67;
+  --color-blue: #146eaa;
+  --color-light-blue: #109bd4;
+
+  --color-dark-teal: #006e78;
+  --color-teal: #009b9d;
+  --color-light-teal: #34bdb4;
+
+  --color-dark-gray: #333333;
+  --color-gray: #666666;
+  --color-light-gray: #999999;
+  --color-very-light-gray: #cccccc;
+
+  --color-green: #20952c;
+
+  /* Secondary */
+  --color-dark-fuscia: #a3075e;
+  --color-fuscia: #d23683;
+
+  --color-dark-orange: #d84d00;
+  --color-yellow: #ffd200;
+
+  /* Logo */
+  --color-red: #f7323f;
+  --color-gray: #4d4d4d;
+
+  /* Absolute */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-lighter-blue: #94a3b8;
+  --color-light-green: #8fca95;
+  --color-light-red: #fb989f;
+}
+
+/* Aliases for color mixes */
+@theme inline {
+  --color-dark-blue-75: color-mix(
+    in srgb,
+    var(--color-dark-blue) 75%,
+    var(--color-black)
+  );
+  --color-dark-blue-50: color-mix(
+    in srgb,
+    var(--color-dark-blue) 50%,
+    var(--color-black)
+  );
+
+  --color-red-75: color-mix(in srgb, var(--color-red) 75%, var(--color-black));
+  --color-red-50: color-mix(in srgb, var(--color-red) 50%, var(--color-black));
+}
