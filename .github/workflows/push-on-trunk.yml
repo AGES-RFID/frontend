@@ -1,0 +1,21 @@
+name: Push on Trunk
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: CI
+    uses: AGES-RFID/cicd/.github/workflows/ci-bun.yml@main
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-staging:
+    name: CD Staging
+    needs: [validate]
+    uses: AGES-RFID/cicd/.github/workflows/deployment.yml@main
+    with:
+      environment: 'staging'
+      version: ${{ github.sha }}

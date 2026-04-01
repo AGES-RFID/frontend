@@ -1,97 +1,17 @@
-name: Continuous Integration
+name: PR to Trunk
 
 on:
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-  pull-requests: read
-
 jobs:
   validate:
-    name: Continuous Integration
-    runs-on: ubuntu-latest
-    steps:
-      # ==========================================
-      # ENTRY GATE
-      # ==========================================
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Validate Branch Name
-        id: validate-branch
-        run: |
-          if [[ ! "${{ github.head_ref }}" =~ ^(feat|fix|chore|docs|refactor)\/[0-9]+-[a-z0-9-]+$ ]]; then
-            echo "[ERROR] Nomenclatura da branch fora do padrão: ${{ github.head_ref }}"
-            echo "[ERROR] Formato esperado: <tipo>/<id>-<descricao-em-kebab-case>"
-            exit 1
-          fi
-
-      - name: Validate PR Title
-        id: validate-pr-title
-        uses: amannn/action-semantic-pull-request@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # ==========================================
-      # SETUP GATE
-      # ==========================================
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        
-      - name: Install Dependencies
-        id: install-deps
-        run: bun install --frozen-lockfile
-
-      # ==========================================
-      # SECURITY GATE
-      # ==========================================
-      - name: Security Audit
-        id: security-audit
-        run: bun audit
-
-      # ==========================================
-      # QUALITY GATE
-      # ==========================================
-      - name: Lint & Format
-        id: lint-format
-        run: bun run check
-
-      - name: Unit Tests
-        id: unit-tests
-        run: bun run test:cov
-
-      # ==========================================
-      # BUILD GATE
-      # ==========================================
-      - name: Build
-        id: build
-        run: bun run build
-
-      # ==========================================
-      # EXIT GATE
-      # ==========================================
-      - name: DevEx Report
-        if: always()
-        run: |
-          cat << EOF >> $GITHUB_STEP_SUMMARY
-          ## Resumo da Validação do PR
-          
-          Job Status: **${{ job.status }}**
-          
-          | Step | Status |
-          | :--- | :--- |
-          | Branch Name | \`${{ steps.validate-branch.conclusion }}\` |
-          | PR Title | \`${{ steps.validate-pr-title.conclusion }}\` |
-          | Security Audit | \`${{ steps.security-audit.conclusion }}\` |
-          | Lint & Format | \`${{ steps.lint-format.conclusion }}\` |
-          | Unit Tests | \`${{ steps.unit-tests.conclusion }}\` |
-          | Build | \`${{ steps.build.conclusion }}\` |
-          
-          > Em caso de falha, consulte os logs do step correspondente acima para análise técnica.
-          EOF
+    name: CI
+    uses: AGES-RFID/cicd/.github/workflows/ci-bun.yml@main
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
