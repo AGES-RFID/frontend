@@ -90,6 +90,7 @@ describe("UserService", () => {
       jsonMock.mockImplementationOnce(async () => ({
         userId: "550e8400-e29b-41d4-a716-446655440000",
         name: "John Doe",
+        email: "john.doe@example.com",
       }));
 
       await userService.createUser(createUserDto);
@@ -137,6 +138,128 @@ describe("UserService", () => {
       }));
 
       expect(userService.createUser(createUserDto)).rejects.toBeDefined();
+    });
+  });
+
+  describe("getUserById", () => {
+    let jsonMock: Mock<() => Promise<unknown>>;
+    let getMock: Mock<(path: string) => { json: typeof jsonMock }>;
+    let apiMock: ApiClient;
+    let userService: UserService;
+
+    beforeEach(() => {
+      jsonMock = mock(async () => ({}));
+      getMock = mock(() => ({ json: jsonMock }));
+
+      apiMock = { get: getMock } as unknown as ApiClient;
+      userService = new UserService(apiMock);
+    });
+
+    it("should call the api route with correct userId", async () => {
+      const userId = "550e8400-e29b-41d4-a716-446655440000";
+
+      jsonMock.mockImplementationOnce(async () => ({
+        userId,
+        name: "John Doe",
+        email: "john.doe@example.com",
+      }));
+
+      await userService.getUserById(userId);
+
+      expect(getMock).toHaveBeenCalledTimes(1);
+      expect(getMock).toHaveBeenCalledWith(`users/${userId}`);
+      expect(jsonMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("should return the user with correct data", async () => {
+      const userId = "550e8400-e29b-41d4-a716-446655440000";
+      const user = {
+        userId,
+        name: "John Doe",
+        email: "john.doe@example.com",
+      };
+
+      jsonMock.mockImplementationOnce(async () => user);
+
+      const result = await userService.getUserById(userId);
+
+      expect(result).toEqual(user);
+      expect(result.userId).toBe(userId);
+      expect(result.name).toBe("John Doe");
+    });
+
+    it("should throw error when user data is invalid", async () => {
+      const userId = "550e8400-e29b-41d4-a716-446655440000";
+
+      jsonMock.mockImplementationOnce(async () => ({
+        invalidField: "this is not a valid user",
+      }));
+
+      expect(userService.getUserById(userId)).rejects.toBeDefined();
+    });
+  });
+
+  describe("editUser", () => {
+    let jsonMock: Mock<() => Promise<unknown>>;
+    let putMock: Mock<
+      (path: string, options: { json: unknown }) => { json: typeof jsonMock }
+    >;
+    let apiMock: ApiClient;
+    let userService: UserService;
+
+    beforeEach(() => {
+      jsonMock = mock(async () => undefined);
+      putMock = mock(() => ({ json: jsonMock }));
+
+      apiMock = { put: putMock } as unknown as ApiClient;
+      userService = new UserService(apiMock);
+    });
+
+    it("should call the api route with correct userId and update data", async () => {
+      const userId = "550e8400-e29b-41d4-a716-446655440000";
+      const updateUserDto = { name: "Jane Smith" };
+
+      await userService.editUser(userId, updateUserDto);
+
+      expect(putMock).toHaveBeenCalledTimes(1);
+      expect(putMock).toHaveBeenCalledWith(`users/${userId}`, {
+        json: updateUserDto,
+      });
+      expect(jsonMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("should handle partial updates", async () => {
+      const userId = "550e8400-e29b-41d4-a716-446655440000";
+      const updateUserDto = { email: "newemail@example.com" };
+
+      await userService.editUser(userId, updateUserDto);
+
+      expect(putMock).toHaveBeenCalledTimes(1);
+      expect(putMock).toHaveBeenCalledWith(`users/${userId}`, {
+        json: updateUserDto,
+      });
+    });
+  });
+
+  describe("deleteUser", () => {
+    let deleteMock: Mock<(path: string) => Promise<unknown>>;
+    let apiMock: ApiClient;
+    let userService: UserService;
+
+    beforeEach(() => {
+      deleteMock = mock(async () => undefined);
+
+      apiMock = { delete: deleteMock } as unknown as ApiClient;
+      userService = new UserService(apiMock);
+    });
+
+    it("should call the api route with correct userId", async () => {
+      const userId = "550e8400-e29b-41d4-a716-446655440000";
+
+      await userService.deleteUser(userId);
+
+      expect(deleteMock).toHaveBeenCalledTimes(1);
+      expect(deleteMock).toHaveBeenCalledWith(`users/${userId}`);
     });
   });
 });
