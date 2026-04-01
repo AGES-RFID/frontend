@@ -1,6 +1,7 @@
 import type { Mock } from "bun:test";
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 import type { ApiClient } from "@/lib/api";
+import type { CreateUserDto } from "./dtos";
 import { UserService } from "./UserService";
 
 describe("UserService", () => {
@@ -28,8 +29,16 @@ describe("UserService", () => {
 
     it("should return the user list with correct data", async () => {
       const mockUsers = [
-        { userId: "550e8400-e29b-41d4-a716-446655440000", name: "John Doe" },
-        { userId: "550e8400-e29b-41d4-a716-446655440001", name: "Jane Smith" },
+        {
+          userId: "550e8400-e29b-41d4-a716-446655440000",
+          name: "John Doe",
+          email: "john.doe@example.com",
+        },
+        {
+          userId: "550e8400-e29b-41d4-a716-446655440001",
+          name: "Jane Smith",
+          email: "jane.smith@example.com",
+        },
       ];
 
       jsonMock.mockImplementationOnce(async () => mockUsers);
@@ -76,7 +85,7 @@ describe("UserService", () => {
     });
 
     it("should call the api route with correct payload and json once", async () => {
-      const createUserDto = { name: "John Doe" };
+      const createUserDto = { name: "John Doe", email: "john.doe@example.com" };
 
       jsonMock.mockImplementationOnce(async () => ({
         userId: "550e8400-e29b-41d4-a716-446655440000",
@@ -91,10 +100,14 @@ describe("UserService", () => {
     });
 
     it("should return the created user with correct data", async () => {
-      const createUserDto = { name: "Jane Smith" };
+      const createUserDto = {
+        name: "Jane Smith",
+        email: "jane.smith@example.com",
+      };
       const createdUser = {
         userId: "550e8400-e29b-41d4-a716-446655440001",
         name: "Jane Smith",
+        email: "jane.smith@example.com",
       };
 
       jsonMock.mockImplementationOnce(async () => createdUser);
@@ -107,7 +120,7 @@ describe("UserService", () => {
     });
 
     it("should throw error when json returns invalid user data", async () => {
-      const createUserDto = { name: "John Doe" };
+      const createUserDto = { name: "John Doe", email: "john.doe@example.com" };
 
       jsonMock.mockImplementationOnce(async () => ({
         invalidField: "this is not a valid user dto",
@@ -117,7 +130,7 @@ describe("UserService", () => {
     });
 
     it("should throw error when user data is missing required fields", async () => {
-      const createUserDto = { name: "John Doe" };
+      const createUserDto = { name: "John Doe" } as CreateUserDto; // cast to make typescript happy;
 
       jsonMock.mockImplementationOnce(async () => ({
         name: "John Doe",
