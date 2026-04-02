@@ -12,7 +12,7 @@ export function UserCard({ user }: UserCardProps) {
   const deleteUserMutation = useDeleteUser();
 
   return (
-    <div className="flex items-center justify-between gap-2 rounded-md border border-dark-blue p-2">
+    <div className="flex items-center justify-between gap-2 rounded-md border border-light-blue p-2">
       <div>
         <p>{user.name}</p>
         <p className="text-dark-gray text-sm">{user.email}</p>
