@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { LogOutIcon } from "lucide-react";
 
 type HeaderAuthButtonProps = {
   isLogged?: boolean;
@@ -8,50 +9,13 @@ type HeaderAuthButtonProps = {
   type?: "button" | "submit" | "reset";
 };
 
-type ExitArrowIconProps = {
-  className?: string;
-};
-
-function ExitArrowIcon({ className = "" }: ExitArrowIconProps) {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 64 64"
-      fill="none"
-      className={className}
-    >
-      <path
-        d="M18 8H9a3 3 0 0 0-3 3v42a3 3 0 0 0 3 3h9"
-        stroke="currentColor"
-        strokeWidth="4.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M22 32h29"
-        stroke="currentColor"
-        strokeWidth="4.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M38 16l16 16-16 16"
-        stroke="currentColor"
-        strokeWidth="4.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export function HeaderAuthButton({
   isLogged = false,
   action,
   disabled = false,
   className = "",
   type = "button",
-}: HeaderAuthButtonProps) {
+}: Readonly<HeaderAuthButtonProps>) {
   const label = isLogged ? "Sair" : "Entrar/Cadastrar";
 
   return (
@@ -66,6 +30,7 @@ export function HeaderAuthButton({
       className={[
         "inline-flex items-center gap-2",
         "rounded-none",
+        "bg-dark-blue text-white",
         "font-['Roboto'] font-bold",
         "hover:opacity-90",
         "active:opacity-80",
@@ -73,9 +38,9 @@ export function HeaderAuthButton({
         className,
       ].join(" ")}
     >
-      {!isLogged && <ExitArrowIcon className="h-4 w-4 shrink-0" />}
+      {!isLogged && <LogOutIcon className="h-4 w-4 shrink-0" />}
       <span>{label}</span>
-      {isLogged && <ExitArrowIcon className="h-4 w-4 shrink-0" />}
+      {isLogged && <LogOutIcon className="h-4 w-4 shrink-0" />}
     </Button>
   );
 }
