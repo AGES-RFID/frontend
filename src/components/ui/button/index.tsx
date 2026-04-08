@@ -4,7 +4,15 @@ import { cn } from "@/utils/cn";
 const buttonStyles = cva(["rounded font-medium cursor-pointer"], {
   variants: {
     variant: {
-      primary: "bg-dark-blue text-white",
+      //
+      primary:
+        "bg-dark-blue text-white hover:bg-dark-blue-75 active:bg-dark-blue-50 disabled:bg-light-gray disabled:text-whitedisabled:hover:bg-dark-blue",
+      secondary:
+        "border border-dark-blue bg-white text-dark-blue hover:bg-blue/15 active:bg-blue/30 disabled:border-gray disabled:text-gray disabled:hover:bg-transparent",
+      destructive:
+        "bg-red text-white hover:bg-red-75 active:bg-red-50 disabled:bg-light-gray disabled:text-white",
+      borderless:
+        "bg-transparent border-none text-dark-blue hover:bg-dark-blue/15 active:bg-dark-blue/30 disabled:bg-transparent disabled:text-light-gray",
     },
 
     size: {
@@ -35,14 +43,24 @@ const buttonStyles = cva(["rounded font-medium cursor-pointer"], {
     { size: "lg", icon: "right", className: "pr-3" },
   ],
 });
-
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
-  VariantProps<typeof buttonStyles>;
-
-export function Button({ size, icon, className, ...props }: ButtonProps) {
+export function Button({
+  variant,
+  size,
+  icon,
+  className,
+  ...props
+}: ButtonProps) {
   return (
-    <button className={cn(buttonStyles({ size, icon }), className)} {...props}>
+    <button
+      // O CVA cuida de aplicar a classe correta com base na prop 'variant'
+      className={cn(buttonStyles({ variant, size, icon }), className)}
+      // O atributo 'disabled' nativo do HTML já resolve a lógica de clique
+      disabled={props.disabled}
+      {...props}
+    >
       {props.children}
     </button>
   );
 }
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+  VariantProps<typeof buttonStyles>;
