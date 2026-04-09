@@ -6,7 +6,7 @@ import { Input } from ".";
 describe("Input component", () => {
   afterEach(cleanup);
 
-  // ── Default variant ──────────────────────────────────────────────────────
+  // ── Input vazio ──────────────────────────────────────────────────────
 
   it("should render with a label", () => {
     render(<Input label="Nome" />);
