@@ -1,9 +1,11 @@
-import { describe, expect, it, mock } from "bun:test";
-import { render, screen } from "@testing-library/react";
+import { describe, expect, it, mock, afterEach } from "bun:test";
+import { render, screen, cleanup } from "@testing-library/react";
 
 import { Button } from ".";
 
 describe("Button component", () => {
+  afterEach(cleanup);
+
   it("should render the button", () => {
     render(<Button>Click me</Button>);
     expect(screen.getByRole("button")).toHaveTextContent("Click me");
