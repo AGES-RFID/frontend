@@ -1,13 +1,11 @@
 import ky from "ky";
-
-const BASE_URL =
-  (typeof process !== "undefined" ? process.env?.PUBLIC_API_URL : undefined) ??
-  "http://localhost:5000";
+import { env } from "@/config/env";
 
 export type ApiClient = typeof ky;
 
 export const api = ky.extend({
-  prefixUrl: `${BASE_URL}/api`,
+  baseUrl: env.API_URL,
+  prefix: "api",
   hooks: {
     beforeRequest: [],
   },
