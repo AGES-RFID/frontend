@@ -1,10 +1,8 @@
-import { Link } from "react-router";
-
+import { SidebarComponent } from "../components/ui/sidebar/sidebarComponent";
 export function Home() {
   return (
     <div>
-      <h1>Home</h1>
-      <Link to="/users">Users</Link>
+      <SidebarComponent />
     </div>
   );
 }
