@@ -15,29 +15,21 @@ export class UserService {
   }
 
   async listUsers(): Promise<UserListDto> {
-    // Já existe a feature de integração do zod com o ky:
-    // https://github.com/sindresorhus/ky/pull/830
-    // A PR foi aprovada, mas não foi publicada uma versão nova.
-    // Na próxima versão, poderemos reescrever esse código como:
-    // const users =  await api.get("/users").json({ schema: userListSchema }),
-    const users = userListSchema.parse(
-      await this.apiClient.get("users").json(),
-    );
+    const users = await this.apiClient.get("users").json(userListSchema);
+
     return users;
   }
 
   async getUserById(userId: string): Promise<UserDto> {
-    const user = userSchema.parse(
-      await this.apiClient.get(`users/${userId}`).json(),
-    );
+    const user = await this.apiClient.get(`users/${userId}`).json(userSchema);
 
     return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
-    const user = userSchema.parse(
-      await this.apiClient.post("users", { json: createUserDto }).json(),
-    );
+    const user = await this.apiClient
+      .post("users", { json: createUserDto })
+      .json(userSchema);
 
     return user;
   }
