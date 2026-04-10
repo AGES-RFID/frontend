@@ -1,6 +1,8 @@
 import ky from "ky";
 
-const BASE_URL = process.env.PUBLIC_API_URL ?? "http://localhost:5000";
+const BASE_URL =
+  (typeof process !== "undefined" ? process.env?.PUBLIC_API_URL : undefined) ??
+  "http://localhost:5000";
 
 export type ApiClient = typeof ky;
 
