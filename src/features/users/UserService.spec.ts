@@ -1,30 +1,31 @@
-import type { Mock } from "bun:test";
 import { beforeEach, describe, expect, it, mock } from "bun:test";
-import type { ApiClient } from "@/lib/api";
+import { type ApiClient, api } from "@/lib/api";
+import { jsonResponse } from "/test/utils/makeResponse";
 import type { CreateUserDto } from "./dtos";
 import { UserService } from "./UserService";
 
 describe("UserService", () => {
   describe("listUsers", () => {
-    let jsonMock: Mock<() => Promise<unknown>>;
-    let getMock: Mock<(path: string) => { json: typeof jsonMock }>;
+    let fetchMock = mock();
     let apiMock: ApiClient;
     let userService: UserService;
 
     beforeEach(() => {
-      jsonMock = mock(async () => []);
-      getMock = mock(() => ({ json: jsonMock }));
-
-      apiMock = { get: getMock } as unknown as ApiClient;
+      fetchMock = mock();
+      apiMock = api.extend({ fetch: fetchMock });
       userService = new UserService(apiMock);
     });
 
-    it("should call the api route and json once", async () => {
+    it("should call the api route with the correct args", async () => {
+      fetchMock.mockImplementationOnce(async () => jsonResponse([]));
       await userService.listUsers();
 
-      expect(getMock).toHaveBeenCalledTimes(1);
-      expect(getMock).toHaveBeenCalledWith("users");
-      expect(jsonMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+
+      const [request] = fetchMock.mock.calls.at(0)!;
+      expect(request).toBeInstanceOf(Request);
+      expect(request.url).toContain("/users");
+      expect(request.method).toBe("GET");
     });
 
     it("should return the user list with correct data", async () => {
@@ -41,7 +42,7 @@ describe("UserService", () => {
         },
       ];
 
-      jsonMock.mockImplementationOnce(async () => mockUsers);
+      fetchMock.mockImplementationOnce(async () => jsonResponse(mockUsers));
 
       const result = await userService.listUsers();
 
@@ -52,52 +53,53 @@ describe("UserService", () => {
     });
 
     it("should throw error when json returns invalid data", async () => {
-      jsonMock.mockImplementationOnce(async () => ({
-        invalidField: "this is not a valid user list",
-      }));
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse({ invalidField: "this is not a valid user list" }),
+      );
 
       expect(userService.listUsers()).rejects.toBeDefined();
     });
 
     it("should throw error when user data is missing required fields", async () => {
-      jsonMock.mockImplementationOnce(async () => [
-        { userId: "550e8400-e29b-41d4-a716-446655440000" },
-      ]);
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse([{ userId: "550e8400-e29b-41d4-a716-446655440000" }]),
+      );
 
       expect(userService.listUsers()).rejects.toBeDefined();
     });
   });
 
   describe("createUser", () => {
-    let jsonMock: Mock<() => Promise<unknown>>;
-    let postMock: Mock<
-      (path: string, options: { json: unknown }) => { json: typeof jsonMock }
-    >;
+    let fetchMock = mock();
     let apiMock: ApiClient;
     let userService: UserService;
 
     beforeEach(() => {
-      jsonMock = mock(async () => ({}));
-      postMock = mock(() => ({ json: jsonMock }));
-
-      apiMock = { post: postMock } as unknown as ApiClient;
+      fetchMock = mock();
+      apiMock = api.extend({ fetch: fetchMock });
       userService = new UserService(apiMock);
     });
 
     it("should call the api route with correct payload and json once", async () => {
       const createUserDto = { name: "John Doe", email: "john.doe@example.com" };
 
-      jsonMock.mockImplementationOnce(async () => ({
-        userId: "550e8400-e29b-41d4-a716-446655440000",
-        name: "John Doe",
-        email: "john.doe@example.com",
-      }));
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse({
+          userId: "550e8400-e29b-41d4-a716-446655440000",
+          name: "John Doe",
+          email: "john.doe@example.com",
+        }),
+      );
 
       await userService.createUser(createUserDto);
 
-      expect(postMock).toHaveBeenCalledTimes(1);
-      expect(postMock).toHaveBeenCalledWith("users", { json: createUserDto });
-      expect(jsonMock).toHaveBeenCalledTimes(1);
+      const [request] = fetchMock.mock.calls.at(0)!;
+      expect(request).toBeInstanceOf(Request);
+      expect(request.url).toContain("/users");
+      expect(request.method).toBe("POST");
+      expect(request.headers.get("Content-Type")).toBe("application/json");
+      const body = await request.clone().json();
+      expect(body).toEqual(createUserDto);
     });
 
     it("should return the created user with correct data", async () => {
@@ -111,21 +113,21 @@ describe("UserService", () => {
         email: "jane.smith@example.com",
       };
 
-      jsonMock.mockImplementationOnce(async () => createdUser);
+      fetchMock.mockImplementationOnce(async () => jsonResponse(createdUser));
 
       const result = await userService.createUser(createUserDto);
 
       expect(result).toEqual(createdUser);
-      expect(result.userId).toBe("550e8400-e29b-41d4-a716-446655440001");
-      expect(result.name).toBe("Jane Smith");
     });
 
     it("should throw error when json returns invalid user data", async () => {
       const createUserDto = { name: "John Doe", email: "john.doe@example.com" };
 
-      jsonMock.mockImplementationOnce(async () => ({
-        invalidField: "this is not a valid user dto",
-      }));
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse({
+          invalidField: "this is not a valid user dto",
+        }),
+      );
 
       expect(userService.createUser(createUserDto)).rejects.toBeDefined();
     });
@@ -133,42 +135,46 @@ describe("UserService", () => {
     it("should throw error when user data is missing required fields", async () => {
       const createUserDto = { name: "John Doe" } as CreateUserDto; // cast to make typescript happy;
 
-      jsonMock.mockImplementationOnce(async () => ({
-        name: "John Doe",
-      }));
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse({
+          name: "John Doe",
+        }),
+      );
 
       expect(userService.createUser(createUserDto)).rejects.toBeDefined();
     });
   });
 
   describe("getUserById", () => {
-    let jsonMock: Mock<() => Promise<unknown>>;
-    let getMock: Mock<(path: string) => { json: typeof jsonMock }>;
+    let fetchMock = mock();
     let apiMock: ApiClient;
     let userService: UserService;
 
     beforeEach(() => {
-      jsonMock = mock(async () => ({}));
-      getMock = mock(() => ({ json: jsonMock }));
-
-      apiMock = { get: getMock } as unknown as ApiClient;
+      fetchMock = mock();
+      apiMock = api.extend({ fetch: fetchMock });
       userService = new UserService(apiMock);
     });
 
     it("should call the api route with correct userId", async () => {
       const userId = "550e8400-e29b-41d4-a716-446655440000";
 
-      jsonMock.mockImplementationOnce(async () => ({
-        userId,
-        name: "John Doe",
-        email: "john.doe@example.com",
-      }));
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse({
+          userId,
+          name: "John Doe",
+          email: "john.doe@example.com",
+        }),
+      );
 
       await userService.getUserById(userId);
 
-      expect(getMock).toHaveBeenCalledTimes(1);
-      expect(getMock).toHaveBeenCalledWith(`users/${userId}`);
-      expect(jsonMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+
+      const [request] = fetchMock.mock.calls.at(0)!;
+      expect(request).toBeInstanceOf(Request);
+      expect(request.url).toContain(`/users/${userId}`);
+      expect(request.method).toBe("GET");
     });
 
     it("should return the user with correct data", async () => {
@@ -179,7 +185,7 @@ describe("UserService", () => {
         email: "john.doe@example.com",
       };
 
-      jsonMock.mockImplementationOnce(async () => user);
+      fetchMock.mockImplementationOnce(async () => jsonResponse(user));
 
       const result = await userService.getUserById(userId);
 
@@ -191,27 +197,24 @@ describe("UserService", () => {
     it("should throw error when user data is invalid", async () => {
       const userId = "550e8400-e29b-41d4-a716-446655440000";
 
-      jsonMock.mockImplementationOnce(async () => ({
-        invalidField: "this is not a valid user",
-      }));
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse({
+          invalidField: "this is not a valid user",
+        }),
+      );
 
       expect(userService.getUserById(userId)).rejects.toBeDefined();
     });
   });
 
   describe("editUser", () => {
-    let jsonMock: Mock<() => Promise<unknown>>;
-    let putMock: Mock<
-      (path: string, options: { json: unknown }) => { json: typeof jsonMock }
-    >;
+    let fetchMock = mock();
     let apiMock: ApiClient;
     let userService: UserService;
 
     beforeEach(() => {
-      jsonMock = mock(async () => undefined);
-      putMock = mock(() => ({ json: jsonMock }));
-
-      apiMock = { put: putMock } as unknown as ApiClient;
+      fetchMock = mock();
+      apiMock = api.extend({ fetch: fetchMock });
       userService = new UserService(apiMock);
     });
 
@@ -219,47 +222,67 @@ describe("UserService", () => {
       const userId = "550e8400-e29b-41d4-a716-446655440000";
       const updateUserDto = { name: "Jane Smith" };
 
+      fetchMock.mockImplementationOnce(async () => jsonResponse({}));
+
       await userService.editUser(userId, updateUserDto);
 
-      expect(putMock).toHaveBeenCalledTimes(1);
-      expect(putMock).toHaveBeenCalledWith(`users/${userId}`, {
-        json: updateUserDto,
-      });
-      expect(jsonMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+
+      const [request] = fetchMock.mock.calls.at(0)!;
+      expect(request).toBeInstanceOf(Request);
+      expect(request.url).toContain(`/users/${userId}`);
+      expect(request.method).toBe("PUT");
+      expect(request.headers.get("Content-Type")).toBe("application/json");
+      const body = await request.clone().json();
+      expect(body).toEqual(updateUserDto);
     });
 
     it("should handle partial updates", async () => {
       const userId = "550e8400-e29b-41d4-a716-446655440000";
       const updateUserDto = { email: "newemail@example.com" };
 
+      fetchMock.mockImplementationOnce(async () => jsonResponse({}));
+
       await userService.editUser(userId, updateUserDto);
 
-      expect(putMock).toHaveBeenCalledTimes(1);
-      expect(putMock).toHaveBeenCalledWith(`users/${userId}`, {
-        json: updateUserDto,
-      });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+
+      const [request] = fetchMock.mock.calls.at(0)!;
+      expect(request).toBeInstanceOf(Request);
+      expect(request.url).toContain(`/users/${userId}`);
+      expect(request.method).toBe("PUT");
+      expect(request.headers.get("Content-Type")).toBe("application/json");
+      const body = await request.clone().json();
+      expect(body).toEqual(updateUserDto);
     });
   });
 
   describe("deleteUser", () => {
-    let deleteMock: Mock<(path: string) => Promise<unknown>>;
+    let fetchMock = mock();
     let apiMock: ApiClient;
     let userService: UserService;
 
     beforeEach(() => {
-      deleteMock = mock(async () => undefined);
-
-      apiMock = { delete: deleteMock } as unknown as ApiClient;
+      fetchMock = mock();
+      apiMock = api.extend({ fetch: fetchMock });
       userService = new UserService(apiMock);
     });
 
     it("should call the api route with correct userId", async () => {
       const userId = "550e8400-e29b-41d4-a716-446655440000";
 
+      fetchMock.mockImplementationOnce(
+        async () => new Response(null, { status: 204 }),
+      );
+
       await userService.deleteUser(userId);
 
-      expect(deleteMock).toHaveBeenCalledTimes(1);
-      expect(deleteMock).toHaveBeenCalledWith(`users/${userId}`);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+
+      const [request] = fetchMock.mock.calls.at(0)!;
+      expect(request).toBeInstanceOf(Request);
+      expect(request.url).toContain(`/users/${userId}`);
+      expect(request.method).toBe("DELETE");
     });
   });
 });
