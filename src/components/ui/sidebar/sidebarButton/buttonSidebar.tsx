@@ -18,7 +18,7 @@ const _menuItens: MenuItem[] = [
   { id: "dashboard", label: "DASHBOARD", icon: <LayoutDashboard /> },
   { id: "veiculos", label: "VEÍCULOS", icon: <Car /> },
   { id: "usuarios", label: "USUÁRIOS", icon: <Users /> },
-  { id: "tag", label: "TAG", icon: <Radio /> },
+  { id: "tags", label: "TAGS", icon: <Radio /> },
   { id: "cobranca", label: "COBRANÇA", icon: <CreditCard /> },
   { id: "sistema", label: "SISTEMA", icon: <Settings /> },
 ];
