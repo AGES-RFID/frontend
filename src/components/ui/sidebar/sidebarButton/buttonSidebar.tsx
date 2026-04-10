@@ -8,17 +8,17 @@ import {
   Settings,
 } from "lucide-react";
 
-type menuItem = {
+type MenuItem = {
   id: string;
   label: string;
   icon: React.ReactNode;
 };
 
-const menuItens: menuItem[] = [
-  { id: "dashboard", label: "DASHBOARD0", icon: <LayoutDashboard /> },
+const menuItens: MenuItem[] = [
+  { id: "dashboard", label: "DASHBOARD", icon: <LayoutDashboard /> },
   { id: "veiculos", label: "VEÍCULOS", icon: <Car /> },
   { id: "usuarios", label: "USUÁRIOS", icon: <Users /> },
-  { id: "tag", label: "TAG", icon: <Radio /> },
+  { id: "tags", label: "TAGS", icon: <Radio /> },
   { id: "cobranca", label: "COBRANÇA", icon: <CreditCard /> },
   { id: "sistema", label: "SISTEMA", icon: <Settings /> },
 ];
@@ -51,7 +51,9 @@ export const buttonSidebar: React.FC = () => {
           >
             {/* Ícone */}
             <span
-              className={`flex w-6 items-center justify-center text-xl transition-all duration-200 ${isHovered || isActive ? "scale-110" : ""}
+              className={`flex w-6 items-center justify-center text-xl transition-all duration-200 ${
+                isHovered || isActive ? "scale-110" : ""
+              }
               `}
             >
               {item.icon}
