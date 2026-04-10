@@ -1,38 +1,43 @@
 import { useState } from "react";
+import {
+  LayoutDashboard,
+  Car,
+  Users,
+  Radio,
+  CreditCard,
+  Settings,
+} from "lucide-react";
 
-//type MenuItem = {
-//    id: string;
-//    label: string;
-//    icon: React.ReactNode;
-//};
-//type ButtonSidebarProps = {
-//    items: MenuItem[];
-//};
+export type MenuItem = {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+};
 
-// const menuItens: MenuItem = [
-//    { id: "dashboard", label: "DASHBOARD", icon: <LayoutDashboard /> },
-//    { id: "veiculos", label: "VEÍCULOS", icon: <Car /> },
-//    { id: "usuarios", label: "USUÁRIOS", icon: <Users /> },
-//    { id: "tag", label: "TAG", icon: <Radio /> },
-//   { id: "cobranca", label: "COBRANÇA", icon: <CreditCard /> },
-//   { id: "sistema", label: "SISTEMA", icon: <Settings /> },
-//];
+const _menuItens: MenuItem[] = [
+  { id: "dashboard", label: "DASHBOARD", icon: <LayoutDashboard /> },
+  { id: "veiculos", label: "VEÍCULOS", icon: <Car /> },
+  { id: "usuarios", label: "USUÁRIOS", icon: <Users /> },
+  { id: "tag", label: "TAG", icon: <Radio /> },
+  { id: "cobranca", label: "COBRANÇA", icon: <CreditCard /> },
+  { id: "sistema", label: "SISTEMA", icon: <Settings /> },
+];
 
-type ButtonSidebarItemProps = {
+type ButtonSidebarProps = {
   label: string;
   icon: React.ReactNode;
   isActive: boolean;
-  onClick?: () => void;
+  onClick: () => void;
   color?: string;
 };
 
-export const ButtonSidebar: React.FC<ButtonSidebarItemProps> = ({
+export function ButtonSidebar({
   label,
   icon,
   isActive,
   onClick,
-  color = "dark-blue",
-}) => {
+  color = "#FFFFFF",
+}: ButtonSidebarProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -65,4 +70,4 @@ export const ButtonSidebar: React.FC<ButtonSidebarItemProps> = ({
       <span>{label}</span>
     </button>
   );
-};
+}
