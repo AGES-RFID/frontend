@@ -1,73 +1,68 @@
 import { useState } from "react";
-import {
-  LayoutDashboard,
-  Car,
-  Users,
-  Radio,
-  CreditCard,
-  Settings,
-} from "lucide-react";
 
-type MenuItem = {
-  id: string;
+//type MenuItem = {
+//    id: string;
+//    label: string;
+//    icon: React.ReactNode;
+//};
+//type ButtonSidebarProps = {
+//    items: MenuItem[];
+//};
+
+// const menuItens: MenuItem = [
+//    { id: "dashboard", label: "DASHBOARD", icon: <LayoutDashboard /> },
+//    { id: "veiculos", label: "VEÍCULOS", icon: <Car /> },
+//    { id: "usuarios", label: "USUÁRIOS", icon: <Users /> },
+//    { id: "tag", label: "TAG", icon: <Radio /> },
+//   { id: "cobranca", label: "COBRANÇA", icon: <CreditCard /> },
+//   { id: "sistema", label: "SISTEMA", icon: <Settings /> },
+//];
+
+type ButtonSidebarItemProps = {
   label: string;
   icon: React.ReactNode;
+  isActive: boolean;
+  onClick?: () => void;
+  color?: string;
 };
 
-type ButtonSidebarProps = {
-  items: MenuItem[];
-};
-
-const menuItens: MenuItem[] = [
-  { id: "dashboard", label: "DASHBOARD", icon: <LayoutDashboard /> },
-  { id: "veiculos", label: "VEÍCULOS", icon: <Car /> },
-  { id: "usuarios", label: "USUÁRIOS", icon: <Users /> },
-  { id: "tags", label: "TAGS", icon: <Radio /> },
-  { id: "cobranca", label: "COBRANÇA", icon: <CreditCard /> },
-  { id: "sistema", label: "SISTEMA", icon: <Settings /> },
-];
-
-export const buttonSidebar: React.FC = () => {
-  const [active, setActive] = useState("dashboard");
-  const [hovered, setHovered] = useState<string | null>(null);
+export const ButtonSidebar: React.FC<ButtonSidebarItemProps> = ({
+  label,
+  icon,
+  isActive,
+  onClick,
+  color = "dark-blue",
+}) => {
+  const [hovered, setHovered] = useState(false);
 
   return (
-    <div className="flex w-64 flex-col gap-2 bg-[#234A6B] p-4">
-      {menuItens.map((item) => {
-        const isActive = active === item.id;
-        const isHovered = hovered === item.id;
-
-        return (
-          <button
-            type="button"
-            key={item.id}
-            onClick={() => setActive(item.id)}
-            onMouseEnter={() => setHovered(item.id)}
-            onMouseLeave={() => setHovered(null)}
-            className={`flex w-full items-center gap-4 rounded-xl px-4 py-3 font-medium text-sm transition-all duration-200 ${
-              isActive
-                ? "bg-[#5A7696] text-white"
-                : isHovered
-                  ? "bg-[#2A4D6E] text-white"
-                  : "text-gray-200"
-            }
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={`flex w-full items-center gap-4 rounded-xl px-4 py-3 font-medium text-sm transition-all duration-200 ${
+        isActive
+          ? "bg-dark-blue text-white"
+          : hovered
+            ? "bg-blue text-white"
+            : "text-white"
+      }
                         `}
-          >
-            {/* Ícone */}
-            <span
-              className={`flex w-6 items-center justify-center text-xl transition-all duration-200 ${
-                isHovered || isActive ? "scale-110" : ""
-              }
+    >
+      {/* Ícone */}
+      <span
+        className={`flex w-6 items-center justify-center text-xl transition-all duration-200 ${
+          hovered || isActive ? "scale-110" : ""
+        }
               `}
-            >
-              {item.icon}
-            </span>
+        style={{ color }}
+      >
+        {icon}
+      </span>
 
-            {/* Texto */}
-            <span>{item.label}</span>
-          </button>
-        );
-      })}
-    </div>
+      {/* Texto */}
+      <span>{label}</span>
+    </button>
   );
 };
