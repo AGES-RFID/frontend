@@ -14,6 +14,10 @@ type MenuItem = {
   icon: React.ReactNode;
 };
 
+type ButtonSidebarProps = {
+  items: MenuItem[];
+};
+
 const menuItens: MenuItem[] = [
   { id: "dashboard", label: "DASHBOARD", icon: <LayoutDashboard /> },
   { id: "veiculos", label: "VEÍCULOS", icon: <Car /> },
