@@ -1,6 +1,7 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
-import { Search, Edit, Trash2 } from "lucide-react";
+import { Table, type TableColumn, type TableAction } from "../components/ui/table";
+import { Edit, Trash2 } from "lucide-react";
 
 // Type definitions for vehicle data from backend
 type Vehicle = {
@@ -15,13 +16,93 @@ type Vehicle = {
 // Mock function to simulate backend data response
 const fetchVehiclesFromBackend = (): Vehicle[] => {
   // This would be replaced with actual API call
-  // For now, returning empty array as requested
-  return [];
+  // Mock data for demonstration
+  return [
+    {
+      id: "1",
+      placa: "ABC1D23",
+      proprietario: "João Silva",
+      etiquetaRFID: "123456789",
+      createdAt: "2024-01-15T10:30:00Z",
+      updatedAt: "2024-01-15T10:30:00Z",
+    },
+    {
+      id: "2",
+      placa: "XYZ9E87",
+      proprietario: "Maria Santos",
+      etiquetaRFID: "987654321",
+      createdAt: "2024-01-16T14:20:00Z",
+      updatedAt: "2024-01-16T14:20:00Z",
+    },
+    {
+      id: "3",
+      placa: "DEF4G56",
+      proprietario: "Pedro Oliveira",
+      etiquetaRFID: "456789123",
+      createdAt: "2024-01-17T09:15:00Z",
+      updatedAt: "2024-01-17T09:15:00Z",
+    },
+    {
+      id: "4",
+      placa: "GHI7J89",
+      proprietario: "Ana Costa",
+      etiquetaRFID: "789123456",
+      createdAt: "2024-01-18T16:45:00Z",
+      updatedAt: "2024-01-18T16:45:00Z",
+    },
+    {
+      id: "5",
+      placa: "JKL5K01",
+      proprietario: "Carlos Ferreira",
+      etiquetaRFID: "321654987",
+      createdAt: "2024-01-19T11:30:00Z",
+      updatedAt: "2024-01-19T11:30:00Z",
+    },
+    {
+      id: "6",
+      placa: "MNO2L34",
+      proprietario: "Lucia Pereira",
+      etiquetaRFID: "654987321",
+      createdAt: "2024-01-20T13:10:00Z",
+      updatedAt: "2024-01-20T13:10:00Z",
+    },
+    {
+      id: "7",
+      placa: "PQR8M56",
+      proprietario: "Roberto Alves",
+      etiquetaRFID: "147258369",
+      createdAt: "2024-01-21T08:25:00Z",
+      updatedAt: "2024-01-21T08:25:00Z",
+    },
+    {
+      id: "8",
+      placa: "STU3N78",
+      proprietario: "Fernanda Lima",
+      etiquetaRFID: "963258147",
+      createdAt: "2024-01-22T15:40:00Z",
+      updatedAt: "2024-01-22T15:40:00Z",
+    },
+    {
+      id: "9",
+      placa: "VWX4O90",
+      proprietario: "Ricardo Mendes",
+      etiquetaRFID: "258147963",
+      createdAt: "2024-01-23T12:05:00Z",
+      updatedAt: "2024-01-23T12:05:00Z",
+    },
+    {
+      id: "10",
+      placa: "YZA5P12",
+      proprietario: "Camila Rocha",
+      etiquetaRFID: "741852963",
+      createdAt: "2024-01-24T17:20:00Z",
+      updatedAt: "2024-01-24T17:20:00Z",
+    },
+  ];
 };
 
 export function Veiculos() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Function to load vehicles from backend
@@ -38,48 +119,51 @@ export function Veiculos() {
     }
   };
 
-  // Filter vehicles based on search term across all fields
-  const filteredVehicles = useMemo(() => {
-    if (!searchTerm) return vehicles;
-    
-    const searchLower = searchTerm.toLowerCase();
-    
-    return vehicles.filter(vehicle => 
-      vehicle.placa.toLowerCase().includes(searchLower) ||
-      vehicle.proprietario.toLowerCase().includes(searchLower) ||
-      vehicle.etiquetaRFID.toLowerCase().includes(searchLower)
-    );
-  }, [vehicles, searchTerm]);
-
-  // Function to highlight search matches
-  const highlightText = (text: string) => {
-    if (!searchTerm) return text;
-    
-    const parts = text.split(new RegExp(`(${searchTerm})`, 'gi'));
-    return (
-      <>
-        {parts.map((part, index) => 
-          part.toLowerCase() === searchTerm.toLowerCase() ? (
-            <span key={index} className="font-bold">{part}</span>
-          ) : (
-            <span key={index}>{part}</span>
-          )
-        )}
-      </>
-    );
-  };
-
   // Handle edit action
-  const handleEdit = (vehicleId: string) => {
-    console.log("Edit vehicle:", vehicleId);
+  const handleEdit = (vehicle: Vehicle) => {
+    console.log("Edit vehicle:", vehicle.id);
     // Navigate to edit page or open modal
   };
 
   // Handle delete action
-  const handleDelete = (vehicleId: string) => {
-    console.log("Delete vehicle:", vehicleId);
+  const handleDelete = (vehicle: Vehicle) => {
+    console.log("Delete vehicle:", vehicle.id);
     // Show confirmation dialog and call delete API
   };
+
+  // Table columns configuration
+  const columns: TableColumn<Vehicle>[] = [
+    {
+      key: "placa",
+      title: "Placa",
+    },
+    {
+      key: "proprietario",
+      title: "Proprietário",
+    },
+    {
+      key: "etiquetaRFID",
+      title: "Etiqueta RFID",
+    },
+  ];
+
+  // Table actions configuration
+  const actions: TableAction<Vehicle>[] = [
+    {
+      key: "edit",
+      label: "Editar",
+      icon: <Edit size={18} />,
+      onClick: handleEdit,
+      className: "text-blue hover:text-blue-700 transition-colors",
+    },
+    {
+      key: "delete",
+      label: "Excluir",
+      icon: <Trash2 size={18} />,
+      onClick: handleDelete,
+      className: "text-red hover:text-red-700 transition-colors",
+    },
+  ];
 
   // Load vehicles on component mount
   useEffect(() => {
@@ -95,78 +179,22 @@ export function Veiculos() {
           <h1 className="text-3xl font-bold text-dark-gray mb-4">Veículos</h1>
           <p className="text-gray mb-6">Gerenciamento de veículos do sistema</p>
           
-          <div className="bg-white p-6">
-            {/* Search and Create Button */}
-            <div className="mb-6 flex items-center space-x-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  placeholder="Pesquisar por placa, proprietário ou etiqueta RFID"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+
+          <Table 
+            data={vehicles}
+            columns={columns}
+            actions={actions}
+            loading={loading}
+            searchPlaceholder="Pesquisar por placa, proprietário ou etiqueta RFID"
+            emptyMessage="Nenhum veículo cadastrado ainda."
+            searchNotFoundMessage="Nenhum veículo encontrado para esta busca."
+            searchBarComponent={
               <button className="bg-blue text-white px-4 py-2 rounded-lg hover:bg-light-blue transition-colors">
                 Criar novo veículo
               </button>
+            }
+            />
             </div>
-
-            {/* Table */}
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="bg-dark-blue text-white">
-                    <th className="py-3 px-4 text-left font-medium">Placa</th>
-                    <th className="py-3 px-4 text-left font-medium">Proprietário</th>
-                    <th className="py-3 px-4 text-left font-medium">Etiqueta RFID</th>
-                    <th className="py-3 px-4 text-left font-medium">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr>
-                      <td colSpan={4} className="py-12 text-center text-gray">
-                        Carregando...
-                      </td>
-                    </tr>
-                  ) : filteredVehicles.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="py-12 text-center text-gray">
-                        {searchTerm ? "Nenhum veículo encontrado para esta busca." : "Nenhum veículo cadastrado ainda."}
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredVehicles.map((vehicle) => (
-                      <tr key={vehicle.id} className="border-b border-gray-200">
-                        <td className="py-3 px-4">{highlightText(vehicle.placa)}</td>
-                        <td className="py-3 px-4">{highlightText(vehicle.proprietario)}</td>
-                        <td className="py-3 px-4">{highlightText(vehicle.etiquetaRFID)}</td>
-                        <td className="py-3 px-4">
-                          <div className="flex space-x-2">
-                            <button 
-                              onClick={() => handleEdit(vehicle.id)}
-                              className="text-blue hover:text-blue-700 transition-colors"
-                            >
-                              <Edit size={18} />
-                            </button>
-                            <button 
-                              onClick={() => handleDelete(vehicle.id)}
-                              className="text-red hover:text-red-700 transition-colors"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   );
