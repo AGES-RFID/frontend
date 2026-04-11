@@ -2,18 +2,24 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/utils/cn";
 
 const buttonStyles = cva(
-  ["transition-colors duration-200 rounded font-medium cursor-pointer"],
+  [
+    "rounded-md font-medium cursor-pointer",
+    "transition-all duration-150 ease-out",
+    "hover:-translate-y-0.5 hover:shadow-sm",
+    "active:translate-y-0.5 active:scale-95 active:shadow-none",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dark-blue/30 focus-visible:ring-offset-2",
+  ],
   {
     variants: {
       variant: {
         primary:
-          "bg-dark-blue text-white hover:bg-dark-blue-75 active:bg-dark-blue-50 disabled:bg-light-gray disabled:text-whitedisabled:hover:bg-dark-blue",
+          "bg-dark-blue text-white hover:bg-dark-blue-75 active:bg-dark-blue-50 disabled:bg-light-gray disabled:text-white disabled:shadow-none disabled:translate-y-0 disabled:hover:bg-dark-blue",
         secondary:
-          "border border-dark-blue bg-white text-dark-blue hover:bg-blue/15 active:bg-blue/30 disabled:border-gray disabled:text-gray disabled:hover:bg-transparent",
+          "border border-dark-blue bg-white text-dark-blue hover:bg-blue/15 active:bg-blue/30 disabled:border-gray disabled:text-gray disabled:hover:bg-transparent disabled:shadow-none disabled:translate-y-0",
         destructive:
-          "bg-red text-white hover:bg-red-75 active:bg-red-50 disabled:bg-light-gray disabled:text-white",
+          "bg-red text-white hover:bg-red-75 active:bg-red-50 disabled:bg-light-gray disabled:text-white disabled:shadow-none disabled:translate-y-0",
         borderless:
-          "bg-transparent border-none text-dark-blue hover:bg-dark-blue/15 active:bg-dark-blue/30 disabled:bg-transparent disabled:text-light-gray",
+          "bg-transparent border-none text-dark-blue hover:bg-dark-blue/15 active:bg-dark-blue/30 disabled:bg-transparent disabled:text-light-gray disabled:shadow-none disabled:translate-y-0",
       },
 
       size: {
