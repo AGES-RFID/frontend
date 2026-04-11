@@ -10,6 +10,7 @@ import { Etiquetas } from "./routes/labels";
 import { Cobranca } from "./routes/payments";
 import { Sistema } from "./routes/system";
 import { Dashboard } from "./routes/dashboard";
+import { AdminRegister } from "./routes/adminRegister.tsx";
 
 export function Router() {
   return (
@@ -24,9 +25,9 @@ export function Router() {
         <Route path="/sistema" element={<Sistema />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/users" element={<Users />} />
         <Route path="/users/new" element={<NewUser />} />
         <Route path="/users/:userId/edit" element={<EditUser />} />
+        <Route path="/register-user" element={<AdminRegister />} />
       </Routes>
     </BrowserRouter>
   );

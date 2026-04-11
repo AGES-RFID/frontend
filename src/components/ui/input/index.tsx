@@ -1,6 +1,6 @@
 import type React from "react";
-import { useId } from "react";
-import { Plus } from "lucide-react";
+import { useId, useState } from "react";
+import { Plus, Eye, EyeOff } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { cn } from "@/utils/cn";
 
@@ -9,7 +9,7 @@ const inputContainerStyles = cva(
   // w-full garante que default/disabled preencham o wrapper
   // flex-1 sobrescreve w-full na variante with-button (dentro do flex row)
   [
-    "flex items-center rounded-md border border-light-gray overflow-hidden w-full",
+    "flex items-center rounded-md border border-light-gray overflow-hidden w-full relative",
   ],
   {
     variants: {
@@ -54,16 +54,20 @@ type InputVariant = "default" | "disabled" | "with-button";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "disabled"> {
-  /** Variant controls the appearance and behavior of the input */
+  /** Variant controls appearance and behavior of input */
   variant?: InputVariant;
-  /** Label displayed above the input — Input 14/20: font-size 14px, line-height 20px, color #333 */
+  /** Label displayed above input — Input 14/20: font-size 14px, line-height 20px, color #333 */
   label?: string;
-  /** Placeholder text inside the input */
+  /** Placeholder text inside input */
   placeholder?: string;
   /** Width of the input wrapper (CSS value, e.g. "100%", "320px") */
   width?: string;
-  /** Callback for the "+" button click (only used when variant is "with-button") */
+  /** Make the input required */
+  required?: boolean;
+  /** Callback for "+" button click (only used when variant is "with-button") */
   onButtonClick?: () => void;
+  /** Enable password visibility toggle (for password inputs) */
+  showPasswordToggle?: boolean;
 }
 
 export function Input({
@@ -73,11 +77,19 @@ export function Input({
   width = "320px",
   className,
   onButtonClick,
+  required = false,
+  showPasswordToggle = false,
   ...props
 }: InputProps) {
   const isDisabled = variant === "disabled";
   const hasButton = variant === "with-button";
+  const isPasswordField = showPasswordToggle && props.type === "password";
+  const [showPassword, setShowPassword] = useState(false);
   const inputId = useId();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div className={cn("flex flex-col gap-1", className)} style={{ width }}>
@@ -88,6 +100,7 @@ export function Input({
           className="font-medium text-[14px] text-dark-gray leading-5"
         >
           {label}
+          {required && <span className="text-red ml-1">*</span>}
         </label>
       )}
 
@@ -100,8 +113,21 @@ export function Input({
             className={inputFieldStyles({ variant })}
             placeholder={placeholder}
             disabled={isDisabled}
-            {...props}
+            required={required}
+            type={isPasswordField && showPassword ? "text" : props.type}
+            value={isPasswordField ? props.value : undefined}
+            {...(isPasswordField ? { ...props, type: showPassword ? "text" : "password" } : props)}
           />
+          {isPasswordField && (
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          )}
         </div>
 
         {/* Botão separado do campo, mesma borda (#999 / light-gray), "+" em #333 */}

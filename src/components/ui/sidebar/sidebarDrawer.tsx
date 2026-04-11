@@ -52,7 +52,7 @@ export function SidebarDrawer() {
     const path = location.pathname;
     if (path === "/dashboard" || path === "/") return "dashboard";
     if (path.startsWith("/veiculos")) return "veiculos";
-    if (path.startsWith("/usuarios")) return "usuarios";
+    if (path.includes("usuarios") || path.includes("user")) return "usuarios";
     if (path.startsWith("/etiquetas")) return "etiquetas";
     if (path.startsWith("/cobranca")) return "cobranca";
     if (path.startsWith("/sistema")) return "sistema";

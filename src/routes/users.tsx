@@ -1,22 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
-import { Table, type TableColumn, type TableAction } from "../components/ui/table";
-import { Button } from "../components/ui/button";
-import { Modal } from "../components/ui/modal";
-import { Edit, Trash2 } from "lucide-react";
+import type { User } from "@/features/users/model/user";
+import { CreateUserModal } from "@/features/users/components/CreateUserModal";
+import { EditUserModal } from "@/features/users/components/EditUserModal";
+import { DeleteUserModal } from "@/features/users/components/DeleteUserModal";
+import { UsersTable } from "@/features/users/components/UsersTable";
 
-// Type definitions for user data from backend
-type UserType = "Admin" | "Cliente";
-
-type User = {
-  id: string;
-  type: UserType;
-  name: string;
-  email: string;
-  createdAt: string;
-  updatedAt: string;
-};
 
 // Mock function to simulate backend data response
 const fetchUsersFromBackend = (): User[] => {
@@ -134,6 +124,11 @@ export function Users() {
     setIsCreateModalOpen(true);
   };
 
+  // Handle navigate to registration page
+  const handleNavigateToRegister = () => {
+    navigate("/register-user");
+  };
+
   // Modal close handlers
   const closeCreateModal = () => setIsCreateModalOpen(false);
   const closeEditModal = () => {
@@ -145,43 +140,6 @@ export function Users() {
     setSelectedUser(null);
   };
 
-  // Table columns configuration
-  const columns: TableColumn<User>[] = [
-    {
-      key: "id",
-      title: "ID",
-    },
-    {
-      key: "type",
-      title: "Tipo",
-    },
-    {
-      key: "name",
-      title: "Nome",
-    },
-    {
-      key: "email",
-      title: "Email",
-    },
-  ];
-
-  // Table actions configuration
-  const actions: TableAction<User>[] = [
-    {
-      key: "edit",
-      label: "Editar",
-      icon: <Edit size={18} />,
-      onClick: handleEdit,
-      className: "text-blue hover:text-light-blue cursor-pointer transition-colors",
-    },
-    {
-      key: "delete",
-      label: "Excluir",
-      icon: <Trash2 size={18} />,
-      onClick: handleDelete,
-      className: "text-red hover:text-light-red cursor-pointer transition-colors",
-    },
-  ];
 
   // Load users on component mount
   useEffect(() => {
@@ -198,83 +156,35 @@ export function Users() {
           <h1 className="text-3xl font-bold text-dark-gray mb-4">Usuários</h1>
           <p className="text-gray mb-6">Gerenciamento de usuários do sistema</p>
           
-          <Table
-            data={users}
-            columns={columns}
-            actions={actions}
+          <UsersTable
+            users={users}
             loading={loading}
-            searchPlaceholder="Pesquisar por ID, tipo, nome ou email"
-            emptyMessage="Nenhum usuário cadastrado ainda."
-            searchNotFoundMessage="Nenhum usuário encontrado para esta busca."
-            searchBarComponent={
-              <Button
-                onClick={handleCreateUser}
-                variant="primary"
-                size="md"
-              >
-                Criar novo usuário
-              </Button>
-            }
-            />
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onCreateUser={handleCreateUser}
+            onNavigateToRegister={handleNavigateToRegister}
+          />
           </div>
         
         {/* Create User Modal */}
-        <Modal
+        <CreateUserModal
           isOpen={isCreateModalOpen}
           onClose={closeCreateModal}
-          title="Criar Novo Usuário"
-        >
-          <div className="space-y-4">
-            <p>Formulário para criar um novo usuário será implementado aqui.</p>
-            <div className="flex justify-end space-x-2">
-              <Button onClick={closeCreateModal} variant="secondary">
-                Cancelar
-              </Button>
-              <Button onClick={closeCreateModal}>
-                Criar
-              </Button>
-            </div>
-          </div>
-        </Modal>
+        />
         
         {/* Edit User Modal */}
-        <Modal
+        <EditUserModal
           isOpen={isEditModalOpen}
           onClose={closeEditModal}
-          title="Editar Usuário"
-        >
-          <div className="space-y-4">
-            <p>Editando usuário: {selectedUser?.name}</p>
-            <div className="flex justify-end space-x-2">
-              <Button onClick={closeEditModal} variant="secondary">
-                Cancelar
-              </Button>
-              <Button onClick={closeEditModal}>
-                Salvar
-              </Button>
-            </div>
-          </div>
-        </Modal>
+          selectedUser={selectedUser}
+        />
         
         {/* Delete User Modal */}
-        <Modal
+        <DeleteUserModal
           isOpen={isDeleteModalOpen}
           onClose={closeDeleteModal}
-          title="Excluir Usuário"
-        >
-          <div className="space-y-4">
-            <p>Tem certeza que deseja excluir o usuário "{selectedUser?.name}"?</p>
-            <p className="text-sm text-gray">Esta ação não pode ser desfeita.</p>
-            <div className="flex justify-end space-x-2">
-              <Button onClick={closeDeleteModal} variant="secondary">
-                Cancelar
-              </Button>
-              <Button onClick={closeDeleteModal} variant="destructive">
-                Excluir
-              </Button>
-            </div>
-          </div>
-        </Modal>
+          selectedUser={selectedUser}
+        />
       </main>
     </div>
   );
