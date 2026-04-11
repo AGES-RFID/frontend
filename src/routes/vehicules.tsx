@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
 import { Table, type TableColumn, type TableAction } from "../components/ui/table";
+import { Button } from "../components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 
 // Type definitions for vehicle data from backend
@@ -189,9 +190,12 @@ export function Veiculos() {
             emptyMessage="Nenhum veículo cadastrado ainda."
             searchNotFoundMessage="Nenhum veículo encontrado para esta busca."
             searchBarComponent={
-              <button className="bg-blue text-white px-4 py-2 rounded-lg hover:bg-light-blue transition-colors">
+              <Button
+                variant="primary"
+                size="md"
+              >
                 Criar novo veículo
-              </button>
+              </Button>
             }
             />
             </div>

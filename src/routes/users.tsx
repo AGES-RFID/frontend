@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
 import { Table, type TableColumn, type TableAction } from "../components/ui/table";
+import { Button } from "../components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 
 // Type definitions for user data from backend
@@ -187,12 +188,13 @@ export function Users() {
             emptyMessage="Nenhum usuário cadastrado ainda."
             searchNotFoundMessage="Nenhum usuário encontrado para esta busca."
             searchBarComponent={
-              <button 
+              <Button 
                 onClick={handleCreateUser}
-                className="bg-blue text-white px-4 py-2 rounded-lg hover:bg-light-blue transition-colors"
+                variant="primary"
+                size="md"
               >
                 Criar novo usuário
-              </button>
+              </Button>
             }
           />
         </div>
