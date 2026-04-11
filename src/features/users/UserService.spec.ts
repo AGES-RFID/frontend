@@ -22,7 +22,10 @@ describe("UserService", () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
 
-      const [request] = fetchMock.mock.calls.at(0)!;
+      const [request] = fetchMock.mock.calls[0] ?? [];
+      if (!request) {
+        throw new Error("Expected a request to be sent");
+      }
       expect(request).toBeInstanceOf(Request);
       expect(request.url).toContain("/users");
       expect(request.method).toBe("GET");
@@ -93,7 +96,10 @@ describe("UserService", () => {
 
       await userService.createUser(createUserDto);
 
-      const [request] = fetchMock.mock.calls.at(0)!;
+      const [request] = fetchMock.mock.calls[0] ?? [];
+      if (!request) {
+        throw new Error("Expected a request to be sent");
+      }
       expect(request).toBeInstanceOf(Request);
       expect(request.url).toContain("/users");
       expect(request.method).toBe("POST");
@@ -171,7 +177,10 @@ describe("UserService", () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
 
-      const [request] = fetchMock.mock.calls.at(0)!;
+      const [request] = fetchMock.mock.calls[0] ?? [];
+      if (!request) {
+        throw new Error("Expected a request to be sent");
+      }
       expect(request).toBeInstanceOf(Request);
       expect(request.url).toContain(`/users/${userId}`);
       expect(request.method).toBe("GET");
@@ -228,7 +237,10 @@ describe("UserService", () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
 
-      const [request] = fetchMock.mock.calls.at(0)!;
+      const [request] = fetchMock.mock.calls[0] ?? [];
+      if (!request) {
+        throw new Error("Expected a request to be sent");
+      }
       expect(request).toBeInstanceOf(Request);
       expect(request.url).toContain(`/users/${userId}`);
       expect(request.method).toBe("PUT");
@@ -247,7 +259,10 @@ describe("UserService", () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
 
-      const [request] = fetchMock.mock.calls.at(0)!;
+      const [request] = fetchMock.mock.calls[0] ?? [];
+      if (!request) {
+        throw new Error("Expected a request to be sent");
+      }
       expect(request).toBeInstanceOf(Request);
       expect(request.url).toContain(`/users/${userId}`);
       expect(request.method).toBe("PUT");
@@ -279,7 +294,10 @@ describe("UserService", () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
 
-      const [request] = fetchMock.mock.calls.at(0)!;
+      const [request] = fetchMock.mock.calls[0] ?? [];
+      if (!request) {
+        throw new Error("Expected a request to be sent");
+      }
       expect(request).toBeInstanceOf(Request);
       expect(request.url).toContain(`/users/${userId}`);
       expect(request.method).toBe("DELETE");

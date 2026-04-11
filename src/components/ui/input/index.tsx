@@ -1,5 +1,6 @@
 import type React from "react";
 import { useId } from "react";
+import { Plus } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { cn } from "@/utils/cn";
 
@@ -8,15 +9,17 @@ const inputContainerStyles = cva(
   // w-full garante que default/disabled preencham o wrapper
   // flex-1 sobrescreve w-full na variante with-button (dentro do flex row)
   [
-    "flex items-center rounded-[6px] border-2 border-light-gray overflow-hidden w-full",
+    "flex items-center rounded-md border border-light-gray overflow-hidden w-full",
   ],
   {
     variants: {
       variant: {
-        default: "bg-white focus-within:border-blue",
-        disabled: "bg-gray-100 opacity-60 cursor-not-allowed",
+        default:
+          "bg-white focus-within:border-[1.5px] focus-within:border-dark-gray",
+        disabled: "bg-very-light-gray/30 opacity-80 cursor-not-allowed",
         // with-button: flex-1 para dividir espaço com o botão
-        "with-button": "bg-white focus-within:border-blue flex-1",
+        "with-button":
+          "bg-white focus-within:border-[1.5px] focus-within:border-dark-gray flex-1",
       },
     },
     defaultVariants: {
@@ -30,14 +33,14 @@ const inputContainerStyles = cva(
 const inputFieldStyles = cva(
   [
     "w-full outline-none bg-transparent px-4 py-2 h-10",
-    "text-[12px] leading-[16px] text-dark-gray",
+    "text-[12px] leading-4 text-dark-gray",
     "placeholder:text-lighter-blue",
   ],
   {
     variants: {
       variant: {
         default: "cursor-text",
-        disabled: "cursor-not-allowed",
+        disabled: "cursor-not-allowed ",
         "with-button": "cursor-text",
       },
     },
@@ -82,7 +85,7 @@ export function Input({
         // Input - 14/20: font-size 14px, line-height 20px, cor #333 (dark-gray)
         <label
           htmlFor={inputId}
-          className="font-medium text-[14px] text-dark-gray leading-[20px]"
+          className="font-medium text-[14px] text-dark-gray leading-5"
         >
           {label}
         </label>
@@ -106,15 +109,22 @@ export function Input({
           <button
             type="button"
             className={cn(
-              "flex h-10 w-10 shrink-0 items-center justify-center",
-              "rounded-[6px] border-2 border-light-gray bg-white",
+              "group flex h-10 w-10 shrink-0 items-center justify-center",
+              "rounded-md border border-baby-blue bg-white",
               "font-bold text-dark-gray text-lg leading-none",
-              "cursor-pointer select-none transition-colors hover:bg-gray-50",
+              "cursor-pointer select-none transition-all duration-150 ease-out",
+              "hover:-translate-y-0.5 hover:border-dark-gray hover:bg-gray-50 hover:shadow-sm",
+              "active:translate-y-0.5 active:scale-90 active:shadow-none",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dark-gray/30 focus-visible:ring-offset-2",
             )}
             onClick={onButtonClick}
             aria-label="Adicionar"
           >
-            +
+            <Plus
+              size={16}
+              strokeWidth={2.5}
+              className="transition-transform duration-150 ease-out group-hover:scale-110 group-active:scale-95"
+            />
           </button>
         )}
       </div>
