@@ -1,6 +1,6 @@
 import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
 
-export function Sistema() {
+export function System() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <SidebarDrawer />

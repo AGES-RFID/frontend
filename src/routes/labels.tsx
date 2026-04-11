@@ -1,7 +1,7 @@
 import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
 
 
-export function Etiquetas() {
+export function Labels() {
  
   return (
     <div className="flex min-h-screen bg-gray-50">

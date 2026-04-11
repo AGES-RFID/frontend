@@ -103,7 +103,7 @@ const fetchVehiclesFromBackend = (): Vehicle[] => {
   ];
 };
 
-export function Veiculos() {
+export function Vehicules() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(false);
   
