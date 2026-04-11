@@ -1,8 +1,8 @@
 import { useNavigate, useLocation } from "react-router";
 import { LogOut, House, Wallet, User } from "lucide-react";
 import { HeaderButton } from "@/components/ui/header-button";
-import { ImpinjLogo } from "../../icons/ImpinjLogo";
 import { cn } from "@/utils/cn";
+import impinjLogo from "../../../../public/impinj-logo.png";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -79,7 +79,7 @@ export function Header({
           aria-label="Ir para Home"
           className="cursor-pointer rounded-md transition-all duration-200 hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/60 active:scale-95 active:opacity-60"
         >
-          <ImpinjLogo className="h-[60px] w-auto" />
+          <img src={impinjLogo} alt="Impinj" className="h-[90px] w-auto" />
         </button>
       </header>
     );
@@ -103,7 +103,7 @@ export function Header({
         aria-label="Ir para Home"
         className="mr-[150px] shrink-0 cursor-pointer rounded-md transition-all duration-200 hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/60 active:scale-95 active:opacity-60"
       >
-        <ImpinjLogo className="h-[60px] w-auto" />
+        <img src={impinjLogo} alt="Impinj" className="h-[90px] w-auto" />
       </button>
 
       {/* Nav buttons — center (grows to fill remaining space) */}
