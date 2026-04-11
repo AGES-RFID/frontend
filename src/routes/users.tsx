@@ -5,7 +5,7 @@ import { Table, type TableColumn, type TableAction } from "../components/ui/tabl
 import { Edit, Trash2 } from "lucide-react";
 
 // Type definitions for user data from backend
-type UserType = "Admin" | "Gerente" | "Operador" | "Visualizador";
+type UserType = "Admin" | "Cliente";
 
 type User = {
   id: string;
@@ -31,7 +31,7 @@ const fetchUsersFromBackend = (): User[] => {
     },
     {
       id: "2",
-      type: "Gerente",
+      type: "Cliente",
       name: "Maria Santos",
       email: "maria.santos@empresa.com",
       createdAt: "2024-01-16T14:20:00Z",
@@ -39,7 +39,7 @@ const fetchUsersFromBackend = (): User[] => {
     },
     {
       id: "3",
-      type: "Operador",
+      type: "Admin",
       name: "Pedro Oliveira",
       email: "pedro.oliveira@empresa.com",
       createdAt: "2024-01-17T09:15:00Z",
@@ -47,7 +47,7 @@ const fetchUsersFromBackend = (): User[] => {
     },
     {
       id: "4",
-      type: "Visualizador",
+      type: "Cliente",
       name: "Ana Costa",
       email: "ana.costa@empresa.com",
       createdAt: "2024-01-18T16:45:00Z",
@@ -63,7 +63,7 @@ const fetchUsersFromBackend = (): User[] => {
     },
     {
       id: "6",
-      type: "Gerente",
+      type: "Cliente",
       name: "Lucia Pereira",
       email: "lucia.pereira@empresa.com",
       createdAt: "2024-01-20T13:10:00Z",
@@ -71,7 +71,7 @@ const fetchUsersFromBackend = (): User[] => {
     },
     {
       id: "7",
-      type: "Operador",
+      type: "Admin",
       name: "Roberto Alves",
       email: "roberto.alves@empresa.com",
       createdAt: "2024-01-21T08:25:00Z",
@@ -79,7 +79,7 @@ const fetchUsersFromBackend = (): User[] => {
     },
     {
       id: "8",
-      type: "Visualizador",
+      type: "Cliente",
       name: "Fernanda Lima",
       email: "fernanda.lima@empresa.com",
       createdAt: "2024-01-22T15:40:00Z",
