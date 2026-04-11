@@ -1,6 +1,6 @@
 import { Header } from "@/components/ui/header";
 
-export function Home() {
+export function Payment() {
   return (
     <>
       <Header />
