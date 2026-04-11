@@ -1,14 +1,15 @@
 import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
 
-export function Home() {
+export function Cobranca() {
   return (
     <div className="flex min-h-screen bg-gray-50">
+      <SidebarDrawer />
       
       {/* Main Content */}
       <main className="flex-1">
         <div className="p-8">
-          <h1 className="text-3xl font-bold text-dark-gray mb-4">Dashboard</h1>
-          <p className="text-gray">Bem-vindo ao sistema IMPINJ</p>
+          <h1 className="text-3xl font-bold text-dark-gray mb-4">Cobrança</h1>
+          <p className="text-gray mb-6">Gerenciamento de cobranças e pagamentos</p>
         </div>
       </main>
     </div>

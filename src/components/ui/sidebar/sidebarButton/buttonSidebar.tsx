@@ -40,9 +40,11 @@ export function ButtonSidebar({
       onMouseLeave={() => setHovered(false)}
       className={`flex w-full items-center gap-4 rounded-xl px-4 py-3 font-medium text-sm transition-all duration-200 ${
         isActive
-          ? "bg-dark-blue text-white"
+          ? hovered
+            ? "bg-light-blue text-white"
+            : "bg-blue text-white"
           : hovered
-            ? "bg-blue text-white"
+            ? "bg-dark-blue-50 text-white"
             : "text-white"
       }
                         `}

@@ -10,7 +10,6 @@ import {
   LogOut,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router";
-import { useState } from "react";
 
 const menuItems: MenuItem[] = [
   {
@@ -45,12 +44,49 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-export function SidebarComponent() {
+export function SidebarDrawer() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeItem, setActiveItem] = useState("dashboard");
+  
+  const getActiveItem = () => {
+    const path = location.pathname;
+    if (path === "/dashboard" || path === "/") return "dashboard";
+    if (path.startsWith("/veiculos")) return "veiculos";
+    if (path.startsWith("/usuarios")) return "usuarios";
+    if (path.startsWith("/etiquetas")) return "etiquetas";
+    if (path.startsWith("/cobranca")) return "cobranca";
+    if (path.startsWith("/sistema")) return "sistema";
+    return "dashboard";
+  };
+  
+  const activeItem = getActiveItem();
+  
+  const handleNavigation = (itemId: string) => {
+    switch (itemId) {
+      case "dashboard":
+        navigate("/dashboard");
+        break;
+      case "veiculos":
+        navigate("/veiculos");
+        break;
+      case "usuarios":
+        navigate("/usuarios");
+        break;
+      case "etiquetas":
+        navigate("/etiquetas");
+        break;
+      case "cobranca":
+        navigate("/cobranca");
+        break;
+      case "sistema":
+        navigate("/sistema");
+        break;
+      default:
+        navigate("/dashboard");
+    }
+  };
   return (
-    <aside className="flex h-screen w-[300px] flex-col bg-dark-blue px-4 py-6">
+    <aside className="flex min-h-screen w-[300px] flex-col bg-dark-blue px-4 py-6">
       <button
         type="button"
         onClick={() => navigate("/dashboard")}
@@ -71,7 +107,7 @@ export function SidebarComponent() {
               label={item.label}
               icon={item.icon}
               isActive={activeItem === item.id}
-              onClick={() => setActiveItem(item.id)}
+              onClick={() => handleNavigation(item.id)}
             />
           ))}
         </nav>
