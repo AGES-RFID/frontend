@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
 import { Table, type TableColumn, type TableAction } from "../components/ui/table";
 import { Button } from "../components/ui/button";
+import { Modal } from "../components/ui/modal";
 import { Edit, Trash2 } from "lucide-react";
 
 // Type definitions for vehicle data from backend
@@ -105,6 +106,12 @@ const fetchVehiclesFromBackend = (): Vehicle[] => {
 export function Veiculos() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(false);
+  
+  // Modal states
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
 
   // Function to load vehicles from backend
   const loadVehicles = () => {
@@ -123,13 +130,31 @@ export function Veiculos() {
   // Handle edit action
   const handleEdit = (vehicle: Vehicle) => {
     console.log("Edit vehicle:", vehicle.id);
-    // Navigate to edit page or open modal
+    setSelectedVehicle(vehicle);
+    setIsEditModalOpen(true);
   };
 
   // Handle delete action
   const handleDelete = (vehicle: Vehicle) => {
     console.log("Delete vehicle:", vehicle.id);
-    // Show confirmation dialog and call delete API
+    setSelectedVehicle(vehicle);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Handle create new vehicle
+  const handleCreateVehicle = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  // Modal close handlers
+  const closeCreateModal = () => setIsCreateModalOpen(false);
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedVehicle(null);
+  };
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedVehicle(null);
   };
 
   // Table columns configuration
@@ -155,14 +180,14 @@ export function Veiculos() {
       label: "Editar",
       icon: <Edit size={18} />,
       onClick: handleEdit,
-      className: "text-blue hover:text-blue-700 transition-colors",
+      className: "text-blue hover:text-light-blue cursor-pointer transition-colors",
     },
     {
       key: "delete",
       label: "Excluir",
       icon: <Trash2 size={18} />,
       onClick: handleDelete,
-      className: "text-red hover:text-red-700 transition-colors",
+      className: "text-red hover:text-light-red cursor-pointer transition-colors",
     },
   ];
 
@@ -191,14 +216,72 @@ export function Veiculos() {
             searchNotFoundMessage="Nenhum veículo encontrado para esta busca."
             searchBarComponent={
               <Button
+                onClick={handleCreateVehicle}
                 variant="primary"
                 size="md"
               >
                 Criar novo veículo
               </Button>
             }
-            />
+            />          
+          {/* Create Vehicle Modal */}
+          <Modal
+            isOpen={isCreateModalOpen}
+            onClose={closeCreateModal}
+            title="Criar Novo Veículo"
+          >
+            <div className="space-y-4">
+              <p>Formulário para criar um novo veículo será implementado aqui.</p>
+              <div className="flex justify-end space-x-2">
+                <Button onClick={closeCreateModal} variant="secondary">
+                  Cancelar
+                </Button>
+                <Button onClick={closeCreateModal}>
+                  Criar
+                </Button>
+              </div>
             </div>
+          </Modal>
+          
+          {/* Edit Vehicle Modal */}
+          <Modal
+            isOpen={isEditModalOpen}
+            onClose={closeEditModal}
+            title="Editar Veículo"
+          >
+            <div className="space-y-4">
+              <p>Editando veículo: {selectedVehicle?.placa}</p>
+              <div className="flex justify-end space-x-2">
+                <Button onClick={closeEditModal} variant="secondary">
+                  Cancelar
+                </Button>
+                <Button onClick={closeEditModal}>
+                  Salvar
+                </Button>
+              </div>
+            </div>
+          </Modal>
+          
+          {/* Delete Vehicle Modal */}
+          <Modal
+            isOpen={isDeleteModalOpen}
+            onClose={closeDeleteModal}
+            title="Excluir Veículo"
+          >
+            <div className="space-y-4">
+              <p>Tem certeza que deseja excluir o veículo "{selectedVehicle?.placa}"?</p>
+              <p className="text-sm text-neutral-500">Esta ação não pode ser desfeita.</p>
+              <div className="flex justify-end space-x-2">
+                <Button onClick={closeDeleteModal} variant="secondary">
+                  Cancelar
+                </Button>
+                <Button onClick={closeDeleteModal} className="bg-red hover:bg-red-75">
+                  Excluir
+                </Button>
+              </div>
+            </div>
+          </Modal>
+        </div>
       </main>
     </div>
   );

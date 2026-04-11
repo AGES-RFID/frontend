@@ -37,6 +37,11 @@
   --color-lighter-blue: #94a3b8;
   --color-light-green: #8fca95;
   --color-light-red: #fb989f;
+
+  /* Background colors with opacity */
+  --color-bg-overlay: rgba(0, 0, 0, 0.3);
+  --color-bg-light: rgba(255, 255, 255, 0.9);
+  --color-bg-dark: rgba(0, 0, 0, 0.8);
 }
 
 /* Aliases for color mixes */

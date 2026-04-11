@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
 import { Table, type TableColumn, type TableAction } from "../components/ui/table";
 import { Button } from "../components/ui/button";
+import { Modal } from "../components/ui/modal";
 import { Edit, Trash2 } from "lucide-react";
 
 // Type definitions for user data from backend
@@ -93,6 +94,12 @@ export function Users() {
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  
+  // Modal states
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // Function to load users from backend
   const loadUsers = () => {
@@ -111,19 +118,31 @@ export function Users() {
   // Handle edit action
   const handleEdit = (user: User) => {
     console.log("Edit user:", user.id);
-    // Navigate to edit page or open modal
-    navigate(`/users/${user.id}/edit`);
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
   };
 
   // Handle delete action
   const handleDelete = (user: User) => {
     console.log("Delete user:", user.id);
-    // Show confirmation dialog and call delete API
+    setSelectedUser(user);
+    setIsDeleteModalOpen(true);
   };
 
   // Handle create new user
   const handleCreateUser = () => {
-    navigate("/users/new");
+    setIsCreateModalOpen(true);
+  };
+
+  // Modal close handlers
+  const closeCreateModal = () => setIsCreateModalOpen(false);
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedUser(null);
+  };
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedUser(null);
   };
 
   // Table columns configuration
@@ -153,14 +172,14 @@ export function Users() {
       label: "Editar",
       icon: <Edit size={18} />,
       onClick: handleEdit,
-      className: "text-blue hover:text-blue-700 transition-colors",
+      className: "text-blue hover:text-light-blue cursor-pointer transition-colors",
     },
     {
       key: "delete",
       label: "Excluir",
       icon: <Trash2 size={18} />,
       onClick: handleDelete,
-      className: "text-red hover:text-red-700 transition-colors",
+      className: "text-red hover:text-light-red cursor-pointer transition-colors",
     },
   ];
 
@@ -197,7 +216,65 @@ export function Users() {
               </Button>
             }
             />
+          </div>
+        
+        {/* Create User Modal */}
+        <Modal
+          isOpen={isCreateModalOpen}
+          onClose={closeCreateModal}
+          title="Criar Novo Usuário"
+        >
+          <div className="space-y-4">
+            <p>Formulário para criar um novo usuário será implementado aqui.</p>
+            <div className="flex justify-end space-x-2">
+              <Button onClick={closeCreateModal} variant="secondary">
+                Cancelar
+              </Button>
+              <Button onClick={closeCreateModal}>
+                Criar
+              </Button>
             </div>
+          </div>
+        </Modal>
+        
+        {/* Edit User Modal */}
+        <Modal
+          isOpen={isEditModalOpen}
+          onClose={closeEditModal}
+          title="Editar Usuário"
+        >
+          <div className="space-y-4">
+            <p>Editando usuário: {selectedUser?.name}</p>
+            <div className="flex justify-end space-x-2">
+              <Button onClick={closeEditModal} variant="secondary">
+                Cancelar
+              </Button>
+              <Button onClick={closeEditModal}>
+                Salvar
+              </Button>
+            </div>
+          </div>
+        </Modal>
+        
+        {/* Delete User Modal */}
+        <Modal
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+          title="Excluir Usuário"
+        >
+          <div className="space-y-4">
+            <p>Tem certeza que deseja excluir o usuário "{selectedUser?.name}"?</p>
+            <p className="text-sm text-gray">Esta ação não pode ser desfeita.</p>
+            <div className="flex justify-end space-x-2">
+              <Button onClick={closeDeleteModal} variant="secondary">
+                Cancelar
+              </Button>
+              <Button onClick={closeDeleteModal} variant="destructive">
+                Excluir
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </main>
     </div>
   );
