@@ -188,7 +188,7 @@ export function Users() {
             emptyMessage="Nenhum usuário cadastrado ainda."
             searchNotFoundMessage="Nenhum usuário encontrado para esta busca."
             searchBarComponent={
-              <Button 
+              <Button
                 onClick={handleCreateUser}
                 variant="primary"
                 size="md"
@@ -196,8 +196,8 @@ export function Users() {
                 Criar novo usuário
               </Button>
             }
-          />
-        </div>
+            />
+            </div>
       </main>
     </div>
   );

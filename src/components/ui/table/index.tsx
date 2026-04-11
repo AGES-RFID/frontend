@@ -124,7 +124,7 @@ export function Table<T extends Record<string, any>>({
   const totalColumns = columns.length + (actions.length > 0 ? 1 : 0);
 
   return (
-    <div className={`bg-white p-6 ${className}`}>
+    <div className={className}>
       {/* Search Bar */}
       {searchable && (
         <div className="mb-6">
