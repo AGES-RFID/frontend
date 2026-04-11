@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: Needed for array destructuring */
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 import { type ApiClient, api } from "@/lib/api";
 import { jsonResponse } from "/test/utils/makeResponse";
