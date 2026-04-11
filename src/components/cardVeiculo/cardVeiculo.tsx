@@ -1,4 +1,5 @@
 import { Trash2 } from "lucide-react";
+import { cn } from "@/utils/cn";
 import { CarIcon } from "./carIcon";
 
 type VehicleCardProps = {
@@ -22,16 +23,20 @@ export function VehicleCard({
     <button
       type="button"
       onClick={onClick}
-      className={`relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-blue-900 font-bold ${isLarge ? "h-[149px] w-[149px]" : "h-[74px] w-[74px]"}
-      `}
+      className={cn(
+        "relative flex cursor-pointer flex-col items-center justify-center border-2 border-dark-blue font-bold",
+        isLarge ? "size-36 rounded-4xl" : "size-18.5 rounded-2xl",
+      )}
     >
       {/*ícone carro*/}
-      <CarIcon size={isLarge ? 64 : 28} className="text-blue-900" />
+      <CarIcon size={isLarge ? 64 : 28} className="text-dark-blue" />
 
       {/*placa*/}
       <span
-        className={`text-black ${isLarge ? "mt-2 text-[28px]" : "mt-1 text-[14px]"}
-        `}
+        className={cn(
+          "text-black",
+          isLarge ? "mt-2 text-[28px]" : "mt-1 text-sm",
+        )}
       >
         {licensePlate}
       </span>
@@ -44,7 +49,10 @@ export function VehicleCard({
             e.stopPropagation();
             onDelete?.();
           }}
-          className="absolute top-1 right-1 text-black hover:text-red-600"
+          className={cn(
+            "absolute cursor-pointer text-black transition-colors hover:text-red",
+            isLarge ? "top-2 right-2" : "top-1 right-1",
+          )}
         >
           <Trash2 size={isLarge ? 18 : 14} />
         </button>
