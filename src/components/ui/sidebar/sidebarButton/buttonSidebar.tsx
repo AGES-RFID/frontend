@@ -1,19 +1,10 @@
 import { useState } from "react";
-import {
-  LayoutDashboard,
-  Car,
-  Users,
-  Radio,
-  CreditCard,
-  Settings,
-} from "lucide-react";
 
 export type MenuItem = {
   id: string;
   label: string;
   icon: React.ReactNode;
 };
-
 
 type ButtonSidebarProps = {
   label: string;
@@ -65,4 +56,3 @@ export function ButtonSidebar({
     </button>
   );
 }
-

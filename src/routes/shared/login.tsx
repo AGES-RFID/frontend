@@ -1,5 +1,4 @@
 import { Header } from "@/components/ui/header";
-import { Home, CreditCard, User, LogIn } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Input } from "@/components/ui/input";
 
@@ -23,11 +22,11 @@ export function Login() {
     <>
       <Header></Header>
 
-      <div className="min-h-screen bg-gray-100 text-gray-900 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-100 text-gray-900">
         <main className="mx-auto flex max-w-screen-2xl px-6">
           <section className="w-full max-w-md">
-            <div className="mb-12 border-b border-gray pb-4">
-              <h1 className="text-2xl font-semibold  text-dark-blue">Login</h1>
+            <div className="mb-12 border-gray border-b pb-4">
+              <h1 className="font-semibold text-2xl text-dark-blue">Login</h1>
             </div>
 
             <form
@@ -59,12 +58,12 @@ export function Login() {
                     type="checkbox"
                     className="mr-2 h-4 w-4 rounded border-dark-gray text-dark-blue focus:ring-dark-blue"
                   />
-                  <span className="text-sm text-gray-600">Lembrar de mim</span>
+                  <span className="text-gray-600 text-sm">Lembrar de mim</span>
                 </label>
                 <button
                   type="button"
                   onClick={handleForgotPassword}
-                  className="text-sm text-dark-blue transition hover:text-blue-700"
+                  className="text-dark-blue text-sm transition hover:text-blue-700"
                 >
                   Esqueci a senha
                 </button>
@@ -72,26 +71,26 @@ export function Login() {
 
               <button
                 type="submit"
-                className="mx-auto mb-6 h-10 w-full rounded bg-dark-blue text-sm font-semibold text-white transition hover:opacity-95"
+                className="mx-auto mb-6 h-10 w-full rounded bg-dark-blue font-semibold text-sm text-white transition hover:opacity-95"
               >
                 Entrar
               </button>
 
               <div className="mb-6 text-center">
-                <span className="text-sm text-gray-500">OU</span>
+                <span className="text-gray-500 text-sm">OU</span>
               </div>
 
               <button
                 type="button"
                 onClick={handleRegister}
-                className="mx-auto h-10 w-full rounded border border-cyan-600 bg-transparent text-sm font-medium text-cyan-600 transition hover:bg-cyan-600 hover:text-white"
+                className="mx-auto h-10 w-full rounded border border-cyan-600 bg-transparent font-medium text-cyan-600 text-sm transition hover:bg-cyan-600 hover:text-white"
               >
                 Criar nova conta
               </button>
             </form>
 
             <div className="mt-12 text-center">
-              <p className="text-xs text-gray-500">
+              <p className="text-gray-500 text-xs">
                 Ao fazer login, você concorda com nossos{" "}
                 <a href="#" className="text-dark-blue hover:text-blue-700">
                   Termos de Serviço
@@ -114,11 +113,11 @@ type NavItemProps = {
   label: string;
 };
 
-function NavItem({ icon, label }: NavItemProps) {
+function _NavItem({ icon, label }: NavItemProps) {
   return (
     <button
       type="button"
-      className="flex items-center gap-2 text-sm font-medium text-white/95 transition hover:text-white"
+      className="flex items-center gap-2 font-medium text-sm text-white/95 transition hover:text-white"
     >
       {icon}
       <span>{label}</span>

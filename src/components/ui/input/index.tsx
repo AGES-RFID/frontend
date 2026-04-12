@@ -100,7 +100,7 @@ export function Input({
           className="font-medium text-[14px] text-dark-gray leading-5"
         >
           {label}
-          {required && <span className="text-red ml-1">*</span>}
+          {required && <span className="ml-1 text-red">*</span>}
         </label>
       )}
 
@@ -116,13 +116,15 @@ export function Input({
             required={required}
             type={isPasswordField && showPassword ? "text" : props.type}
             value={isPasswordField ? props.value : undefined}
-            {...(isPasswordField ? { ...props, type: showPassword ? "text" : "password" } : props)}
+            {...(isPasswordField
+              ? { ...props, type: showPassword ? "text" : "password" }
+              : props)}
           />
           {isPasswordField && (
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-500 hover:text-gray-700 focus:outline-none"
               aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}

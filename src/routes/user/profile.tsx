@@ -1,6 +1,4 @@
 import { Header } from "@/components/ui/header";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { useNavigate } from "react-router";
 
 export function Profile() {
@@ -10,8 +8,6 @@ export function Profile() {
     navigate("/user/new");
   };
   return (
-    <>
-      <Header onAuthAction={handleAuthAction} />
-    </>
+    <Header onAuthAction={handleAuthAction} />
   );
 }

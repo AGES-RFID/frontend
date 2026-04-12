@@ -1,5 +1,5 @@
 import { ButtonSidebar, type MenuItem } from "./sidebarButton/buttonSidebar";
-import impinjLogo from "../../../../public/impinj-logo.png"
+import impinjLogo from "../../../../public/impinj-logo.png";
 import {
   LayoutDashboard,
   Car,
@@ -47,7 +47,7 @@ const menuItems: MenuItem[] = [
 export function SidebarDrawer() {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const getActiveItem = () => {
     const path = location.pathname;
     if (path === "/admin/dashboard" || path === "/") return "dashboard";
@@ -58,9 +58,9 @@ export function SidebarDrawer() {
     if (path.startsWith("/admin/system")) return "sistema";
     return "dashboard";
   };
-  
+
   const activeItem = getActiveItem();
-  
+
   const handleNavigation = (itemId: string) => {
     switch (itemId) {
       case "dashboard":

@@ -31,21 +31,36 @@ type TableProps<T = any> = {
 };
 
 // Skeleton component for loading state
-const TableSkeleton = ({ columnsCount, actionsCount }: { columnsCount: number; actionsCount: number }) => {
+const TableSkeleton = ({
+  columnsCount,
+  actionsCount,
+}: {
+  columnsCount: number;
+  actionsCount: number;
+}) => {
   return (
     <tbody>
       {[...Array(5)].map((_, index) => (
-        <tr key={index} className={`border-b border-gray-200 ${index === 4 ? 'border-b-0' : ''}`}>
+        <tr
+          key={index}
+          className={`border-gray-200 border-b ${index === 4 ? "border-b-0" : ""}`}
+        >
           {[...Array(columnsCount)].map((_, colIndex) => (
-            <td key={colIndex} className="py-3 px-4 border-r border-light-gray last:border-r-0">
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+            <td
+              key={colIndex}
+              className="border-light-gray border-r px-4 py-3 last:border-r-0"
+            >
+              <div className="h-4 animate-pulse rounded bg-gray-200"></div>
             </td>
           ))}
           {actionsCount > 0 && (
-            <td className="py-3 px-4 border-r border-light-gray last:border-r-0">
+            <td className="border-light-gray border-r px-4 py-3 last:border-r-0">
               <div className="flex space-x-2">
                 {[...Array(actionsCount)].map((_, actionIndex) => (
-                  <div key={actionIndex} className="h-4 w-8 bg-gray-200 rounded animate-pulse"></div>
+                  <div
+                    key={actionIndex}
+                    className="h-4 w-8 animate-pulse rounded bg-gray-200"
+                  ></div>
                 ))}
               </div>
             </td>
@@ -59,16 +74,18 @@ const TableSkeleton = ({ columnsCount, actionsCount }: { columnsCount: number; a
 // Function to highlight search matches
 const highlightText = (text: string, searchTerm: string) => {
   if (!searchTerm) return text;
-  
-  const parts = text.split(new RegExp(`(${searchTerm})`, 'gi'));
+
+  const parts = text.split(new RegExp(`(${searchTerm})`, "gi"));
   return (
     <>
-      {parts.map((part, index) => 
+      {parts.map((part, index) =>
         part.toLowerCase() === searchTerm.toLowerCase() ? (
-          <span key={index} className="font-bold">{part}</span>
+          <span key={index} className="font-bold">
+            {part}
+          </span>
         ) : (
           <span key={index}>{part}</span>
-        )
+        ),
       )}
     </>
   );
@@ -91,12 +108,12 @@ export function Table<T extends Record<string, any>>({
   // Filter data based on search term across all fields
   const filteredData = useMemo(() => {
     if (!searchTerm || !searchable) return data;
-    
+
     const searchLower = searchTerm.toLowerCase();
-    
-    return data.filter(item => {
+
+    return data.filter((item) => {
       // Search through all column values
-      return columns.some(column => {
+      return columns.some((column) => {
         const value = item[column.key];
         if (value === null || value === undefined) return false;
         const stringValue = String(value);
@@ -108,16 +125,16 @@ export function Table<T extends Record<string, any>>({
   // Function to render cell content
   const renderCell = (column: TableColumn<T>, item: T) => {
     const value = item[column.key];
-    
+
     if (column.render) {
       return column.render(value, item);
     }
-    
+
     // Apply highlighting if search is active
     if (searchTerm && searchable) {
       return highlightText(String(value || ""), searchTerm);
     }
-    
+
     return value || "-";
   };
 
@@ -130,66 +147,85 @@ export function Table<T extends Record<string, any>>({
         <div className="mb-6">
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Search
+                className="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-400"
+                size={20}
+              />
               <input
                 type="text"
                 placeholder={searchPlaceholder}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
+                className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:outline-none"
               />
             </div>
             {searchBarComponent && (
-              <div className="flex-shrink-0">
-                {searchBarComponent}
-              </div>
+              <div className="flex-shrink-0">{searchBarComponent}</div>
             )}
           </div>
         </div>
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto border border-light-gray rounded-lg ">
+      <div className="overflow-x-auto rounded-lg border border-light-gray">
         <table className="min-w-full">
           <thead>
             <tr className="bg-dark-blue text-white">
               {columns.map((column) => (
-                <th key={String(column.key)} className="py-3 px-4 text-left font-medium border-r border-light-gray last:border-r-0">
+                <th
+                  key={String(column.key)}
+                  className="border-light-gray border-r px-4 py-3 text-left font-medium last:border-r-0"
+                >
                   {column.title}
                 </th>
               ))}
               {actions.length > 0 && (
-                <th className="py-3 px-4 text-left font-medium">Ações</th>
+                <th className="px-4 py-3 text-left font-medium">Ações</th>
               )}
             </tr>
           </thead>
-          
+
           {loading ? (
-            <TableSkeleton columnsCount={columns.length} actionsCount={actions.length} />
+            <TableSkeleton
+              columnsCount={columns.length}
+              actionsCount={actions.length}
+            />
           ) : (
             <tbody>
               {filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan={totalColumns} className="py-12 text-center text-gray">
+                  <td
+                    colSpan={totalColumns}
+                    className="py-12 text-center text-gray"
+                  >
                     {searchTerm ? searchNotFoundMessage : emptyMessage}
                   </td>
                 </tr>
               ) : (
                 filteredData.map((item, index) => (
-                  <tr key={index} className={`border-b border-light-gray ${index === filteredData.length - 1 ? 'border-b-0' : ''}`}>
+                  <tr
+                    key={index}
+                    className={`border-light-gray border-b ${index === filteredData.length - 1 ? "border-b-0" : ""}`}
+                  >
                     {columns.map((column) => (
-                      <td key={String(column.key)} className="py-3 px-4 border-r border-light-gray last:border-r-0">
+                      <td
+                        key={String(column.key)}
+                        className="border-light-gray border-r px-4 py-3 last:border-r-0"
+                      >
                         {renderCell(column, item)}
                       </td>
                     ))}
                     {actions.length > 0 && (
-                      <td className="py-3 px-4">
+                      <td className="px-4 py-3">
                         <div className="flex space-x-2">
                           {actions.map((action) => (
                             <button
                               key={action.key}
                               onClick={() => action.onClick(item)}
-                              className={action.className || "text-dark-blue hover:text-dark-blue transition-colors"}
+                              className={
+                                action.className ||
+                                "text-dark-blue transition-colors hover:text-dark-blue"
+                              }
                               title={action.label}
                             >
                               {action.icon || action.label}

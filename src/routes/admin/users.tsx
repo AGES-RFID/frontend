@@ -7,7 +7,6 @@ import { EditUserModal } from "@/features/users/components/EditUserModal";
 import { DeleteUserModal } from "@/features/users/components/DeleteUserModal";
 import { UsersTable } from "@/features/users/components/UsersTable";
 
-
 // Mock function to simulate backend data response
 const fetchUsersFromBackend = (): User[] => {
   // This would be replaced with actual API call
@@ -84,7 +83,7 @@ export function Users() {
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
-  
+
   // Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -140,22 +139,21 @@ export function Users() {
     setSelectedUser(null);
   };
 
-
   // Load users on component mount
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [loadUsers]);
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       <SidebarDrawer />
-      
+
       {/* Main Content */}
       <main className="flex-1">
         <div className="p-8">
-          <h1 className="text-3xl font-bold text-dark-gray mb-4">Usuários</h1>
-          <p className="text-gray mb-6">Gerenciamento de usuários do sistema</p>
-          
+          <h1 className="mb-4 font-bold text-3xl text-dark-gray">Usuários</h1>
+          <p className="mb-6 text-gray">Gerenciamento de usuários do sistema</p>
+
           <UsersTable
             users={users}
             loading={loading}
@@ -164,21 +162,21 @@ export function Users() {
             onCreateUser={handleCreateUser}
             onNavigateToRegister={handleNavigateToRegister}
           />
-          </div>
-        
+        </div>
+
         {/* Create User Modal */}
         <CreateUserModal
           isOpen={isCreateModalOpen}
           onClose={closeCreateModal}
         />
-        
+
         {/* Edit User Modal */}
         <EditUserModal
           isOpen={isEditModalOpen}
           onClose={closeEditModal}
           selectedUser={selectedUser}
         />
-        
+
         {/* Delete User Modal */}
         <DeleteUserModal
           isOpen={isDeleteModalOpen}

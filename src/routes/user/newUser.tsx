@@ -31,26 +31,26 @@ export function NewUser() {
   };
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       <Header onAuthAction={handleAuthAction} />
 
       <main className="mx-auto max-w-6xl px-6 py-12">
         <header className="mb-10 text-center">
           <h1 className="font-bold text-4xl text-[#123b6d]">Cadastro</h1>
-          <p className="mt-2 text-sm text-gray">
+          <p className="mt-2 text-gray text-sm">
             Preencha os dados abaixo para criar sua conta
           </p>
         </header>
 
         <UserForm buttonText="Criar Conta" onSubmit={handleCreateUser} />
 
-        <div className="flex justify-center mt-6">
+        <div className="mt-6 flex justify-center">
           <Button onClick={() => console.log("Button clicked")}>
             Criar Conta
           </Button>
         </div>
 
-        <div className="mt-6 text-center text-sm text-gray">
+        <div className="mt-6 text-center text-gray text-sm">
           <span>Já possui uma conta? </span>
           <Link to="/login" className="font-medium text-cyan hover:underline">
             Fazer login

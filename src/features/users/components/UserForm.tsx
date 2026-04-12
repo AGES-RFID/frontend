@@ -1,8 +1,5 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-
 
 interface UserFormProps {
   onSubmit: (data: any) => void;
@@ -44,10 +41,9 @@ export function UserForm({
   return (
     <div className="px-6">
       <div className="mx-auto w-full max-w-[1060px]">
-        
         <form onSubmit={handleSubmit} className="w-full">
           <div className="mb-8 flex items-center gap-4">
-            <span className="shrink-0 text-[20px] font-semibold text-[#3d3d3d]">
+            <span className="shrink-0 font-semibold text-[#3d3d3d] text-[20px]">
               Informações pessoais
             </span>
             <div className="h-px flex-1 bg-[#bdbdbd]" />
