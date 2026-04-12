@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { SidebarDrawer } from "../../components/ui/sidebar/sidebarDrawer";
+import { Button } from "../../components/ui/button";
 import { UserForm } from "@/features/users/components/UserForm";
 
-export function AdminRegister() {
+export function AdminNewUser() {
   const navigate = useNavigate();
 
   // Form state
@@ -28,12 +27,12 @@ export function AdminRegister() {
     console.log("Form data:", formData);
     // TODO: Implement user creation logic
     alert("Usuário cadastrado com sucesso!");
-    navigate("/usuarios");
+    navigate("/admin/users");
   };
 
   // Handle navigation back
   const handleGoBack = () => {
-    navigate("/usuarios");
+    navigate("/admin/users");
   };
 
   return (

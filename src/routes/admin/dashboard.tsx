@@ -1,4 +1,4 @@
-import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
+import { SidebarDrawer } from "../../components/ui/sidebar/sidebarDrawer";
 
 export function Dashboard() {
   return (

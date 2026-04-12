@@ -126,8 +126,8 @@ export function Header({
         <HeaderButton
           icon={<User className="h-[31px] w-[31px] shrink-0" />}
           label="Perfil"
-          isActive={isActive("/users")}
-          action={() => navigate("/users")}
+          isActive={isActive("/profile")}
+          action={() => navigate("/profile")}
         />
       </nav>
 

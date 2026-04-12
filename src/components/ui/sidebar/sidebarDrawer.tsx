@@ -50,12 +50,12 @@ export function SidebarDrawer() {
   
   const getActiveItem = () => {
     const path = location.pathname;
-    if (path === "/dashboard" || path === "/") return "dashboard";
-    if (path.startsWith("/veiculos")) return "veiculos";
-    if (path.includes("usuarios") || path.includes("user")) return "usuarios";
-    if (path.startsWith("/etiquetas")) return "etiquetas";
-    if (path.startsWith("/cobranca")) return "cobranca";
-    if (path.startsWith("/sistema")) return "sistema";
+    if (path === "/admin/dashboard" || path === "/") return "dashboard";
+    if (path.startsWith("/admin/vehicules")) return "veiculos";
+    if (path.startsWith("/admin/users")) return "usuarios";
+    if (path.startsWith("/admin/labels")) return "etiquetas";
+    if (path.startsWith("/admin/payments")) return "cobranca";
+    if (path.startsWith("/admin/system")) return "sistema";
     return "dashboard";
   };
   
@@ -64,25 +64,25 @@ export function SidebarDrawer() {
   const handleNavigation = (itemId: string) => {
     switch (itemId) {
       case "dashboard":
-        navigate("/dashboard");
+        navigate("/admin/dashboard");
         break;
       case "veiculos":
-        navigate("/veiculos");
+        navigate("/admin/vehicules");
         break;
       case "usuarios":
-        navigate("/usuarios");
+        navigate("/admin/users");
         break;
       case "etiquetas":
-        navigate("/etiquetas");
+        navigate("/admin/labels");
         break;
       case "cobranca":
-        navigate("/cobranca");
+        navigate("/admin/payments");
         break;
       case "sistema":
-        navigate("/sistema");
+        navigate("/admin/system");
         break;
       default:
-        navigate("/dashboard");
+        navigate("/admin/dashboard");
     }
   };
   return (

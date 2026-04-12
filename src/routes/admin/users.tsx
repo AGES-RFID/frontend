@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
+import { SidebarDrawer } from "../../components/ui/sidebar/sidebarDrawer";
 import type { User } from "@/features/users/model/user";
 import { CreateUserModal } from "@/features/users/components/CreateUserModal";
 import { EditUserModal } from "@/features/users/components/EditUserModal";
@@ -126,7 +126,7 @@ export function Users() {
 
   // Handle navigate to registration page
   const handleNavigateToRegister = () => {
-    navigate("/register-user");
+    navigate("/admin/users/register");
   };
 
   // Modal close handlers

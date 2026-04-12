@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { SidebarDrawer } from "../components/ui/sidebar/sidebarDrawer";
-import { Table, type TableColumn, type TableAction } from "../components/ui/table";
-import { Button } from "../components/ui/button";
-import { Modal } from "../components/ui/modal";
+import { SidebarDrawer } from "../../components/ui/sidebar/sidebarDrawer";
+import { Table, type TableColumn, type TableAction } from "../../components/ui/table";
+import { Button } from "../../components/ui/button";
+import { Modal } from "../../components/ui/modal";
 import { Edit, Trash2 } from "lucide-react";
 
 // Type definitions for vehicle data from backend

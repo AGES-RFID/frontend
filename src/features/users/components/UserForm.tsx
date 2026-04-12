@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+
+
 interface UserFormProps {
   onSubmit: (data: any) => void;
   buttonText: string;
@@ -40,89 +42,86 @@ export function UserForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mx-auto flex max-w-6xl flex-col gap-6"
-    >
-      <div className="grid grid-cols-2 gap-25 max-w-6xl mx-auto">
-            {/* Left Column */}
-            <div className="space-y-6">
+    <div className="px-6">
+      <div className="mx-auto w-full max-w-[1060px]">
+        
+        <form onSubmit={handleSubmit} className="w-full">
+          <div className="mb-8 flex items-center gap-4">
+            <span className="shrink-0 text-[20px] font-semibold text-[#3d3d3d]">
+              Informações pessoais
+            </span>
+            <div className="h-px flex-1 bg-[#bdbdbd]" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-x-20 gap-y-6">
+            <div className="flex flex-col gap-8">
               <Input
-                label="Email"
+                label="Email *"
                 type="email"
-                placeholder="Digite seu email"
+                placeholder="Email"
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 required
+                width="100%"
               />
 
               <Input
-                label="CPF"
-                placeholder="Digite seu CPF"
+                label="CPF *"
+                placeholder="000.000.000-00"
                 value={formData.cpf}
                 onChange={(e) => handleInputChange("cpf", e.target.value)}
                 required
+                width="100%"
               />
 
               <Input
-                label="CEP"
-                placeholder="Digite seu CEP"
-                value={formData.cep}
-                onChange={(e) => handleInputChange("cep", e.target.value)}
-                required
-              />
-
-              <Input
-                label="Senha"
+                label="Senha *"
                 type="password"
-                placeholder="Digite sua senha"
+                placeholder="Senha"
                 value={formData.password}
                 onChange={(e) => handleInputChange("password", e.target.value)}
                 required
                 showPasswordToggle
+                width="100%"
               />
             </div>
 
-            {/* Right Column */}
-            <div className="space-y-6">
+            <div className="flex flex-col gap-8">
               <Input
-                label="Nome completo"
-                placeholder="Digite seu nome completo"
+                label="Nome Completo *"
+                placeholder="Seu nome completo"
                 value={formData.fullName}
                 onChange={(e) => handleInputChange("fullName", e.target.value)}
                 required
+                width="100%"
               />
 
               <Input
-                label="Telefone"
+                label="Telefone *"
                 type="tel"
-                placeholder="Digite seu telefone"
+                placeholder="(51) 99999-9999"
                 value={formData.cellphone}
                 onChange={(e) => handleInputChange("cellphone", e.target.value)}
                 required
+                width="100%"
               />
 
               <Input
-                label="Endereço"
-                placeholder="Digite seu endereço"
-                value={formData.address}
-                onChange={(e) => handleInputChange("address", e.target.value)}
-                required
-              />
-
-              <Input
-                label="Confirmar Senha"
+                label="Confirmar senha *"
                 type="password"
-                placeholder="Confirme sua senha"
+                placeholder="Confirmar senha"
                 value={formData.confirmPassword}
                 onChange={(e) =>
                   handleInputChange("confirmPassword", e.target.value)
                 }
                 required
                 showPasswordToggle
+                width="100%"
               />
             </div>
           </div>
-    </form>
+        </form>
+      </div>
+    </div>
   );
 }

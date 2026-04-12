@@ -2,12 +2,17 @@ import { useNavigate, useParams } from "react-router";
 import { UserForm } from "@/features/users/components/UserForm";
 import type { CreateUserDto } from "@/features/users/dtos";
 import { useEditUser, useGetUser } from "@/features/users/hooks";
+import { Header } from "@/components/ui/header";
 
 export function EditUser() {
   const navigate = useNavigate();
   const { userId } = useParams<{ userId: string }>();
   const { data: user, isLoading, error } = useGetUser(userId || "");
   const editUserMutation = useEditUser();
+
+  const handleAuthAction = () => {
+    navigate("/user/new");
+  };
 
   if (isLoading) {
     return (
@@ -54,19 +59,22 @@ export function EditUser() {
   };
 
   return (
-    <main className="p-4">
-      <header>
-        <h1 className="mb-4 font-bold text-2xl">Editar usuário</h1>
-      </header>
+    <>
+      <Header onAuthAction={handleAuthAction} />
+      <main className="p-4">
+        <header>
+          <h1 className="mb-4 font-bold text-2xl">Editar usuário</h1>
+        </header>
 
-      <UserForm
-        buttonText="Atualizar usuário"
-        onSubmit={handleEditUser}
-        initialValues={{
-          name: user.name,
-          email: user.email || "",
-        }}
-      />
-    </main>
+        <UserForm
+          buttonText="Atualizar usuário"
+          onSubmit={handleEditUser}
+          initialValues={{
+            name: user.name,
+            email: user.email || "",
+          }}
+        />
+      </main>
+    </>
   );
 }
