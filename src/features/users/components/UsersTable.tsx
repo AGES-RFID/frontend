@@ -1,17 +1,14 @@
-import {
-  Table,
-  type TableColumn,
-  type TableAction,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
-import type { User } from "@/features/users/model/user";
+import { Button } from "@/components/ui/button";
+import { Table } from "@/components/ui/table";
+import type { TableAction, TableColumn } from "@/components/ui/table/types";
+import type { UserDto, UserListDto } from "../dtos";
 
 interface UsersTableProps {
-  users: User[];
+  users: UserListDto;
   loading: boolean;
-  onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
+  onEdit: (user: UserDto) => void;
+  onDelete: (user: UserDto) => void;
   onCreateUser: () => void;
   onNavigateToRegister?: () => void;
 }
@@ -24,35 +21,26 @@ export function UsersTable({
   onCreateUser,
   onNavigateToRegister,
 }: UsersTableProps) {
-  // Table columns configuration
-  const columns: TableColumn<User>[] = [
+  const columns: TableColumn<UserDto>[] = [
     {
-      key: "id",
-      title: "ID",
-    },
-    {
-      key: "type",
+      key: "role",
       title: "Tipo",
+      render: (col) => (
+        <span className={col === "admin" ? "bg-blue" : "bg-fuscia"}>{col}</span>
+      ),
     },
-    {
-      key: "name",
-      title: "Nome",
-    },
-    {
-      key: "email",
-      title: "Email",
-    },
+    { key: "name", title: "Nome" },
+    { key: "email", title: "Email" },
   ];
 
-  // Table actions configuration
-  const actions: TableAction<User>[] = [
+  const actions: TableAction<UserDto>[] = [
     {
       key: "edit",
       label: "Editar",
       icon: <Edit size={18} />,
       onClick: onEdit,
       className:
-        "text-blue hover:text-light-blue cursor-pointer transition-colors",
+        "text-dark-blue hover:text-blue cursor-pointer transition-colors",
     },
     {
       key: "delete",

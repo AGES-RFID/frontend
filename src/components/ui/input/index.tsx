@@ -1,16 +1,14 @@
+import { cva } from "class-variance-authority";
+import { Eye, EyeOff, Plus } from "lucide-react";
 import type React from "react";
 import { useId, useState } from "react";
-import { Plus, Eye, EyeOff } from "lucide-react";
-import { cva } from "class-variance-authority";
 import { cn } from "@/utils/cn";
 
 // Border: 2px (dobro do padrão 1px), radius 6px, cor #999 (light-gray)
 const inputContainerStyles = cva(
   // w-full garante que default/disabled preencham o wrapper
   // flex-1 sobrescreve w-full na variante with-button (dentro do flex row)
-  [
-    "flex items-center rounded-md border border-light-gray overflow-hidden w-full relative",
-  ],
+  "flex items-center cursor-text rounded-md border h-10 border-light-gray px-4 py-2 gap-3 overflow-hidden w-full relative",
   {
     variants: {
       variant: {
@@ -32,8 +30,8 @@ const inputContainerStyles = cva(
 // Placeholder #94A3B8 (lighter-blue), texto digitado #333 (dark-gray)
 const inputFieldStyles = cva(
   [
-    "w-full outline-none bg-transparent px-4 py-2 h-10",
-    "text-[12px] leading-4 text-dark-gray",
+    "w-full outline-none bg-transparent",
+    "text-sm leading-4 text-dark-gray",
     "placeholder:text-lighter-blue",
   ],
   {
@@ -60,8 +58,8 @@ export interface InputProps
   label?: string;
   /** Placeholder text inside input */
   placeholder?: string;
-  /** Width of the input wrapper (CSS value, e.g. "100%", "320px") */
-  width?: string;
+  /** Used to display a decoration before the input */
+  leftDecoration?: React.ReactNode;
   /** Make the input required */
   required?: boolean;
   /** Callback for "+" button click (only used when variant is "with-button") */
@@ -74,9 +72,9 @@ export function Input({
   variant = "default",
   label,
   placeholder,
-  width = "320px",
   className,
   onButtonClick,
+  leftDecoration,
   required = false,
   showPasswordToggle = false,
   ...props
@@ -92,12 +90,12 @@ export function Input({
   };
 
   return (
-    <div className={cn("flex flex-col gap-1", className)} style={{ width }}>
+    <div className={cn("flex w-full flex-col gap-1", className)}>
       {label && (
         // Input - 14/20: font-size 14px, line-height 20px, cor #333 (dark-gray)
         <label
           htmlFor={inputId}
-          className="font-medium text-[14px] text-dark-gray leading-5"
+          className="font-medium text-dark-gray text-sm leading-5"
         >
           {label}
           {required && <span className="ml-1 text-red">*</span>}
@@ -107,7 +105,9 @@ export function Input({
       {/* Linha que contém o campo e, se necessário, o botão separado */}
       {/* w-full garante que a linha ocupa toda a largura do wrapper */}
       <div className={cn("flex w-full items-center", hasButton && "gap-2")}>
-        <div className={inputContainerStyles({ variant })}>
+        <label className={inputContainerStyles({ variant })}>
+          {leftDecoration}
+
           <input
             id={inputId}
             className={inputFieldStyles({ variant })}
@@ -116,21 +116,19 @@ export function Input({
             required={required}
             type={isPasswordField && showPassword ? "text" : props.type}
             value={isPasswordField ? props.value : undefined}
-            {...(isPasswordField
-              ? { ...props, type: showPassword ? "text" : "password" }
-              : props)}
+            {...props}
           />
           {isPasswordField && (
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-500 hover:text-gray-700 focus:outline-none"
+              className="text-gray hover:text-dark-gray focus:outline-none"
               aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           )}
-        </div>
+        </label>
 
         {/* Botão separado do campo, mesma borda (#999 / light-gray), "+" em #333 */}
         {hasButton && (

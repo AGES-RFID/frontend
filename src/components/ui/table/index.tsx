@@ -1,23 +1,12 @@
-import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Input } from "../input";
+import { HighlightText } from "./HighlightText";
+import { TableSkeleton } from "./TableSkeleton";
+import type { TableAction, TableColumn, TableColumnValue } from "./types";
+import { canSearchColumn } from "./utils";
 
-// Type definitions for the table component
-export type TableColumn<T = any> = {
-  key: keyof T;
-  title: string;
-  render?: (value: any, item: T) => React.ReactNode;
-  sortable?: boolean;
-};
-
-export type TableAction<T = any> = {
-  key: string;
-  label: string;
-  icon?: React.ReactNode;
-  onClick: (item: T) => void;
-  className?: string;
-};
-
-type TableProps<T = any> = {
+type TableProps<T extends Record<string, TableColumnValue>> = {
   data: T[];
   columns: TableColumn<T>[];
   actions?: TableAction<T>[];
@@ -30,68 +19,7 @@ type TableProps<T = any> = {
   searchBarComponent?: React.ReactNode;
 };
 
-// Skeleton component for loading state
-const TableSkeleton = ({
-  columnsCount,
-  actionsCount,
-}: {
-  columnsCount: number;
-  actionsCount: number;
-}) => {
-  return (
-    <tbody>
-      {[...Array(5)].map((_, index) => (
-        <tr
-          key={index}
-          className={`border-gray-200 border-b ${index === 4 ? "border-b-0" : ""}`}
-        >
-          {[...Array(columnsCount)].map((_, colIndex) => (
-            <td
-              key={colIndex}
-              className="border-light-gray border-r px-4 py-3 last:border-r-0"
-            >
-              <div className="h-4 animate-pulse rounded bg-gray-200"></div>
-            </td>
-          ))}
-          {actionsCount > 0 && (
-            <td className="border-light-gray border-r px-4 py-3 last:border-r-0">
-              <div className="flex space-x-2">
-                {[...Array(actionsCount)].map((_, actionIndex) => (
-                  <div
-                    key={actionIndex}
-                    className="h-4 w-8 animate-pulse rounded bg-gray-200"
-                  ></div>
-                ))}
-              </div>
-            </td>
-          )}
-        </tr>
-      ))}
-    </tbody>
-  );
-};
-
-// Function to highlight search matches
-const highlightText = (text: string, searchTerm: string) => {
-  if (!searchTerm) return text;
-
-  const parts = text.split(new RegExp(`(${searchTerm})`, "gi"));
-  return (
-    <>
-      {parts.map((part, index) =>
-        part.toLowerCase() === searchTerm.toLowerCase() ? (
-          <span key={index} className="font-bold">
-            {part}
-          </span>
-        ) : (
-          <span key={index}>{part}</span>
-        ),
-      )}
-    </>
-  );
-};
-
-export function Table<T extends Record<string, any>>({
+export function Table<T extends Record<string, TableColumnValue>>({
   data,
   columns,
   actions = [],
@@ -99,7 +27,7 @@ export function Table<T extends Record<string, any>>({
   searchPlaceholder = "Pesquisar...",
   emptyMessage = "Nenhum dado encontrado.",
   searchNotFoundMessage = "Nenhum resultado encontrado para esta busca.",
-  className = "",
+  className,
   searchable = true,
   searchBarComponent,
 }: TableProps<T>) {
@@ -112,8 +40,7 @@ export function Table<T extends Record<string, any>>({
     const searchLower = searchTerm.toLowerCase();
 
     return data.filter((item) => {
-      // Search through all column values
-      return columns.some((column) => {
+      return columns.filter(canSearchColumn).some((column) => {
         const value = item[column.key];
         if (value === null || value === undefined) return false;
         const stringValue = String(value);
@@ -131,8 +58,10 @@ export function Table<T extends Record<string, any>>({
     }
 
     // Apply highlighting if search is active
-    if (searchTerm && searchable) {
-      return highlightText(String(value || ""), searchTerm);
+    if (canSearchColumn(column)) {
+      return (
+        <HighlightText text={String(value) || ""} searchTerm={searchTerm} />
+      );
     }
 
     return value || "-";
@@ -147,20 +76,16 @@ export function Table<T extends Record<string, any>>({
         <div className="mb-6">
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
-              <Search
-                className="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-400"
-                size={20}
-              />
-              <input
+              <Input
+                leftDecoration={<Search size={16} className="text-gray" />}
                 type="text"
                 placeholder={searchPlaceholder}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:outline-none"
               />
             </div>
             {searchBarComponent && (
-              <div className="flex-shrink-0">{searchBarComponent}</div>
+              <div className="flex shrink-0">{searchBarComponent}</div>
             )}
           </div>
         </div>
@@ -204,6 +129,7 @@ export function Table<T extends Record<string, any>>({
               ) : (
                 filteredData.map((item, index) => (
                   <tr
+                    // biome-ignore lint/suspicious/noArrayIndexKey: a
                     key={index}
                     className={`border-light-gray border-b ${index === filteredData.length - 1 ? "border-b-0" : ""}`}
                   >
@@ -220,6 +146,7 @@ export function Table<T extends Record<string, any>>({
                         <div className="flex space-x-2">
                           {actions.map((action) => (
                             <button
+                              type="button"
                               key={action.key}
                               onClick={() => action.onClick(item)}
                               className={

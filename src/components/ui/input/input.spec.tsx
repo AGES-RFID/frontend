@@ -1,5 +1,5 @@
-import { describe, expect, it, mock, afterEach } from "bun:test";
-import { render, screen, cleanup, fireEvent } from "@testing-library/react";
+import { afterEach, describe, expect, it, mock } from "bun:test";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
 import { Input } from ".";
 
@@ -23,6 +23,18 @@ describe("Input component", () => {
     const input = screen.getByPlaceholderText("Nome") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "João" } });
     expect(input.value).toBe("João");
+  });
+
+  it("should trigger the onChange event", () => {
+    const handleChange = mock();
+    render(
+      <Input onChange={handleChange} variant="default" placeholder="Nome" />,
+    );
+    const input = screen.getByPlaceholderText("Nome") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "João" } });
+
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange.mock.calls.at(0)?.at(0)?.target.value).toBe("João");
   });
 
   // ── Disabled variant ─────────────────────────────────────────────────────
