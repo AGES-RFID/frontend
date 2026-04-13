@@ -8,16 +8,16 @@ interface DeleteUserModalProps {
   selectedUser: User | null;
 }
 
-export function DeleteUserModal({ isOpen, onClose, selectedUser }: DeleteUserModalProps) {
+export function DeleteUserModal({
+  isOpen,
+  onClose,
+  selectedUser,
+}: DeleteUserModalProps) {
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Excluir Usuário"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Excluir Usuário">
       <div className="space-y-4">
         <p>Tem certeza que deseja excluir o usuário "{selectedUser?.name}"?</p>
-        <p className="text-sm text-gray">Esta ação não pode ser desfeita.</p>
+        <p className="text-gray text-sm">Esta ação não pode ser desfeita.</p>
         <div className="flex justify-end space-x-2">
           <Button onClick={onClose} variant="secondary">
             Cancelar

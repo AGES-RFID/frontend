@@ -8,22 +8,20 @@ interface EditUserModalProps {
   selectedUser: User | null;
 }
 
-export function EditUserModal({ isOpen, onClose, selectedUser }: EditUserModalProps) {
+export function EditUserModal({
+  isOpen,
+  onClose,
+  selectedUser,
+}: EditUserModalProps) {
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Editar Usuário"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Editar Usuário">
       <div className="space-y-4">
         <p>Editando usuário: {selectedUser?.name}</p>
         <div className="flex justify-end space-x-2">
           <Button onClick={onClose} variant="secondary">
             Cancelar
           </Button>
-          <Button onClick={onClose}>
-            Salvar
-          </Button>
+          <Button onClick={onClose}>Salvar</Button>
         </div>
       </div>
     </Modal>

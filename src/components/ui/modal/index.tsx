@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { X } from "lucide-react";
 
 type ModalProps = {
@@ -14,28 +14,29 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div 
+      <button
+        type="button"
         className="absolute inset-0 bg-bg-overlay"
         onClick={onClose}
+        aria-label="Fechar modal"
       />
-      
+
       {/* Modal Content */}
-      <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+      <div className="relative mx-4 w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
         {/* Modal Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-dark-gray">{title}</h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-semibold text-dark-gray text-xl">{title}</h2>
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray hover:text-dark-gray transition-colors"
+            className="cursor-pointer text-gray transition-colors hover:text-dark-gray"
           >
-            <X className="w-6 h-6" />
+            <X className="h-6 w-6" />
           </button>
         </div>
-        
+
         {/* Modal Body */}
-        <div className="text-gray">
-          {children}
-        </div>
+        <div className="text-gray">{children}</div>
       </div>
     </div>
   );

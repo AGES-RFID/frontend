@@ -1,4 +1,8 @@
-import { Table, type TableColumn, type TableAction } from "@/components/ui/table";
+import {
+  Table,
+  type TableColumn,
+  type TableAction,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import type { User } from "@/features/users/model/user";
@@ -12,7 +16,14 @@ interface UsersTableProps {
   onNavigateToRegister?: () => void;
 }
 
-export function UsersTable({ users, loading, onEdit, onDelete, onCreateUser, onNavigateToRegister }: UsersTableProps) {
+export function UsersTable({
+  users,
+  loading,
+  onEdit,
+  onDelete,
+  onCreateUser,
+  onNavigateToRegister,
+}: UsersTableProps) {
   // Table columns configuration
   const columns: TableColumn<User>[] = [
     {
@@ -40,14 +51,16 @@ export function UsersTable({ users, loading, onEdit, onDelete, onCreateUser, onN
       label: "Editar",
       icon: <Edit size={18} />,
       onClick: onEdit,
-      className: "text-blue hover:text-light-blue cursor-pointer transition-colors",
+      className:
+        "text-blue hover:text-light-blue cursor-pointer transition-colors",
     },
     {
       key: "delete",
       label: "Excluir",
       icon: <Trash2 size={18} />,
       onClick: onDelete,
-      className: "text-red hover:text-light-red cursor-pointer transition-colors",
+      className:
+        "text-red hover:text-light-red cursor-pointer transition-colors",
     },
   ];
 

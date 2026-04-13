@@ -1,10 +1,13 @@
-import { Header } from "@/components/ui/header";
-import { Home, CreditCard, User, LogIn } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
+import { Header } from "@/components/ui/header";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function Login() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -12,35 +15,38 @@ export function Login() {
   };
 
   const handleRegister = () => {
-    navigate("/register");
+    navigate("/user/new");
   };
 
-  const handleForgotPassword = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleForgotPassword = () => {
+    navigate("/user/new");
   };
 
   return (
     <>
-      <Header></Header>
+      <Header type="logo" />
 
-      <div className="min-h-screen bg-gray-100 text-gray-900 flex items-center justify-center">
-        <main className="mx-auto flex max-w-screen-2xl px-6">
-          <section className="w-full max-w-md">
-            <div className="mb-12 border-b border-gray pb-4">
-              <h1 className="text-2xl font-semibold  text-dark-blue">Login</h1>
+      <div className="flex min-h-[calc(100vh-108px)] items-center justify-center bg-gray-100 px-6 py-10 text-gray-900">
+        <main className="w-full max-w-140 rounded-2xl bg-white p-8">
+          <section className="space-y-8">
+            <div className="border-gray border-b pb-4">
+              <h1 className="font-bold text-3xl text-dark-blue">Login</h1>
+              <p className="mt-2 text-gray text-sm">
+                Acesse sua conta para continuar.
+              </p>
             </div>
 
-            <form
-              className="mx-auto mt-8 flex max-w-xs flex-col gap-6"
-              onSubmit={handleSubmit}
-            >
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <Input
                 id="email"
                 type="email"
                 name="email"
                 label="Email"
-                placeholder="Digite seu Email"
+                placeholder="Digite seu email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 required
+                width="100%"
               />
 
               <Input
@@ -49,79 +55,62 @@ export function Login() {
                 name="password"
                 label="Senha"
                 placeholder="Digite sua senha"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
                 required
                 showPasswordToggle
+                width="100%"
               />
 
-              <div className="mb-8 flex items-center justify-between">
-                <label className="flex items-center">
+              <div className="flex items-center justify-between gap-4">
+                <label className="flex items-center gap-2 text-gray text-sm">
                   <input
                     type="checkbox"
-                    className="mr-2 h-4 w-4 rounded border-dark-gray text-dark-blue focus:ring-dark-blue"
+                    className="h-4 w-4 rounded border-dark-gray text-dark-blue focus:ring-dark-blue"
                   />
-                  <span className="text-sm text-gray-600">Lembrar de mim</span>
+                  Lembrar de mim
                 </label>
-                <button
+
+                <Button
                   type="button"
+                  variant="borderless"
+                  size="sm"
                   onClick={handleForgotPassword}
-                  className="text-sm text-dark-blue transition hover:text-blue-700"
                 >
                   Esqueci a senha
-                </button>
+                </Button>
               </div>
 
-              <button
-                type="submit"
-                className="mx-auto mb-6 h-10 w-full rounded bg-dark-blue text-sm font-semibold text-white transition hover:opacity-95"
-              >
+              <Button type="submit" size="md" className="w-full">
                 Entrar
-              </button>
+              </Button>
 
-              <div className="mb-6 text-center">
-                <span className="text-sm text-gray-500">OU</span>
+              <div className="flex items-center gap-4">
+                <div className="h-px flex-1 bg-light-gray" />
+                <span className="text-gray text-sm">OU</span>
+                <div className="h-px flex-1 bg-light-gray" />
               </div>
 
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="md"
+                className="w-full"
                 onClick={handleRegister}
-                className="mx-auto h-10 w-full rounded border border-cyan-600 bg-transparent text-sm font-medium text-cyan-600 transition hover:bg-cyan-600 hover:text-white"
               >
                 Criar nova conta
-              </button>
+              </Button>
             </form>
 
-            <div className="mt-12 text-center">
-              <p className="text-xs text-gray-500">
-                Ao fazer login, você concorda com nossos{" "}
-                <a href="#" className="text-dark-blue hover:text-blue-700">
-                  Termos de Serviço
-                </a>{" "}
-                e{" "}
-                <a href="#" className="text-dark-blue hover:text-blue-700">
-                  Política de Privacidade
-                </a>
+            <div className="text-center">
+              <p className="text-gray text-xs">
+                Ao fazer login, você concorda com nossos termos de serviço e
+                política de privacidade.
               </p>
             </div>
           </section>
         </main>
       </div>
     </>
-  );
-}
-
-type NavItemProps = {
-  icon: React.ReactNode;
-  label: string;
-};
-
-function NavItem({ icon, label }: NavItemProps) {
-  return (
-    <button
-      type="button"
-      className="flex items-center gap-2 text-sm font-medium text-white/95 transition hover:text-white"
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
   );
 }

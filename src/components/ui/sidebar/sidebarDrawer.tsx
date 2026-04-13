@@ -1,5 +1,5 @@
 import { ButtonSidebar, type MenuItem } from "./sidebarButton/buttonSidebar";
-import impinjLogo from "../../../../public/impinj-logo.png"
+import impinjLogo from "../../../../public/impinj-logo.png";
 import {
   LayoutDashboard,
   Car,
@@ -44,36 +44,45 @@ const menuItems: MenuItem[] = [
   },
 ];
 
+const MENU_ITEM_HEIGHT = 56;
+const MENU_ITEM_GAP = 16;
+const MENU_STEP = MENU_ITEM_HEIGHT + MENU_ITEM_GAP;
+
 export function SidebarDrawer() {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const getActiveItem = () => {
     const path = location.pathname;
-    if (path === "/admin/dashboard" || path === "/") return "dashboard";
-    if (path.startsWith("/admin/vehicules")) return "veiculos";
+    if (path === "/admin" || path === "/admin/dashboard" || path === "/")
+      return "dashboard";
+    if (path.startsWith("/admin/vehicles")) return "veiculos";
     if (path.startsWith("/admin/users")) return "usuarios";
-    if (path.startsWith("/admin/labels")) return "etiquetas";
+    if (path.startsWith("/admin/tags")) return "etiquetas";
     if (path.startsWith("/admin/payments")) return "cobranca";
     if (path.startsWith("/admin/system")) return "sistema";
     return "dashboard";
   };
-  
+
   const activeItem = getActiveItem();
-  
+  const activeIndex = Math.max(
+    menuItems.findIndex((item) => item.id === activeItem),
+    0,
+  );
+
   const handleNavigation = (itemId: string) => {
     switch (itemId) {
       case "dashboard":
         navigate("/admin/dashboard");
         break;
       case "veiculos":
-        navigate("/admin/vehicules");
+        navigate("/admin/vehicles");
         break;
       case "usuarios":
         navigate("/admin/users");
         break;
       case "etiquetas":
-        navigate("/admin/labels");
+        navigate("/admin/tags");
         break;
       case "cobranca":
         navigate("/admin/payments");
@@ -85,22 +94,31 @@ export function SidebarDrawer() {
         navigate("/admin/dashboard");
     }
   };
+
   return (
-    <aside className="flex min-h-screen w-[300px] flex-col bg-dark-blue px-4 py-6">
+    <aside className="flex min-h-screen w-75 flex-col bg-dark-blue px-4 py-6">
       <button
         type="button"
-        onClick={() => navigate("/dashboard")}
+        onClick={() => navigate("/admin/dashboard")}
         className="mb-8 flex justify-center hover:opacity-90"
       >
         <img
           src={impinjLogo}
           alt="Logo Impinj"
-          className="w-[180px] object-contain"
+          className="w-45 object-contain"
         />
       </button>
 
       <div className="flex flex-1 flex-col justify-between">
-        <nav className="flex flex-col gap-4">
+        <nav className="relative flex flex-col gap-4">
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 rounded-xl bg-blue shadow-black/15 shadow-lg transition-transform duration-300 ease-out"
+            style={{
+              height: MENU_ITEM_HEIGHT,
+              transform: `translateY(${activeIndex * MENU_STEP}px)`,
+            }}
+          />
           {menuItems.map((item) => (
             <ButtonSidebar
               key={item.id}

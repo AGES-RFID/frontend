@@ -1,8 +1,16 @@
+import { useEffect } from "react";
 import { useUsers } from "../hooks/useUsers";
 import { UserCard } from "./UserCard";
+import { toast } from "@/components/ui/toast";
 
 export function UserList() {
   const { data: users, status, error } = useUsers();
+
+  useEffect(() => {
+    if (status === "error") {
+      toast.error("Algo deu errado ao buscar os usuários.");
+    }
+  }, [status]);
 
   if (status === "pending") {
     return <div>Carregando...</div>;
@@ -10,7 +18,7 @@ export function UserList() {
   if (status === "error") {
     console.log(error);
     return (
-      <div className="text-red-800">Algo deu errado ao buscar os usuários</div>
+      <div className="text-gray">Não foi possível carregar os usuários.</div>
     );
   }
 

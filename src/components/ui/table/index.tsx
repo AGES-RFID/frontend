@@ -1,15 +1,20 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
 // Type definitions for the table component
-export type TableColumn<T = any> = {
+export type TableColumn<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = {
   key: keyof T;
   title: string;
-  render?: (value: any, item: T) => React.ReactNode;
+  render?: (value: unknown, item: T) => React.ReactNode;
   sortable?: boolean;
+  className?: string;
 };
 
-export type TableAction<T = any> = {
+export type TableAction<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = {
   key: string;
   label: string;
   icon?: React.ReactNode;
@@ -17,7 +22,7 @@ export type TableAction<T = any> = {
   className?: string;
 };
 
-type TableProps<T = any> = {
+type TableProps<T extends Record<string, unknown> = Record<string, unknown>> = {
   data: T[];
   columns: TableColumn<T>[];
   actions?: TableAction<T>[];
@@ -28,24 +33,59 @@ type TableProps<T = any> = {
   className?: string;
   searchable?: boolean;
   searchBarComponent?: React.ReactNode;
+  paginationPageSize?: number;
+  onRowClick?: (item: T) => void;
+  rowClassName?: string;
+};
+
+type SortDirection = "asc" | "desc";
+
+type SortConfig<T> = {
+  key: keyof T;
+  direction: SortDirection;
 };
 
 // Skeleton component for loading state
-const TableSkeleton = ({ columnsCount, actionsCount }: { columnsCount: number; actionsCount: number }) => {
+const TableSkeleton = ({
+  columnsCount,
+  actionsCount,
+}: {
+  columnsCount: number;
+  actionsCount: number;
+}) => {
+  const rowKeys = ["row-1", "row-2", "row-3", "row-4", "row-5"];
+  const columnKeys = Array.from(
+    { length: columnsCount },
+    (_, index) => `column-${index}`,
+  );
+  const actionKeys = Array.from(
+    { length: actionsCount },
+    (_, index) => `action-${index}`,
+  );
+
   return (
     <tbody>
-      {[...Array(5)].map((_, index) => (
-        <tr key={index} className={`border-b border-gray-200 ${index === 4 ? 'border-b-0' : ''}`}>
-          {[...Array(columnsCount)].map((_, colIndex) => (
-            <td key={colIndex} className="py-3 px-4 border-r border-light-gray last:border-r-0">
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+      {rowKeys.map((rowKey, rowIndex) => (
+        <tr
+          key={rowKey}
+          className={`border-gray-200 border-b ${rowIndex === rowKeys.length - 1 ? "border-b-0" : ""}`}
+        >
+          {columnKeys.map((columnKey) => (
+            <td
+              key={columnKey}
+              className="border-light-gray border-r px-4 py-3 last:border-r-0"
+            >
+              <div className="h-4 animate-pulse rounded bg-gray-200"></div>
             </td>
           ))}
           {actionsCount > 0 && (
-            <td className="py-3 px-4 border-r border-light-gray last:border-r-0">
+            <td className="border-light-gray border-r px-4 py-3 last:border-r-0">
               <div className="flex space-x-2">
-                {[...Array(actionsCount)].map((_, actionIndex) => (
-                  <div key={actionIndex} className="h-4 w-8 bg-gray-200 rounded animate-pulse"></div>
+                {actionKeys.map((actionKey) => (
+                  <div
+                    key={actionKey}
+                    className="h-4 w-8 animate-pulse rounded bg-gray-200"
+                  ></div>
                 ))}
               </div>
             </td>
@@ -59,22 +99,24 @@ const TableSkeleton = ({ columnsCount, actionsCount }: { columnsCount: number; a
 // Function to highlight search matches
 const highlightText = (text: string, searchTerm: string) => {
   if (!searchTerm) return text;
-  
-  const parts = text.split(new RegExp(`(${searchTerm})`, 'gi'));
+
+  const parts = text.split(new RegExp(`(${searchTerm})`, "gi"));
   return (
     <>
-      {parts.map((part, index) => 
+      {parts.map((part) =>
         part.toLowerCase() === searchTerm.toLowerCase() ? (
-          <span key={index} className="font-bold">{part}</span>
+          <span key={`${part}-${searchTerm}-match`} className="font-bold">
+            {part}
+          </span>
         ) : (
-          <span key={index}>{part}</span>
-        )
+          <span key={`${part}-${searchTerm}-plain`}>{part}</span>
+        ),
       )}
     </>
   );
 };
 
-export function Table<T extends Record<string, any>>({
+export function Table<T extends Record<string, unknown>>({
   data,
   columns,
   actions = [],
@@ -85,18 +127,23 @@ export function Table<T extends Record<string, any>>({
   className = "",
   searchable = true,
   searchBarComponent,
+  paginationPageSize,
+  onRowClick,
+  rowClassName = "",
 }: TableProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortConfig, setSortConfig] = useState<SortConfig<T> | null>(null);
 
   // Filter data based on search term across all fields
   const filteredData = useMemo(() => {
     if (!searchTerm || !searchable) return data;
-    
+
     const searchLower = searchTerm.toLowerCase();
-    
-    return data.filter(item => {
+
+    return data.filter((item) => {
       // Search through all column values
-      return columns.some(column => {
+      return columns.some((column) => {
         const value = item[column.key];
         if (value === null || value === undefined) return false;
         const stringValue = String(value);
@@ -105,23 +152,128 @@ export function Table<T extends Record<string, any>>({
     });
   }, [data, columns, searchTerm, searchable]);
 
+  const sortedData = useMemo(() => {
+    if (!sortConfig) return filteredData;
+
+    const sorted = [...filteredData];
+
+    sorted.sort((leftItem, rightItem) => {
+      const leftValue = leftItem[sortConfig.key];
+      const rightValue = rightItem[sortConfig.key];
+
+      if (leftValue === rightValue) {
+        return 0;
+      }
+
+      if (leftValue === null || leftValue === undefined) {
+        return sortConfig.direction === "asc" ? -1 : 1;
+      }
+
+      if (rightValue === null || rightValue === undefined) {
+        return sortConfig.direction === "asc" ? 1 : -1;
+      }
+
+      const leftDate = new Date(String(leftValue));
+      const rightDate = new Date(String(rightValue));
+      const leftIsDate = !Number.isNaN(leftDate.getTime());
+      const rightIsDate = !Number.isNaN(rightDate.getTime());
+
+      if (leftIsDate && rightIsDate) {
+        return sortConfig.direction === "asc"
+          ? leftDate.getTime() - rightDate.getTime()
+          : rightDate.getTime() - leftDate.getTime();
+      }
+
+      const leftNumber = Number(leftValue);
+      const rightNumber = Number(rightValue);
+      const leftIsNumber = Number.isFinite(leftNumber);
+      const rightIsNumber = Number.isFinite(rightNumber);
+
+      if (leftIsNumber && rightIsNumber) {
+        return sortConfig.direction === "asc"
+          ? leftNumber - rightNumber
+          : rightNumber - leftNumber;
+      }
+
+      const comparison = String(leftValue).localeCompare(
+        String(rightValue),
+        "pt-BR",
+        {
+          sensitivity: "base",
+          numeric: true,
+        },
+      );
+
+      return sortConfig.direction === "asc" ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [filteredData, sortConfig]);
+
+  const pageSize =
+    paginationPageSize && paginationPageSize > 0
+      ? paginationPageSize
+      : undefined;
+  const totalPages = pageSize
+    ? Math.max(1, Math.ceil(sortedData.length / pageSize))
+    : 1;
+
+  const paginatedData = useMemo(() => {
+    if (!pageSize) return sortedData;
+
+    const startIndex = (currentPage - 1) * pageSize;
+    return sortedData.slice(startIndex, startIndex + pageSize);
+  }, [currentPage, pageSize, sortedData]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   // Function to render cell content
   const renderCell = (column: TableColumn<T>, item: T) => {
     const value = item[column.key];
-    
+
     if (column.render) {
       return column.render(value, item);
     }
-    
+
     // Apply highlighting if search is active
     if (searchTerm && searchable) {
       return highlightText(String(value || ""), searchTerm);
     }
-    
-    return value || "-";
+
+    return value == null || value === "" ? "-" : String(value);
   };
 
   const totalColumns = columns.length + (actions.length > 0 ? 1 : 0);
+
+  const handleSort = (column: TableColumn<T>) => {
+    if (!column.sortable) return;
+
+    setSortConfig((currentSort) => {
+      if (currentSort?.key === column.key) {
+        return {
+          key: column.key,
+          direction: currentSort.direction === "asc" ? "desc" : "asc",
+        };
+      }
+
+      return {
+        key: column.key,
+        direction: "asc",
+      };
+    });
+  };
+
+  const getSortIndicator = (column: TableColumn<T>) => {
+    if (!sortConfig || sortConfig.key !== column.key) {
+      return "↕";
+    }
+
+    return sortConfig.direction === "asc" ? "↑" : "↓";
+  };
 
   return (
     <div className={className}>
@@ -130,66 +282,119 @@ export function Table<T extends Record<string, any>>({
         <div className="mb-6">
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Search
+                className="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-400"
+                size={20}
+              />
               <input
                 type="text"
                 placeholder={searchPlaceholder}
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:outline-none"
               />
             </div>
             {searchBarComponent && (
-              <div className="flex-shrink-0">
-                {searchBarComponent}
-              </div>
+              <div className="shrink-0">{searchBarComponent}</div>
             )}
           </div>
         </div>
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto border border-light-gray rounded-lg ">
+      <div className="overflow-x-auto rounded-lg border border-light-gray">
         <table className="min-w-full">
           <thead>
             <tr className="bg-dark-blue text-white">
               {columns.map((column) => (
-                <th key={String(column.key)} className="py-3 px-4 text-left font-medium border-r border-light-gray last:border-r-0">
-                  {column.title}
+                <th
+                  key={String(column.key)}
+                  className={`border-light-gray border-r px-4 py-3 text-left font-medium last:border-r-0 ${column.className || ""} ${column.sortable ? "cursor-pointer select-none" : ""}`}
+                  onClick={
+                    column.sortable ? () => handleSort(column) : undefined
+                  }
+                  scope="col"
+                >
+                  <span className="flex items-center gap-2">
+                    <span>{column.title}</span>
+                    {column.sortable ? (
+                      <span
+                        className="text-white/80 text-xs"
+                        aria-hidden="true"
+                      >
+                        {getSortIndicator(column)}
+                      </span>
+                    ) : null}
+                  </span>
                 </th>
               ))}
               {actions.length > 0 && (
-                <th className="py-3 px-4 text-left font-medium">Ações</th>
+                <th className="px-4 py-3 text-left font-medium">Ações</th>
               )}
             </tr>
           </thead>
-          
+
           {loading ? (
-            <TableSkeleton columnsCount={columns.length} actionsCount={actions.length} />
+            <TableSkeleton
+              columnsCount={columns.length}
+              actionsCount={actions.length}
+            />
           ) : (
             <tbody>
               {filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan={totalColumns} className="py-12 text-center text-gray">
+                  <td
+                    colSpan={totalColumns}
+                    className="py-12 text-center text-gray"
+                  >
                     {searchTerm ? searchNotFoundMessage : emptyMessage}
                   </td>
                 </tr>
               ) : (
-                filteredData.map((item, index) => (
-                  <tr key={index} className={`border-b border-light-gray ${index === filteredData.length - 1 ? 'border-b-0' : ''}`}>
+                paginatedData.map((item, index) => (
+                  <tr
+                    key={JSON.stringify(item)}
+                    className={`border-light-gray border-b ${index === paginatedData.length - 1 ? "border-b-0" : ""} ${onRowClick ? "cursor-pointer transition-colors hover:bg-light-gray/30" : ""} ${rowClassName}`}
+                    onClick={onRowClick ? () => onRowClick(item) : undefined}
+                    role={onRowClick ? "button" : undefined}
+                    tabIndex={onRowClick ? 0 : undefined}
+                    onKeyDown={
+                      onRowClick
+                        ? (event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              onRowClick(item);
+                            }
+                          }
+                        : undefined
+                    }
+                  >
                     {columns.map((column) => (
-                      <td key={String(column.key)} className="py-3 px-4 border-r border-light-gray last:border-r-0">
+                      <td
+                        key={String(column.key)}
+                        className={`border-light-gray border-r px-4 py-3 last:border-r-0 ${column.className || ""}`}
+                      >
                         {renderCell(column, item)}
                       </td>
                     ))}
                     {actions.length > 0 && (
-                      <td className="py-3 px-4">
+                      <td className="px-4 py-3">
                         <div className="flex space-x-2">
                           {actions.map((action) => (
                             <button
                               key={action.key}
-                              onClick={() => action.onClick(item)}
-                              className={action.className || "text-dark-blue hover:text-dark-blue transition-colors"}
+                              type="button"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                action.onClick(item);
+                              }}
+                              className={
+                                action.className ||
+                                "text-dark-blue transition-colors hover:text-dark-blue"
+                              }
                               title={action.label}
                             >
                               {action.icon || action.label}
@@ -205,6 +410,41 @@ export function Table<T extends Record<string, any>>({
           )}
         </table>
       </div>
+
+      {pageSize && filteredData.length > 0 && (
+        <div className="mt-4 flex items-center justify-between gap-4 text-gray text-sm">
+          <span>
+            Mostrando{" "}
+            {Math.min((currentPage - 1) * pageSize + 1, filteredData.length)}-
+            {Math.min(currentPage * pageSize, filteredData.length)} de{" "}
+            {filteredData.length}
+          </span>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="rounded-md border border-light-gray px-3 py-2 text-dark-gray transition-colors hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPage <= 1}
+            >
+              Anterior
+            </button>
+            <span className="min-w-20 text-center font-medium text-dark-gray">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              type="button"
+              className="rounded-md border border-light-gray px-3 py-2 text-dark-gray transition-colors hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() =>
+                setCurrentPage((page) => Math.min(totalPages, page + 1))
+              }
+              disabled={currentPage >= totalPages}
+            >
+              Próxima
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

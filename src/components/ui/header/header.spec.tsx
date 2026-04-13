@@ -98,5 +98,10 @@ describe("Header component", () => {
         screen.getByRole("button", { name: "Perfil" }).click(),
       ).not.toThrow();
     });
+
+    it("should update the active indicator on resize without throwing", () => {
+      renderWithRouter(<Header />);
+      expect(() => window.dispatchEvent(new Event("resize"))).not.toThrow();
+    });
   });
 });
