@@ -2,7 +2,9 @@ import { Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table } from "@/components/ui/table";
 import type { TableAction, TableColumn } from "@/components/ui/table/types";
+import { cn } from "@/utils/cn";
 import type { UserDto, UserListDto } from "../dtos";
+import { translateUseRole } from "../utils/translateUserRole";
 
 interface UsersTableProps {
   users: UserListDto;
@@ -26,7 +28,14 @@ export function UsersTable({
       key: "role",
       title: "Tipo",
       render: (col) => (
-        <span className={col === "admin" ? "bg-blue" : "bg-fuscia"}>{col}</span>
+        <span
+          className={cn(
+            "rounded-full px-2 py-0.5 font-medium text-white",
+            col === "admin" ? "bg-dark-blue" : "bg-green",
+          )}
+        >
+          {translateUseRole(col)}
+        </span>
       ),
     },
     { key: "name", title: "Nome" },

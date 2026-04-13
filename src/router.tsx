@@ -7,7 +7,7 @@ import { Labels } from "./routes/admin/labels.tsx";
 import { Payments } from "./routes/admin/payments.tsx";
 import { System } from "./routes/admin/system.tsx";
 import { Users } from "./routes/admin/users.tsx";
-import { Vehicules } from "./routes/admin/vehicules.tsx";
+import { Vehicles } from "./routes/admin/vehicles.tsx";
 import { Login } from "./routes/shared/login.tsx";
 import { EditUser } from "./routes/user/editUser.tsx";
 import { Home } from "./routes/user/home.tsx";
@@ -26,7 +26,7 @@ export function Router() {
         {/* Admin Routes */}
         <Route path="admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="vehicules" element={<Vehicules />} />
+          <Route path="vehicles" element={<Vehicles />} />
           <Route path="users" element={<Users />} />
           <Route path="users/new" element={<AdminNewUser />} />
           <Route path="labels" element={<Labels />} />

@@ -38,11 +38,13 @@ describe("UserService", () => {
           userId: "550e8400-e29b-41d4-a716-446655440000",
           name: "John Doe",
           email: "john.doe@example.com",
+          role: "admin",
         },
         {
           userId: "550e8400-e29b-41d4-a716-446655440001",
           name: "Jane Smith",
           email: "jane.smith@example.com",
+          role: "customer",
         },
       ];
 
@@ -92,6 +94,7 @@ describe("UserService", () => {
           userId: "550e8400-e29b-41d4-a716-446655440000",
           name: "John Doe",
           email: "john.doe@example.com",
+          role: "admin",
         }),
       );
 
@@ -118,6 +121,7 @@ describe("UserService", () => {
         userId: "550e8400-e29b-41d4-a716-446655440001",
         name: "Jane Smith",
         email: "jane.smith@example.com",
+        role: "customer",
       };
 
       fetchMock.mockImplementationOnce(async () => jsonResponse(createdUser));
@@ -171,6 +175,7 @@ describe("UserService", () => {
           userId,
           name: "John Doe",
           email: "john.doe@example.com",
+          role: "admin",
         }),
       );
 
@@ -193,6 +198,7 @@ describe("UserService", () => {
         userId,
         name: "John Doe",
         email: "john.doe@example.com",
+        role: "admin",
       };
 
       fetchMock.mockImplementationOnce(async () => jsonResponse(user));

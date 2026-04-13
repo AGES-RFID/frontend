@@ -51,7 +51,7 @@ export function SidebarDrawer() {
   const getActiveItem = () => {
     const path = location.pathname;
     if (path === "/admin/dashboard" || path === "/") return "dashboard";
-    if (path.startsWith("/admin/vehicules")) return "veiculos";
+    if (path.startsWith("/admin/vehicles")) return "veiculos";
     if (path.startsWith("/admin/users")) return "usuarios";
     if (path.startsWith("/admin/labels")) return "etiquetas";
     if (path.startsWith("/admin/payments")) return "cobranca";
@@ -67,7 +67,7 @@ export function SidebarDrawer() {
         navigate("/admin/dashboard");
         break;
       case "veiculos":
-        navigate("/admin/vehicules");
+        navigate("/admin/vehicles");
         break;
       case "usuarios":
         navigate("/admin/users");

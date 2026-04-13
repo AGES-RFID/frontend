@@ -1,5 +1,5 @@
 import { Edit, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Modal } from "../../components/ui/modal";
 import {
@@ -106,7 +106,7 @@ const fetchVehiclesFromBackend = (): Vehicle[] => {
   ];
 };
 
-export function Vehicules() {
+export function Vehicles() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -117,7 +117,7 @@ export function Vehicules() {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
 
   // Function to load vehicles from backend
-  const loadVehicles = () => {
+  const loadVehicles = useCallback(() => {
     setLoading(true);
     try {
       // Simulate backend call - replace with actual API call
@@ -128,7 +128,7 @@ export function Vehicules() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Handle edit action
   const handleEdit = (vehicle: Vehicle) => {
