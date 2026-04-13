@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
-import { SidebarDrawer } from "../../components/ui/sidebar/sidebarDrawer";
-import {
-  Table,
-  type TableColumn,
-  type TableAction,
-} from "../../components/ui/table";
+import { Edit, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Modal } from "../../components/ui/modal";
-import { Edit, Trash2 } from "lucide-react";
+import {
+  Table,
+  type TableAction,
+  type TableColumn,
+} from "../../components/ui/table";
 
 // Type definitions for vehicle data from backend
 type Vehicle = {
@@ -202,94 +201,87 @@ export function Vehicules() {
     loadVehicles();
   }, [loadVehicles]);
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <SidebarDrawer />
+    <main>
+      <div className="p-8">
+        <h1 className="mb-4 font-bold text-3xl text-dark-gray">Veículos</h1>
+        <p className="mb-6 text-gray">Gerenciamento de veículos do sistema</p>
 
-      {/* Main Content */}
-      <main className="flex-1">
-        <div className="p-8">
-          <h1 className="mb-4 font-bold text-3xl text-dark-gray">Veículos</h1>
-          <p className="mb-6 text-gray">Gerenciamento de veículos do sistema</p>
-
-          <Table
-            data={vehicles}
-            columns={columns}
-            actions={actions}
-            loading={loading}
-            searchPlaceholder="Pesquisar por placa, proprietário ou etiqueta RFID"
-            emptyMessage="Nenhum veículo cadastrado ainda."
-            searchNotFoundMessage="Nenhum veículo encontrado para esta busca."
-            searchBarComponent={
-              <Button onClick={handleCreateVehicle} variant="primary" size="md">
-                Criar novo veículo
+        <Table
+          data={vehicles}
+          columns={columns}
+          actions={actions}
+          loading={loading}
+          searchPlaceholder="Pesquisar por placa, proprietário ou etiqueta RFID"
+          emptyMessage="Nenhum veículo cadastrado ainda."
+          searchNotFoundMessage="Nenhum veículo encontrado para esta busca."
+          searchBarComponent={
+            <Button onClick={handleCreateVehicle} variant="primary" size="md">
+              Criar novo veículo
+            </Button>
+          }
+        />
+        {/* Create Vehicle Modal */}
+        <Modal
+          isOpen={isCreateModalOpen}
+          onClose={closeCreateModal}
+          title="Criar Novo Veículo"
+        >
+          <div className="space-y-4">
+            <p>Formulário para criar um novo veículo será implementado aqui.</p>
+            <div className="flex justify-end space-x-2">
+              <Button onClick={closeCreateModal} variant="secondary">
+                Cancelar
               </Button>
-            }
-          />
-          {/* Create Vehicle Modal */}
-          <Modal
-            isOpen={isCreateModalOpen}
-            onClose={closeCreateModal}
-            title="Criar Novo Veículo"
-          >
-            <div className="space-y-4">
-              <p>
-                Formulário para criar um novo veículo será implementado aqui.
-              </p>
-              <div className="flex justify-end space-x-2">
-                <Button onClick={closeCreateModal} variant="secondary">
-                  Cancelar
-                </Button>
-                <Button onClick={closeCreateModal}>Criar</Button>
-              </div>
+              <Button onClick={closeCreateModal}>Criar</Button>
             </div>
-          </Modal>
+          </div>
+        </Modal>
 
-          {/* Edit Vehicle Modal */}
-          <Modal
-            isOpen={isEditModalOpen}
-            onClose={closeEditModal}
-            title="Editar Veículo"
-          >
-            <div className="space-y-4">
-              <p>Editando veículo: {selectedVehicle?.placa}</p>
-              <div className="flex justify-end space-x-2">
-                <Button onClick={closeEditModal} variant="secondary">
-                  Cancelar
-                </Button>
-                <Button onClick={closeEditModal}>Salvar</Button>
-              </div>
+        {/* Edit Vehicle Modal */}
+        <Modal
+          isOpen={isEditModalOpen}
+          onClose={closeEditModal}
+          title="Editar Veículo"
+        >
+          <div className="space-y-4">
+            <p>Editando veículo: {selectedVehicle?.placa}</p>
+            <div className="flex justify-end space-x-2">
+              <Button onClick={closeEditModal} variant="secondary">
+                Cancelar
+              </Button>
+              <Button onClick={closeEditModal}>Salvar</Button>
             </div>
-          </Modal>
+          </div>
+        </Modal>
 
-          {/* Delete Vehicle Modal */}
-          <Modal
-            isOpen={isDeleteModalOpen}
-            onClose={closeDeleteModal}
-            title="Excluir Veículo"
-          >
-            <div className="space-y-4">
-              <p>
-                Tem certeza que deseja excluir o veículo "
-                {selectedVehicle?.placa}"?
-              </p>
-              <p className="text-neutral-500 text-sm">
-                Esta ação não pode ser desfeita.
-              </p>
-              <div className="flex justify-end space-x-2">
-                <Button onClick={closeDeleteModal} variant="secondary">
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={closeDeleteModal}
-                  className="bg-red hover:bg-red-75"
-                >
-                  Excluir
-                </Button>
-              </div>
+        {/* Delete Vehicle Modal */}
+        <Modal
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+          title="Excluir Veículo"
+        >
+          <div className="space-y-4">
+            <p>
+              Tem certeza que deseja excluir o veículo "{selectedVehicle?.placa}
+              "?
+            </p>
+            <p className="text-neutral-500 text-sm">
+              Esta ação não pode ser desfeita.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <Button onClick={closeDeleteModal} variant="secondary">
+                Cancelar
+              </Button>
+              <Button
+                onClick={closeDeleteModal}
+                className="bg-red hover:bg-red-75"
+              >
+                Excluir
+              </Button>
             </div>
-          </Modal>
-        </div>
-      </main>
-    </div>
+          </div>
+        </Modal>
+      </div>
+    </main>
   );
 }

@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { SidebarDrawer } from "../../components/ui/sidebar/sidebarDrawer";
-import type { User } from "@/features/users/model/user";
 import { CreateUserModal } from "@/features/users/components/CreateUserModal";
-import { EditUserModal } from "@/features/users/components/EditUserModal";
 import { DeleteUserModal } from "@/features/users/components/DeleteUserModal";
+import { EditUserModal } from "@/features/users/components/EditUserModal";
 import { UsersTable } from "@/features/users/components/UsersTable";
+import type { User } from "@/features/users/model/user";
 
 // Mock function to simulate backend data response
 const fetchUsersFromBackend = (): User[] => {
@@ -145,45 +144,37 @@ export function Users() {
   }, [loadUsers]);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <SidebarDrawer />
+    <main>
+      <div className="p-8">
+        <h1 className="mb-4 font-bold text-3xl text-dark-gray">Usuários</h1>
+        <p className="mb-6 text-gray">Gerenciamento de usuários do sistema</p>
 
-      {/* Main Content */}
-      <main className="flex-1">
-        <div className="p-8">
-          <h1 className="mb-4 font-bold text-3xl text-dark-gray">Usuários</h1>
-          <p className="mb-6 text-gray">Gerenciamento de usuários do sistema</p>
-
-          <UsersTable
-            users={users}
-            loading={loading}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onCreateUser={handleCreateUser}
-            onNavigateToRegister={handleNavigateToRegister}
-          />
-        </div>
-
-        {/* Create User Modal */}
-        <CreateUserModal
-          isOpen={isCreateModalOpen}
-          onClose={closeCreateModal}
+        <UsersTable
+          users={users}
+          loading={loading}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onCreateUser={handleCreateUser}
+          onNavigateToRegister={handleNavigateToRegister}
         />
+      </div>
 
-        {/* Edit User Modal */}
-        <EditUserModal
-          isOpen={isEditModalOpen}
-          onClose={closeEditModal}
-          selectedUser={selectedUser}
-        />
+      {/* Create User Modal */}
+      <CreateUserModal isOpen={isCreateModalOpen} onClose={closeCreateModal} />
 
-        {/* Delete User Modal */}
-        <DeleteUserModal
-          isOpen={isDeleteModalOpen}
-          onClose={closeDeleteModal}
-          selectedUser={selectedUser}
-        />
-      </main>
-    </div>
+      {/* Edit User Modal */}
+      <EditUserModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        selectedUser={selectedUser}
+      />
+
+      {/* Delete User Modal */}
+      <DeleteUserModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        selectedUser={selectedUser}
+      />
+    </main>
   );
 }

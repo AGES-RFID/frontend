@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { SidebarDrawer } from "../../components/ui/sidebar/sidebarDrawer";
-import { Button } from "../../components/ui/button";
 import { UserForm } from "@/features/users/components/UserForm";
+import { Button } from "../../components/ui/button";
 
 export function AdminNewUser() {
   const navigate = useNavigate();
@@ -35,33 +34,28 @@ export function AdminNewUser() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <SidebarDrawer />
+    <main className="flex-1 px-8">
+      <div className="py-8">
+        <h1 className="mb-8 font-bold text-3xl text-dark-gray">
+          Cadastrar usuario
+        </h1>
 
-      {/* Main Content */}
-      <main className="flex-1 px-8">
-        <div className="py-8">
-          <h1 className="mb-8 font-bold text-3xl text-dark-gray">
-            Cadastrar usuario
-          </h1>
+        {/* Form Grid - 4x2 layout */}
+        <div className="flex flex-col items-center justify-center">
+          <UserForm onSubmit={handleSubmit} buttonText="Criar conta" />
 
-          {/* Form Grid - 4x2 layout */}
-          <div className="flex flex-col items-center justify-center">
-            <UserForm onSubmit={handleSubmit} buttonText="Criar conta" />
+          {/* Buttons */}
+          <div className="mt-8 flex gap-4">
+            <Button onClick={handleGoBack} variant="borderless" size="md">
+              Voltar
+            </Button>
 
-            {/* Buttons */}
-            <div className="mt-8 flex gap-4">
-              <Button onClick={handleGoBack} variant="borderless" size="md">
-                Voltar
-              </Button>
-
-              <Button onClick={handleSubmit} variant="primary" size="md">
-                Criar conta
-              </Button>
-            </div>
+            <Button onClick={handleSubmit} variant="primary" size="md">
+              Criar conta
+            </Button>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

@@ -1,12 +1,6 @@
-import { SidebarDrawer } from "../../components/ui/sidebar/sidebarDrawer";
-
 export function Dashboard() {
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <SidebarDrawer />
-
-      {/* Main Content */}
-      <main className="flex-1">
+    <main>
         <div className="p-8">
           <h1 className="mb-4 font-bold text-3xl text-dark-gray">Dashboard</h1>
           <p className="mb-6 text-gray">
@@ -40,7 +34,6 @@ export function Dashboard() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+    </main>
   );
 }

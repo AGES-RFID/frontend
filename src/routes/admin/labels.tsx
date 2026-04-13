@@ -1,12 +1,6 @@
-import { SidebarDrawer } from "../../components/ui/sidebar/sidebarDrawer";
-
 export function Labels() {
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <SidebarDrawer />
-
-      {/* Main Content */}
-      <main className="flex-1">
+    <main>
         <div className="p-8">
           <div className="mb-6 flex items-center justify-between">
             <div>
@@ -17,7 +11,6 @@ export function Labels() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+    </main>
   );
 }
