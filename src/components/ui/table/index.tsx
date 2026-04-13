@@ -1,120 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { HighlightText } from "./HighlightText";
+import { TableSkeleton } from "./TableSkeleton";
+import { compareTableValues, formatTableCellValue } from "./utils";
+import type { SortConfig, TableColumn, TableProps } from "./types";
 
-// Type definitions for the table component
-export type TableColumn<
-  T extends Record<string, unknown> = Record<string, unknown>,
-> = {
-  key: keyof T;
-  title: string;
-  render?: (value: unknown, item: T) => React.ReactNode;
-  sortable?: boolean;
-  className?: string;
-};
-
-export type TableAction<
-  T extends Record<string, unknown> = Record<string, unknown>,
-> = {
-  key: string;
-  label: string;
-  icon?: React.ReactNode;
-  onClick: (item: T) => void;
-  className?: string;
-};
-
-type TableProps<T extends Record<string, unknown> = Record<string, unknown>> = {
-  data: T[];
-  columns: TableColumn<T>[];
-  actions?: TableAction<T>[];
-  loading?: boolean;
-  searchPlaceholder?: string;
-  emptyMessage?: string;
-  searchNotFoundMessage?: string;
-  className?: string;
-  searchable?: boolean;
-  searchBarComponent?: React.ReactNode;
-  paginationPageSize?: number;
-  onRowClick?: (item: T) => void;
-  rowClassName?: string;
-};
-
-type SortDirection = "asc" | "desc";
-
-type SortConfig<T> = {
-  key: keyof T;
-  direction: SortDirection;
-};
-
-// Skeleton component for loading state
-const TableSkeleton = ({
-  columnsCount,
-  actionsCount,
-}: {
-  columnsCount: number;
-  actionsCount: number;
-}) => {
-  const rowKeys = ["row-1", "row-2", "row-3", "row-4", "row-5"];
-  const columnKeys = Array.from(
-    { length: columnsCount },
-    (_, index) => `column-${index}`,
-  );
-  const actionKeys = Array.from(
-    { length: actionsCount },
-    (_, index) => `action-${index}`,
-  );
-
-  return (
-    <tbody>
-      {rowKeys.map((rowKey, rowIndex) => (
-        <tr
-          key={rowKey}
-          className={`border-gray-200 border-b ${rowIndex === rowKeys.length - 1 ? "border-b-0" : ""}`}
-        >
-          {columnKeys.map((columnKey) => (
-            <td
-              key={columnKey}
-              className="border-light-gray border-r px-4 py-3 last:border-r-0"
-            >
-              <div className="h-4 animate-pulse rounded bg-gray-200"></div>
-            </td>
-          ))}
-          {actionsCount > 0 && (
-            <td className="border-light-gray border-r px-4 py-3 last:border-r-0">
-              <div className="flex space-x-2">
-                {actionKeys.map((actionKey) => (
-                  <div
-                    key={actionKey}
-                    className="h-4 w-8 animate-pulse rounded bg-gray-200"
-                  ></div>
-                ))}
-              </div>
-            </td>
-          )}
-        </tr>
-      ))}
-    </tbody>
-  );
-};
-
-// Function to highlight search matches
-const highlightText = (text: string, searchTerm: string) => {
-  if (!searchTerm) return text;
-
-  const parts = text.split(new RegExp(`(${searchTerm})`, "gi"));
-  return (
-    <>
-      {parts.map((part) =>
-        part.toLowerCase() === searchTerm.toLowerCase() ? (
-          <span key={`${part}-${searchTerm}-match`} className="font-bold">
-            {part}
-          </span>
-        ) : (
-          <span key={`${part}-${searchTerm}-plain`}>{part}</span>
-        ),
-      )}
-    </>
-  );
-};
+export type { TableAction, TableColumn, TableProps, SortConfig } from "./types";
 
 export function Table<T extends Record<string, unknown>>({
   data,
@@ -135,76 +26,29 @@ export function Table<T extends Record<string, unknown>>({
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState<SortConfig<T> | null>(null);
 
-  // Filter data based on search term across all fields
   const filteredData = useMemo(() => {
     if (!searchTerm || !searchable) return data;
 
     const searchLower = searchTerm.toLowerCase();
 
-    return data.filter((item) => {
-      // Search through all column values
-      return columns.some((column) => {
+    return data.filter((item) =>
+      columns.some((column) => {
         const value = item[column.key];
         if (value === null || value === undefined) return false;
-        const stringValue = String(value);
-        return stringValue.toLowerCase().includes(searchLower);
-      });
-    });
+        return String(value).toLowerCase().includes(searchLower);
+      }),
+    );
   }, [data, columns, searchTerm, searchable]);
 
   const sortedData = useMemo(() => {
     if (!sortConfig) return filteredData;
 
     const sorted = [...filteredData];
-
     sorted.sort((leftItem, rightItem) => {
       const leftValue = leftItem[sortConfig.key];
       const rightValue = rightItem[sortConfig.key];
 
-      if (leftValue === rightValue) {
-        return 0;
-      }
-
-      if (leftValue === null || leftValue === undefined) {
-        return sortConfig.direction === "asc" ? -1 : 1;
-      }
-
-      if (rightValue === null || rightValue === undefined) {
-        return sortConfig.direction === "asc" ? 1 : -1;
-      }
-
-      const leftDate = new Date(String(leftValue));
-      const rightDate = new Date(String(rightValue));
-      const leftIsDate = !Number.isNaN(leftDate.getTime());
-      const rightIsDate = !Number.isNaN(rightDate.getTime());
-
-      if (leftIsDate && rightIsDate) {
-        return sortConfig.direction === "asc"
-          ? leftDate.getTime() - rightDate.getTime()
-          : rightDate.getTime() - leftDate.getTime();
-      }
-
-      const leftNumber = Number(leftValue);
-      const rightNumber = Number(rightValue);
-      const leftIsNumber = Number.isFinite(leftNumber);
-      const rightIsNumber = Number.isFinite(rightNumber);
-
-      if (leftIsNumber && rightIsNumber) {
-        return sortConfig.direction === "asc"
-          ? leftNumber - rightNumber
-          : rightNumber - leftNumber;
-      }
-
-      const comparison = String(leftValue).localeCompare(
-        String(rightValue),
-        "pt-BR",
-        {
-          sensitivity: "base",
-          numeric: true,
-        },
-      );
-
-      return sortConfig.direction === "asc" ? comparison : -comparison;
+      return compareTableValues(leftValue, rightValue, sortConfig.direction);
     });
 
     return sorted;
@@ -231,7 +75,6 @@ export function Table<T extends Record<string, unknown>>({
     }
   }, [currentPage, totalPages]);
 
-  // Function to render cell content
   const renderCell = (column: TableColumn<T>, item: T) => {
     const value = item[column.key];
 
@@ -239,12 +82,11 @@ export function Table<T extends Record<string, unknown>>({
       return column.render(value, item);
     }
 
-    // Apply highlighting if search is active
     if (searchTerm && searchable) {
-      return highlightText(String(value || ""), searchTerm);
+      return <HighlightText text={formatTableCellValue(value)} searchTerm={searchTerm} />;
     }
 
-    return value == null || value === "" ? "-" : String(value);
+    return formatTableCellValue(value);
   };
 
   const totalColumns = columns.length + (actions.length > 0 ? 1 : 0);
@@ -277,7 +119,6 @@ export function Table<T extends Record<string, unknown>>({
 
   return (
     <div className={className}>
-      {/* Search Bar */}
       {searchable && (
         <div className="mb-6">
           <div className="flex items-center gap-4">
@@ -290,8 +131,8 @@ export function Table<T extends Record<string, unknown>>({
                 type="text"
                 placeholder={searchPlaceholder}
                 value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
                   setCurrentPage(1);
                 }}
                 className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:outline-none"
@@ -304,7 +145,6 @@ export function Table<T extends Record<string, unknown>>({
         </div>
       )}
 
-      {/* Table */}
       <div className="overflow-x-auto rounded-lg border border-light-gray">
         <table className="min-w-full">
           <thead>
@@ -313,18 +153,13 @@ export function Table<T extends Record<string, unknown>>({
                 <th
                   key={String(column.key)}
                   className={`border-light-gray border-r px-4 py-3 text-left font-medium last:border-r-0 ${column.className || ""} ${column.sortable ? "cursor-pointer select-none" : ""}`}
-                  onClick={
-                    column.sortable ? () => handleSort(column) : undefined
-                  }
+                  onClick={column.sortable ? () => handleSort(column) : undefined}
                   scope="col"
                 >
                   <span className="flex items-center gap-2">
                     <span>{column.title}</span>
                     {column.sortable ? (
-                      <span
-                        className="text-white/80 text-xs"
-                        aria-hidden="true"
-                      >
+                      <span className="text-white/80 text-xs" aria-hidden="true">
                         {getSortIndicator(column)}
                       </span>
                     ) : null}
@@ -338,18 +173,12 @@ export function Table<T extends Record<string, unknown>>({
           </thead>
 
           {loading ? (
-            <TableSkeleton
-              columnsCount={columns.length}
-              actionsCount={actions.length}
-            />
+            <TableSkeleton columnsCount={columns.length} actionsCount={actions.length} />
           ) : (
             <tbody>
               {filteredData.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={totalColumns}
-                    className="py-12 text-center text-gray"
-                  >
+                  <td colSpan={totalColumns} className="py-12 text-center text-gray">
                     {searchTerm ? searchNotFoundMessage : emptyMessage}
                   </td>
                 </tr>
@@ -414,10 +243,8 @@ export function Table<T extends Record<string, unknown>>({
       {pageSize && filteredData.length > 0 && (
         <div className="mt-4 flex items-center justify-between gap-4 text-gray text-sm">
           <span>
-            Mostrando{" "}
-            {Math.min((currentPage - 1) * pageSize + 1, filteredData.length)}-
-            {Math.min(currentPage * pageSize, filteredData.length)} de{" "}
-            {filteredData.length}
+            Mostrando {Math.min((currentPage - 1) * pageSize + 1, filteredData.length)}-
+            {Math.min(currentPage * pageSize, filteredData.length)} de {filteredData.length}
           </span>
 
           <div className="flex items-center gap-2">
