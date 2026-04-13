@@ -83,7 +83,12 @@ export function Table<T extends Record<string, unknown>>({
     }
 
     if (searchTerm && searchable) {
-      return <HighlightText text={formatTableCellValue(value)} searchTerm={searchTerm} />;
+      return (
+        <HighlightText
+          text={formatTableCellValue(value)}
+          searchTerm={searchTerm}
+        />
+      );
     }
 
     return formatTableCellValue(value);
@@ -153,13 +158,18 @@ export function Table<T extends Record<string, unknown>>({
                 <th
                   key={String(column.key)}
                   className={`border-light-gray border-r px-4 py-3 text-left font-medium last:border-r-0 ${column.className || ""} ${column.sortable ? "cursor-pointer select-none" : ""}`}
-                  onClick={column.sortable ? () => handleSort(column) : undefined}
+                  onClick={
+                    column.sortable ? () => handleSort(column) : undefined
+                  }
                   scope="col"
                 >
                   <span className="flex items-center gap-2">
                     <span>{column.title}</span>
                     {column.sortable ? (
-                      <span className="text-white/80 text-xs" aria-hidden="true">
+                      <span
+                        className="text-white/80 text-xs"
+                        aria-hidden="true"
+                      >
                         {getSortIndicator(column)}
                       </span>
                     ) : null}
@@ -173,12 +183,18 @@ export function Table<T extends Record<string, unknown>>({
           </thead>
 
           {loading ? (
-            <TableSkeleton columnsCount={columns.length} actionsCount={actions.length} />
+            <TableSkeleton
+              columnsCount={columns.length}
+              actionsCount={actions.length}
+            />
           ) : (
             <tbody>
               {filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan={totalColumns} className="py-12 text-center text-gray">
+                  <td
+                    colSpan={totalColumns}
+                    className="py-12 text-center text-gray"
+                  >
                     {searchTerm ? searchNotFoundMessage : emptyMessage}
                   </td>
                 </tr>
@@ -243,8 +259,10 @@ export function Table<T extends Record<string, unknown>>({
       {pageSize && filteredData.length > 0 && (
         <div className="mt-4 flex items-center justify-between gap-4 text-gray text-sm">
           <span>
-            Mostrando {Math.min((currentPage - 1) * pageSize + 1, filteredData.length)}-
-            {Math.min(currentPage * pageSize, filteredData.length)} de {filteredData.length}
+            Mostrando{" "}
+            {Math.min((currentPage - 1) * pageSize + 1, filteredData.length)}-
+            {Math.min(currentPage * pageSize, filteredData.length)} de{" "}
+            {filteredData.length}
           </span>
 
           <div className="flex items-center gap-2">

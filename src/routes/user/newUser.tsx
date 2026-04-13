@@ -53,7 +53,7 @@ export function NewUser() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Header onAuthAction={handleAuthAction} />
 
       <main className="mx-auto max-w-6xl px-6 py-12">

@@ -25,12 +25,14 @@ export const HeaderButton = forwardRef<HTMLButtonElement, HeaderButtonProps>(
         className={cn(
           "inline-flex items-center gap-2.5 px-4.5 py-2.5",
           "font-['Roboto'] font-bold text-[18px] leading-none",
-          "text-white",
+          "border-2 border-transparent bg-transparent text-white",
+          isActive && "border-white",
           "transition-all duration-300 ease-out",
           "rounded-[100px]",
           "hover:bg-white/15",
           "active:scale-95 active:bg-white/25",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60",
+          "group",
           "cursor-pointer",
           className,
         )}

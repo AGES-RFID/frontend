@@ -43,10 +43,14 @@ export function compareTableValues(
       : rightNumber - leftNumber;
   }
 
-  const comparison = String(leftValue).localeCompare(String(rightValue), "pt-BR", {
-    sensitivity: "base",
-    numeric: true,
-  });
+  const comparison = String(leftValue).localeCompare(
+    String(rightValue),
+    "pt-BR",
+    {
+      sensitivity: "base",
+      numeric: true,
+    },
+  );
 
   return direction === "asc" ? comparison : -comparison;
 }

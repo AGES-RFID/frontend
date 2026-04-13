@@ -11,7 +11,10 @@ export function Payment() {
   return (
     <>
       <Header onAuthAction={handleAuthAction} />
-      <main className="p-4"></main>
+      <main className="p-6">
+        <h1 className="mb-4 font-bold text-3xl text-dark-blue">Pagamentos</h1>
+        <p className="text-gray text-sm">Seção em construção.</p>
+      </main>
     </>
   );
 }

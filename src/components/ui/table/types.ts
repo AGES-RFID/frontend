@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
-export type TableColumn<T extends Record<string, unknown> = Record<string, unknown>> = {
+export type TableColumn<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = {
   key: keyof T;
   title: string;
   render?: (value: unknown, item: T) => ReactNode;
@@ -8,7 +10,9 @@ export type TableColumn<T extends Record<string, unknown> = Record<string, unkno
   className?: string;
 };
 
-export type TableAction<T extends Record<string, unknown> = Record<string, unknown>> = {
+export type TableAction<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = {
   key: string;
   label: string;
   icon?: ReactNode;
@@ -16,7 +20,9 @@ export type TableAction<T extends Record<string, unknown> = Record<string, unkno
   className?: string;
 };
 
-export type TableProps<T extends Record<string, unknown> = Record<string, unknown>> = {
+export type TableProps<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = {
   data: T[];
   columns: TableColumn<T>[];
   actions?: TableAction<T>[];

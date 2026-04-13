@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Edit, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
 import {
   Table,
   type TableAction,
   type TableColumn,
-} from "../../components/ui/table";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Modal } from "../../components/ui/modal";
+} from "@/components/ui/table";
+import { toast } from "@/components/ui/toast";
+import { api } from "@/lib/api";
 
 type Vehicle = {
   id: string;
@@ -20,10 +23,17 @@ type Vehicle = {
 };
 
 type VehicleFormValues = {
+  userId: string;
   plate: string;
   brand: string;
   model: string;
   owner: string;
+};
+
+type VehicleOwner = {
+  userId: string;
+  name: string;
+  email: string;
 };
 
 const mockVehicles: Vehicle[] = [
@@ -120,11 +130,30 @@ const mockVehicles: Vehicle[] = [
 ];
 
 const emptyForm: VehicleFormValues = {
+  userId: "",
   plate: "",
   brand: "",
   model: "",
   owner: "",
 };
+
+const mockOwners: VehicleOwner[] = [
+  {
+    userId: "11111111-1111-1111-1111-111111111111",
+    name: "João Silva",
+    email: "joao.silva@exemplo.com",
+  },
+  {
+    userId: "22222222-2222-2222-2222-222222222222",
+    name: "Maria Santos",
+    email: "maria.santos@exemplo.com",
+  },
+  {
+    userId: "33333333-3333-3333-3333-333333333333",
+    name: "Pedro Oliveira",
+    email: "pedro.oliveira@exemplo.com",
+  },
+];
 
 const datetimeFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
@@ -142,6 +171,15 @@ function normalizePlate(value: string) {
   return value.toUpperCase().slice(0, 7);
 }
 
+function buildCreatePayload(formData: VehicleFormValues) {
+  return {
+    userId: formData.userId,
+    plate: normalizePlate(formData.plate),
+    brand: formData.brand.trim(),
+    model: formData.model.trim(),
+  };
+}
+
 export function Vehicles() {
   const [vehicles, setVehicles] = useState<Vehicle[]>(mockVehicles);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -150,6 +188,20 @@ export function Vehicles() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [form, setForm] = useState<VehicleFormValues>(emptyForm);
+
+  const createVehicleMutation = useMutation({
+    mutationFn: async (formData: VehicleFormValues) =>
+      api.post("vehicles", { json: buildCreatePayload(formData) }).json(),
+    onSuccess: () => {
+      toast.success("Veículo criado com sucesso.");
+      closeCreateModal();
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao criar veículo.",
+      );
+    },
+  });
 
   const openCreateModal = () => {
     setSelectedVehicle(null);
@@ -165,6 +217,7 @@ export function Vehicles() {
   const openEditModal = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
     setForm({
+      userId: "",
       plate: vehicle.plate,
       brand: vehicle.brand,
       model: vehicle.model,
@@ -215,20 +268,27 @@ export function Vehicles() {
 
   const handleCreateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    createVehicleMutation.mutate(form, {
+      onSuccess: () => {
+        const ownerName =
+          mockOwners.find((owner) => owner.userId === form.userId)?.name ??
+          form.owner;
+        const now = new Date().toISOString();
 
-    const now = new Date().toISOString();
-    const newVehicle: Vehicle = {
-      id: crypto.randomUUID(),
-      plate: form.plate,
-      brand: form.brand,
-      model: form.model,
-      owner: form.owner,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    setVehicles((currentVehicles) => [newVehicle, ...currentVehicles]);
-    closeCreateModal();
+        setVehicles((currentVehicles) => [
+          {
+            id: crypto.randomUUID(),
+            plate: normalizePlate(form.plate),
+            brand: form.brand,
+            model: form.model,
+            owner: ownerName,
+            createdAt: now,
+            updatedAt: now,
+          },
+          ...currentVehicles,
+        ]);
+      },
+    });
   };
 
   const handleEditSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -416,6 +476,31 @@ export function Vehicles() {
         title="Criar Veículo"
       >
         <form className="space-y-4" onSubmit={handleCreateSubmit}>
+          <label className="flex flex-col gap-1 font-medium text-dark-gray text-sm">
+            Proprietário
+            <select
+              className="h-10 rounded-md border border-light-gray bg-white px-4 text-dark-gray outline-none focus:border-dark-gray"
+              value={form.userId}
+              onChange={(event) =>
+                setForm((currentForm) => ({
+                  ...currentForm,
+                  userId: event.target.value,
+                  owner:
+                    mockOwners.find(
+                      (owner) => owner.userId === event.target.value,
+                    )?.name ?? currentForm.owner,
+                }))
+              }
+              required
+            >
+              <option value="">Selecione um proprietário</option>
+              {mockOwners.map((owner) => (
+                <option key={owner.userId} value={owner.userId}>
+                  {owner.name} - {owner.email}
+                </option>
+              ))}
+            </select>
+          </label>
           <Input
             label="Placa"
             value={form.plate}
