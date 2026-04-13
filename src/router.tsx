@@ -35,6 +35,7 @@ export function Router() {
           <Route index element={<Home />} />
           <Route path="/payments" element={<Payment />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/user/profile" element={<Profile />} />
         </Route>
 
         <Route path="/user/new" element={<NewUser />} />
