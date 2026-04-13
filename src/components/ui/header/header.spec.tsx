@@ -52,6 +52,7 @@ describe("Header component", () => {
       expect(
         screen.getByRole("button", { name: "Perfil" }),
       ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Admin" })).toBeInTheDocument();
     });
 
     it("should render 'Entrar/Cadastrar' when isLogged is false", () => {
@@ -97,6 +98,18 @@ describe("Header component", () => {
       expect(() =>
         screen.getByRole("button", { name: "Perfil" }).click(),
       ).not.toThrow();
+    });
+
+    it("should trigger Admin button click without throwing", () => {
+      renderWithRouter(<Header />);
+      expect(() =>
+        screen.getByRole("button", { name: "Admin" }).click(),
+      ).not.toThrow();
+    });
+
+    it("should update the active indicator on resize without throwing", () => {
+      renderWithRouter(<Header />);
+      expect(() => window.dispatchEvent(new Event("resize"))).not.toThrow();
     });
   });
 });

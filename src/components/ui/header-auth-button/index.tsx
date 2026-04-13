@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
 import { LogOutIcon } from "lucide-react";
 
@@ -20,28 +19,25 @@ export function HeaderAuthButton({
   const label = isLogged ? "Sair" : "Entrar/Cadastrar";
 
   return (
-    <Button
+    <button
       type={type}
       onClick={action}
       disabled={disabled}
-      size="md"
-      icon={isLogged ? "right" : "left"}
       aria-label={label}
       data-testid="header-auth-button"
       className={cn(
-        "inline-flex items-center gap-2",
-        "rounded-none",
-        "bg-dark-blue text-white",
-        "font-['Roboto'] font-bold",
+        "inline-flex items-center gap-3.5 whitespace-nowrap px-7 py-3.5",
+        "rounded-full bg-dark-blue text-white",
+        "font-['Roboto'] font-semibold text-[19px] leading-none",
         "hover:opacity-90",
         "active:opacity-80",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
         className,
       )}
     >
-      {!isLogged && <LogOutIcon className="h-4 w-4 shrink-0" />}
+      {!isLogged && <LogOutIcon className="h-6 w-6 shrink-0" />}
       <span>{label}</span>
-      {isLogged && <LogOutIcon className="h-4 w-4 shrink-0" />}
-    </Button>
+      {isLogged && <LogOutIcon className="h-6 w-6 shrink-0" />}
+    </button>
   );
 }

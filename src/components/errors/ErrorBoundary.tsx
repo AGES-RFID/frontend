@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { toast } from "@/components/ui/toast";
 
 interface Props {
   children?: ReactNode;
@@ -16,6 +17,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Erro capturado:", error, errorInfo);
+    toast.error("Erro inesperado na interface.");
   }
 
   override render() {
