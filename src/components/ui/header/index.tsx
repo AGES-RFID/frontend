@@ -22,6 +22,11 @@ type HeaderNavItem = {
   icon: React.ReactNode;
 };
 
+const HEADER_NAV_ITEM_WIDTH = 188;
+const HEADER_NAV_ITEM_HEIGHT = 52;
+const HEADER_NAV_ITEM_GAP = 24;
+const HEADER_NAV_STEP = HEADER_NAV_ITEM_WIDTH + HEADER_NAV_ITEM_GAP;
+
 // ─── Auth Button ──────────────────────────────────────────────────────────────
 
 function AuthButton({
@@ -110,6 +115,10 @@ export function Header({
   );
 
   const isActive = (path: string) => location.pathname === path;
+  const activeIndex = Math.max(
+    navItems.findIndex((item) => isActive(item.path)),
+    0,
+  );
   // ── Logo Only ──────────────────────────────────────────────────────────────
   if (type === "logo") {
     return (
@@ -156,21 +165,33 @@ export function Header({
       </button>
 
       {/* Nav buttons — center (grows to fill remaining space) */}
-      <nav
-        aria-label="Navegação principal"
-        className="flex flex-1 items-center justify-center gap-6"
-      >
-        {navItems.map((item) => (
-          <HeaderButton
-            key={item.path}
-            icon={item.icon}
-            label={item.label}
-            isActive={isActive(item.path)}
-            action={() => navigate(item.path)}
-            className="relative"
+      <div className="flex flex-1 justify-center">
+        <nav
+          aria-label="Navegação principal"
+          className="relative inline-flex items-center gap-6"
+        >
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-0 z-0 rounded-[100px] border-2 border-white bg-transparent transition-transform duration-300 ease-out"
+            style={{
+              width: `${HEADER_NAV_ITEM_WIDTH}px`,
+              height: `${HEADER_NAV_ITEM_HEIGHT}px`,
+              transform: `translateY(-50%) translateX(${activeIndex * HEADER_NAV_STEP}px)`,
+            }}
           />
-        ))}
-      </nav>
+
+          {navItems.map((item) => (
+            <HeaderButton
+              key={item.path}
+              icon={item.icon}
+              label={item.label}
+              isActive={isActive(item.path)}
+              action={() => navigate(item.path)}
+              className="relative z-10 w-[188px] justify-center"
+            />
+          ))}
+        </nav>
+      </div>
 
       <div className="flex shrink-0 justify-end pr-4">
         <AdminButton onClick={() => navigate("/admin/dashboard")} />

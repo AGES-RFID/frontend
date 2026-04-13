@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 import { Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,14 +13,31 @@ import {
 import { toast } from "@/components/ui/toast";
 import { api } from "@/lib/api";
 
-type Vehicle = {
-  id: string;
-  plate: string;
-  brand: string;
-  model: string;
-  owner: string;
-  createdAt: string;
-  updatedAt: string;
+const vehicleSchema = z.object({
+  userId: z.uuid(),
+  vehicleId: z.uuid(),
+  plate: z.string(),
+  brand: z.string(),
+  model: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+const vehicleListSchema = z.array(vehicleSchema);
+
+const vehicleOwnerSchema = z.object({
+  userId: z.uuid(),
+  name: z.string(),
+  email: z.email(),
+});
+
+const vehicleOwnerListSchema = z.array(vehicleOwnerSchema);
+
+type VehicleDto = z.infer<typeof vehicleSchema>;
+
+type Vehicle = VehicleDto & {
+  ownerName: string;
+  ownerEmail: string;
 };
 
 type VehicleFormValues = {
@@ -27,133 +45,14 @@ type VehicleFormValues = {
   plate: string;
   brand: string;
   model: string;
-  owner: string;
 };
-
-type VehicleOwner = {
-  userId: string;
-  name: string;
-  email: string;
-};
-
-const mockVehicles: Vehicle[] = [
-  {
-    id: "1",
-    plate: "ABC1D23",
-    brand: "Volkswagen",
-    model: "Polo",
-    owner: "João Silva",
-    createdAt: "2024-01-15T10:30:00Z",
-    updatedAt: "2024-01-15T10:30:00Z",
-  },
-  {
-    id: "2",
-    plate: "XYZ9E87",
-    brand: "Toyota",
-    model: "Corolla",
-    owner: "Maria Santos",
-    createdAt: "2024-01-16T14:20:00Z",
-    updatedAt: "2024-01-16T14:20:00Z",
-  },
-  {
-    id: "3",
-    plate: "DEF4G56",
-    brand: "Chevrolet",
-    model: "Onix",
-    owner: "Pedro Oliveira",
-    createdAt: "2024-01-17T09:15:00Z",
-    updatedAt: "2024-01-17T09:15:00Z",
-  },
-  {
-    id: "4",
-    plate: "GHI7J89",
-    brand: "Fiat",
-    model: "Argo",
-    owner: "Ana Costa",
-    createdAt: "2024-01-18T16:45:00Z",
-    updatedAt: "2024-01-18T16:45:00Z",
-  },
-  {
-    id: "5",
-    plate: "JKL5K01",
-    brand: "Hyundai",
-    model: "HB20",
-    owner: "Carlos Ferreira",
-    createdAt: "2024-01-19T11:30:00Z",
-    updatedAt: "2024-01-19T11:30:00Z",
-  },
-  {
-    id: "6",
-    plate: "MNO2L34",
-    brand: "Honda",
-    model: "Civic",
-    owner: "Lucia Pereira",
-    createdAt: "2024-01-20T13:10:00Z",
-    updatedAt: "2024-01-20T13:10:00Z",
-  },
-  {
-    id: "7",
-    plate: "PQR8M56",
-    brand: "Renault",
-    model: "Kwid",
-    owner: "Roberto Alves",
-    createdAt: "2024-01-21T08:25:00Z",
-    updatedAt: "2024-01-21T08:25:00Z",
-  },
-  {
-    id: "8",
-    plate: "STU3N78",
-    brand: "Nissan",
-    model: "Versa",
-    owner: "Fernanda Lima",
-    createdAt: "2024-01-22T15:40:00Z",
-    updatedAt: "2024-01-22T15:40:00Z",
-  },
-  {
-    id: "9",
-    plate: "VWX4O90",
-    brand: "Jeep",
-    model: "Renegade",
-    owner: "Ricardo Mendes",
-    createdAt: "2024-01-23T12:05:00Z",
-    updatedAt: "2024-01-23T12:05:00Z",
-  },
-  {
-    id: "10",
-    plate: "YZA5P12",
-    brand: "Ford",
-    model: "Fiesta",
-    owner: "Camila Rocha",
-    createdAt: "2024-01-24T17:20:00Z",
-    updatedAt: "2024-01-24T17:20:00Z",
-  },
-];
 
 const emptyForm: VehicleFormValues = {
   userId: "",
   plate: "",
   brand: "",
   model: "",
-  owner: "",
 };
-
-const mockOwners: VehicleOwner[] = [
-  {
-    userId: "11111111-1111-1111-1111-111111111111",
-    name: "João Silva",
-    email: "joao.silva@exemplo.com",
-  },
-  {
-    userId: "22222222-2222-2222-2222-222222222222",
-    name: "Maria Santos",
-    email: "maria.santos@exemplo.com",
-  },
-  {
-    userId: "33333333-3333-3333-3333-333333333333",
-    name: "Pedro Oliveira",
-    email: "pedro.oliveira@exemplo.com",
-  },
-];
 
 const datetimeFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
@@ -168,10 +67,13 @@ function formatDateTime(value: string) {
 }
 
 function normalizePlate(value: string) {
-  return value.toUpperCase().slice(0, 7);
+  return value
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 7);
 }
 
-function buildCreatePayload(formData: VehicleFormValues) {
+function buildVehiclePayload(formData: VehicleFormValues) {
   return {
     userId: formData.userId,
     plate: normalizePlate(formData.plate),
@@ -181,7 +83,8 @@ function buildCreatePayload(formData: VehicleFormValues) {
 }
 
 export function Vehicles() {
-  const [vehicles, setVehicles] = useState<Vehicle[]>(mockVehicles);
+  const queryClient = useQueryClient();
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -189,11 +92,28 @@ export function Vehicles() {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [form, setForm] = useState<VehicleFormValues>(emptyForm);
 
+  const usersQuery = useQuery({
+    queryKey: ["vehicle-owners"],
+    queryFn: async () =>
+      vehicleOwnerListSchema.parse(await api.get("users").json()),
+  });
+
+  const vehiclesQuery = useQuery({
+    queryKey: ["admin-vehicles"],
+    queryFn: async () =>
+      vehicleListSchema.parse(await api.get("vehicles").json()),
+  });
+
   const createVehicleMutation = useMutation({
     mutationFn: async (formData: VehicleFormValues) =>
-      api.post("vehicles", { json: buildCreatePayload(formData) }).json(),
-    onSuccess: () => {
+      vehicleSchema.parse(
+        await api
+          .post("vehicles", { json: buildVehiclePayload(formData) })
+          .json(),
+      ),
+    onSuccess: async () => {
       toast.success("Veículo criado com sucesso.");
+      await queryClient.invalidateQueries({ queryKey: ["admin-vehicles"] });
       closeCreateModal();
     },
     onError: (error) => {
@@ -202,6 +122,93 @@ export function Vehicles() {
       );
     },
   });
+
+  const updateVehicleMutation = useMutation({
+    mutationFn: async ({
+      vehicleId,
+      formData,
+    }: {
+      vehicleId: string;
+      formData: VehicleFormValues;
+    }) =>
+      vehicleSchema.parse(
+        await api
+          .put(`vehicles/${vehicleId}`, { json: buildVehiclePayload(formData) })
+          .json(),
+      ),
+    onSuccess: async () => {
+      toast.success("Veículo atualizado com sucesso.");
+      await queryClient.invalidateQueries({ queryKey: ["admin-vehicles"] });
+      closeEditModal();
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao atualizar veículo.",
+      );
+    },
+  });
+
+  const deleteVehicleMutation = useMutation({
+    mutationFn: async (vehicleId: string) => {
+      await api.delete(`vehicles/${vehicleId}`);
+    },
+    onSuccess: async () => {
+      toast.success("Veículo excluído com sucesso.");
+      await queryClient.invalidateQueries({ queryKey: ["admin-vehicles"] });
+      closeDeleteModal();
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao excluir veículo.",
+      );
+    },
+  });
+
+  useEffect(() => {
+    if (usersQuery.error) {
+      toast.error(
+        usersQuery.error instanceof Error
+          ? usersQuery.error.message
+          : "Não foi possível carregar os proprietários.",
+      );
+    }
+  }, [usersQuery.error]);
+
+  useEffect(() => {
+    if (vehiclesQuery.error) {
+      toast.error(
+        vehiclesQuery.error instanceof Error
+          ? vehiclesQuery.error.message
+          : "Não foi possível carregar os veículos.",
+      );
+    }
+  }, [vehiclesQuery.error]);
+
+  const owners = usersQuery.data ?? [];
+
+  const ownersById = useMemo(
+    () => new Map(owners.map((owner) => [owner.userId, owner])),
+    [owners],
+  );
+
+  const vehicles = useMemo<Vehicle[]>(
+    () =>
+      (vehiclesQuery.data ?? []).map((vehicle) => {
+        const owner = ownersById.get(vehicle.userId);
+        return {
+          ...vehicle,
+          ownerName: owner?.name ?? "Usuário não encontrado",
+          ownerEmail: owner?.email ?? "-",
+        };
+      }),
+    [vehiclesQuery.data, ownersById],
+  );
+
+  const isLoading =
+    usersQuery.isLoading ||
+    usersQuery.isFetching ||
+    vehiclesQuery.isLoading ||
+    vehiclesQuery.isFetching;
 
   const openCreateModal = () => {
     setSelectedVehicle(null);
@@ -217,11 +224,10 @@ export function Vehicles() {
   const openEditModal = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
     setForm({
-      userId: "",
+      userId: vehicle.userId,
       plate: vehicle.plate,
       brand: vehicle.brand,
       model: vehicle.model,
-      owner: vehicle.owner,
     });
     setIsEditModalOpen(true);
   };
@@ -268,27 +274,7 @@ export function Vehicles() {
 
   const handleCreateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    createVehicleMutation.mutate(form, {
-      onSuccess: () => {
-        const ownerName =
-          mockOwners.find((owner) => owner.userId === form.userId)?.name ??
-          form.owner;
-        const now = new Date().toISOString();
-
-        setVehicles((currentVehicles) => [
-          {
-            id: crypto.randomUUID(),
-            plate: normalizePlate(form.plate),
-            brand: form.brand,
-            model: form.model,
-            owner: ownerName,
-            createdAt: now,
-            updatedAt: now,
-          },
-          ...currentVehicles,
-        ]);
-      },
-    });
+    createVehicleMutation.mutate(form);
   };
 
   const handleEditSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -298,21 +284,10 @@ export function Vehicles() {
       return;
     }
 
-    setVehicles((currentVehicles) =>
-      currentVehicles.map((vehicle) =>
-        vehicle.id === selectedVehicle.id
-          ? {
-              ...vehicle,
-              plate: form.plate,
-              brand: form.brand,
-              model: form.model,
-              owner: form.owner,
-              updatedAt: new Date().toISOString(),
-            }
-          : vehicle,
-      ),
-    );
-    closeEditModal();
+    updateVehicleMutation.mutate({
+      vehicleId: selectedVehicle.vehicleId,
+      formData: form,
+    });
   };
 
   const handleDelete = () => {
@@ -320,10 +295,7 @@ export function Vehicles() {
       return;
     }
 
-    setVehicles((currentVehicles) =>
-      currentVehicles.filter((vehicle) => vehicle.id !== selectedVehicle.id),
-    );
-    closeDeleteModal();
+    deleteVehicleMutation.mutate(selectedVehicle.vehicleId);
   };
 
   const columns = useMemo<TableColumn<Vehicle>[]>(
@@ -342,7 +314,7 @@ export function Vehicles() {
       },
       { key: "model", title: "Modelo", className: "w-56", sortable: true },
       {
-        key: "owner",
+        key: "ownerName",
         title: "Proprietário",
         className: "w-72",
         sortable: true,
@@ -386,11 +358,17 @@ export function Vehicles() {
         </div>
       </div>
 
+      {usersQuery.error || vehiclesQuery.error ? (
+        <div className="mb-6 rounded-md border border-light-gray bg-white px-4 py-3 text-gray">
+          Não foi possível carregar os dados de veículos.
+        </div>
+      ) : null}
+
       <Table
         data={vehicles}
         columns={columns}
         actions={actions}
-        loading={false}
+        loading={isLoading}
         paginationPageSize={10}
         searchPlaceholder="Pesquisar por placa, marca, modelo ou proprietário"
         emptyMessage="Nenhum veículo cadastrado ainda."
@@ -413,7 +391,9 @@ export function Vehicles() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <p className="text-gray text-xs uppercase tracking-wide">ID</p>
-                <p className="break-all text-dark-gray">{selectedVehicle.id}</p>
+                <p className="break-all text-dark-gray">
+                  {selectedVehicle.vehicleId}
+                </p>
               </div>
               <div>
                 <p className="text-gray text-xs uppercase tracking-wide">
@@ -437,7 +417,18 @@ export function Vehicles() {
                 <p className="text-gray text-xs uppercase tracking-wide">
                   Proprietário
                 </p>
-                <p className="text-dark-gray">{selectedVehicle.owner}</p>
+                <p className="text-dark-gray">{selectedVehicle.ownerName}</p>
+                <p className="text-gray text-sm">
+                  {selectedVehicle.ownerEmail}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray text-xs uppercase tracking-wide">
+                  ID do proprietário
+                </p>
+                <p className="break-all text-dark-gray">
+                  {selectedVehicle.userId}
+                </p>
               </div>
               <div>
                 <p className="text-gray text-xs uppercase tracking-wide">
@@ -473,7 +464,7 @@ export function Vehicles() {
       <Modal
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
-        title="Criar Veículo"
+        title="Criar veículo"
       >
         <form className="space-y-4" onSubmit={handleCreateSubmit}>
           <label className="flex flex-col gap-1 font-medium text-dark-gray text-sm">
@@ -485,16 +476,12 @@ export function Vehicles() {
                 setForm((currentForm) => ({
                   ...currentForm,
                   userId: event.target.value,
-                  owner:
-                    mockOwners.find(
-                      (owner) => owner.userId === event.target.value,
-                    )?.name ?? currentForm.owner,
                 }))
               }
               required
             >
               <option value="">Selecione um proprietário</option>
-              {mockOwners.map((owner) => (
+              {owners.map((owner) => (
                 <option key={owner.userId} value={owner.userId}>
                   {owner.name} - {owner.email}
                 </option>
@@ -526,14 +513,6 @@ export function Vehicles() {
             width="100%"
             placeholder="Digite o modelo"
           />
-          <Input
-            label="Proprietário"
-            value={form.owner}
-            onChange={handleFieldChange("owner")}
-            required
-            width="100%"
-            placeholder="Digite o proprietário"
-          />
 
           <div className="flex justify-end gap-2">
             <Button
@@ -543,7 +522,9 @@ export function Vehicles() {
             >
               Cancelar
             </Button>
-            <Button type="submit">Criar</Button>
+            <Button type="submit" disabled={createVehicleMutation.isPending}>
+              Criar
+            </Button>
           </div>
         </form>
       </Modal>
@@ -551,9 +532,30 @@ export function Vehicles() {
       <Modal
         isOpen={isEditModalOpen}
         onClose={closeEditModal}
-        title="Editar Veículo"
+        title="Editar veículo"
       >
         <form className="space-y-4" onSubmit={handleEditSubmit}>
+          <label className="flex flex-col gap-1 font-medium text-dark-gray text-sm">
+            Proprietário
+            <select
+              className="h-10 rounded-md border border-light-gray bg-white px-4 text-dark-gray outline-none focus:border-dark-gray"
+              value={form.userId}
+              onChange={(event) =>
+                setForm((currentForm) => ({
+                  ...currentForm,
+                  userId: event.target.value,
+                }))
+              }
+              required
+            >
+              <option value="">Selecione um proprietário</option>
+              {owners.map((owner) => (
+                <option key={owner.userId} value={owner.userId}>
+                  {owner.name} - {owner.email}
+                </option>
+              ))}
+            </select>
+          </label>
           <Input
             label="Placa"
             value={form.plate}
@@ -579,20 +581,14 @@ export function Vehicles() {
             width="100%"
             placeholder="Digite o modelo"
           />
-          <Input
-            label="Proprietário"
-            value={form.owner}
-            onChange={handleFieldChange("owner")}
-            required
-            width="100%"
-            placeholder="Digite o proprietário"
-          />
 
           <div className="flex justify-end gap-2">
             <Button onClick={closeEditModal} variant="secondary" type="button">
               Cancelar
             </Button>
-            <Button type="submit">Salvar</Button>
+            <Button type="submit" disabled={updateVehicleMutation.isPending}>
+              Salvar
+            </Button>
           </div>
         </form>
       </Modal>
@@ -600,7 +596,7 @@ export function Vehicles() {
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
-        title="Excluir Veículo"
+        title="Excluir veículo"
       >
         <div className="space-y-4">
           <p>
@@ -616,7 +612,12 @@ export function Vehicles() {
             >
               Cancelar
             </Button>
-            <Button onClick={handleDelete} variant="destructive" type="button">
+            <Button
+              onClick={handleDelete}
+              variant="destructive"
+              type="button"
+              disabled={deleteVehicleMutation.isPending}
+            >
               Excluir
             </Button>
           </div>
