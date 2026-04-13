@@ -19,7 +19,6 @@ export function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<Home />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
@@ -33,11 +32,13 @@ export function Router() {
 
         {/* customer Routes */}
         <Route element={<CustomerLayout />}>
+          <Route index element={<Home />} />
           <Route path="/payments" element={<Payment />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/user/new" element={<NewUser />} />
-          <Route path="/user/:userId/edit" element={<EditUser />} />
         </Route>
+
+        <Route path="/user/new" element={<NewUser />} />
+        <Route path="/user/:userId/edit" element={<EditUser />} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />

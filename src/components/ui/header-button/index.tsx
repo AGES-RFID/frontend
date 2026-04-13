@@ -26,7 +26,6 @@ export const HeaderButton = forwardRef<HTMLButtonElement, HeaderButtonProps>(
           "inline-flex items-center gap-2.5 px-4.5 py-2.5",
           "font-['Roboto'] font-bold text-[18px] leading-none",
           "border-2 border-transparent bg-transparent text-white",
-          isActive && "border-white",
           "transition-all duration-300 ease-out",
           "rounded-[100px]",
           "hover:bg-white/15",
@@ -40,7 +39,7 @@ export const HeaderButton = forwardRef<HTMLButtonElement, HeaderButtonProps>(
         <span
           className={cn(
             "flex shrink-0 items-center justify-center",
-            "transition-transform duration-200",
+            "transition-transform duration-200 ease-out",
             "group-hover:scale-110",
           )}
           aria-hidden="true"
