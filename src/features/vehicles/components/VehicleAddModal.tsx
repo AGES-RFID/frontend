@@ -24,6 +24,9 @@ const defaultValues: VehicleAddModalValue = {
     model: "",
 };
 
+//placa modelo antigo e atual
+const plateRegex = /^[A-Z]{3}\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$/;
+
 export function VehicleAddModal({
                                     isOpen,
                                     onClose,
@@ -54,6 +57,16 @@ export function VehicleAddModal({
             ...prev,
             [field]: value,
         }));
+    };
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (!plateRegex.test(formData.plate)) {
+            setValidationError("Placa inválida. Use formato ABC1234 ou ABC1D23.");
+            return;
+        }
+
+        onSubmit(formData);
     };
 
 }
