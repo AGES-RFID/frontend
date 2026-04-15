@@ -273,11 +273,6 @@ export function Vehicles() {
       }));
     };
 
-  const handleCreateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    createVehicleMutation.mutate(form);
-  };
-
   const handleEditSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
