@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
 
 
 export type VehicleAddModalValue = {
@@ -68,5 +70,42 @@ export function VehicleAddModal({
 
         onSubmit(formData);
     };
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title="Criar veículo">
+            <form className="space-y-4" onSubmit={handleSubmit}>
+                {isAdmin && (
+                    <label className="flex flex-col gap-1 font-medium text-dark-gray text-sm">
+                        Proprietário
+                        <select
+                            className="h-10 rounded-md border border-light-gray bg-white px-4 text-dark-gray outline-none focus:border-dark-gray"
+                            value={formData.userId}
+                            onChange={(e) => updateField("userId", e.target.value)}
+                            required
+                        >
+                            <option value="">Selecione um proprietário</option>
+                            {owners.map((owner) => (
+                                <option key={owner.userId} value={owner.userId}>
+                                    {owner.name} - {owner.email}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                )}
+
+                {validationError && (
+                    <p className="text-red text-sm">{validationError}</p>
+                )}
+
+                <div className="flex justify-end gap-2">
+                    <Button onClick={onClose} variant="secondary" type="button">
+                        Cancelar
+                    </Button>
+                    <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? "Criando..." : "Criar"}
+                    </Button>
+                </div>
+            </form>
+        </Modal>
+    );
 
 }
