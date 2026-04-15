@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
-
+import { Input } from "@/components/ui/input";
 
 export type VehicleAddModalValue = {
     userId: string;
@@ -92,10 +92,35 @@ export function VehicleAddModal({
                     </label>
                 )}
 
+                <Input
+                    label="Placa"
+                    value={formData.plate}
+                    onChange={(e) => updateField("plate", e.target.value)}
+                    required
+                    maxLength={7}
+                    placeholder="ABC1234 ou ABC1D23"
+                    width="100%"
+                />
+
+                <Input
+                    label="Marca"
+                    value={formData.brand}
+                    onChange={(e) => updateField("brand", e.target.value)}
+                    required
+                    width="100%"
+                />
+
+                <Input
+                    label="Modelo"
+                    value={formData.model}
+                    onChange={(e) => updateField("model", e.target.value)}
+                    required
+                    width="100%"
+                />
+
                 {validationError && (
                     <p className="text-red text-sm">{validationError}</p>
                 )}
-
                 <div className="flex justify-end gap-2">
                     <Button onClick={onClose} variant="secondary" type="button">
                         Cancelar
@@ -107,5 +132,4 @@ export function VehicleAddModal({
             </form>
         </Modal>
     );
-
 }
