@@ -457,14 +457,14 @@ export function Vehicles() {
         ) : null}
       </Modal>
 
-        <VehicleAddModal
-            isOpen={isCreateModalOpen}
-            onClose={closeCreateModal}
-            isSubmitting={createVehicleMutation.isPending}
-            onSubmit={(data) => createVehicleMutation.mutate(data)}
-            isAdmin={true}
-            owners={owners}
-        />
+      <VehicleAddModal
+        isOpen={isCreateModalOpen}
+        onClose={closeCreateModal}
+        isSubmitting={createVehicleMutation.isPending}
+        onSubmit={(data) => createVehicleMutation.mutate(data)}
+        isAdmin={true}
+        owners={owners}
+      />
 
       <Modal
         isOpen={isEditModalOpen}
