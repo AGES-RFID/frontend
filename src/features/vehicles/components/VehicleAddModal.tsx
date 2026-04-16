@@ -2,31 +2,26 @@ import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-export type VehicleAddModalValue = {
-  userId: string;
-  plate: string;
-  brand: string;
-  model: string;
-};
+import type { CreateVehicleDto } from "../dtos";
+import type { UserListDto } from "@/features/users/dtos";
 
 interface VehicleAddModalProps {
   isOpen: boolean;
   onClose: () => void;
   isSubmitting: boolean;
-  onSubmit: (values: VehicleAddModalValue) => void;
+  onSubmit: (values: CreateVehicleDto) => void;
   isAdmin: boolean;
-  owners: { userId: string; name: string; email: string }[];
+  owners: UserListDto;
 }
 
-const defaultValues: VehicleAddModalValue = {
+const defaultValues: CreateVehicleDto = {
   userId: "",
   plate: "",
   brand: "",
   model: "",
 };
 
-//placa modelo antigo e atual
+// Placa modelo antigo (ABC1234) e atual (ABC1D23)
 const plateRegex = /^[A-Z]{3}\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$/;
 
 export function VehicleAddModal({
@@ -37,7 +32,7 @@ export function VehicleAddModal({
   isAdmin,
   owners,
 }: VehicleAddModalProps) {
-  const [formData, setFormData] = useState<VehicleAddModalValue>(defaultValues);
+  const [formData, setFormData] = useState<CreateVehicleDto>(defaultValues);
   const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,7 +42,7 @@ export function VehicleAddModal({
     }
   }, [isOpen]);
 
-  const updateField = (field: keyof VehicleAddModalValue, value: string) => {
+  const updateField = (field: keyof CreateVehicleDto, value: string) => {
     if (validationError) setValidationError(null);
 
     if (field === "plate") {
@@ -59,6 +54,7 @@ export function VehicleAddModal({
       [field]: value,
     }));
   };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -120,6 +116,7 @@ export function VehicleAddModal({
         {validationError && (
           <p className="text-red text-sm">{validationError}</p>
         )}
+
         <div className="flex justify-end gap-2">
           <Button onClick={onClose} variant="secondary" type="button">
             Cancelar
