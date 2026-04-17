@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { VehicleAddModal } from "@/features/vehicles/components/VehicleAddModal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { Edit, Trash2 } from "lucide-react";
@@ -272,11 +273,6 @@ export function Vehicles() {
       }));
     };
 
-  const handleCreateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    createVehicleMutation.mutate(form);
-  };
-
   const handleEditSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -461,73 +457,14 @@ export function Vehicles() {
         ) : null}
       </Modal>
 
-      <Modal
+      <VehicleAddModal
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
-        title="Criar veículo"
-      >
-        <form className="space-y-4" onSubmit={handleCreateSubmit}>
-          <label className="flex flex-col gap-1 font-medium text-dark-gray text-sm">
-            Proprietário
-            <select
-              className="h-10 rounded-md border border-light-gray bg-white px-4 text-dark-gray outline-none focus:border-dark-gray"
-              value={form.userId}
-              onChange={(event) =>
-                setForm((currentForm) => ({
-                  ...currentForm,
-                  userId: event.target.value,
-                }))
-              }
-              required
-            >
-              <option value="">Selecione um proprietário</option>
-              {owners.map((owner) => (
-                <option key={owner.userId} value={owner.userId}>
-                  {owner.name} - {owner.email}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Input
-            label="Placa"
-            value={form.plate}
-            onChange={handleFieldChange("plate")}
-            required
-            width="100%"
-            maxLength={7}
-            placeholder="Digite a placa"
-          />
-          <Input
-            label="Marca"
-            value={form.brand}
-            onChange={handleFieldChange("brand")}
-            required
-            width="100%"
-            placeholder="Digite a marca"
-          />
-          <Input
-            label="Modelo"
-            value={form.model}
-            onChange={handleFieldChange("model")}
-            required
-            width="100%"
-            placeholder="Digite o modelo"
-          />
-
-          <div className="flex justify-end gap-2">
-            <Button
-              onClick={closeCreateModal}
-              variant="secondary"
-              type="button"
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={createVehicleMutation.isPending}>
-              Criar
-            </Button>
-          </div>
-        </form>
-      </Modal>
+        isSubmitting={createVehicleMutation.isPending}
+        onSubmit={(data) => createVehicleMutation.mutate(data)}
+        isAdmin={true}
+        owners={owners}
+      />
 
       <Modal
         isOpen={isEditModalOpen}
