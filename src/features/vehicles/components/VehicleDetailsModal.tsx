@@ -1,7 +1,7 @@
-import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
-import type { VehicleWithOwnerDto } from "../dtos";
+import { Modal } from "@/components/ui/modal";
 import { formatDateTime } from "@/utils/formatting";
+import type { VehicleWithOwnerDto } from "../dtos";
 
 interface VehicleDetailsModalProps {
   isOpen: boolean;
@@ -15,30 +15,20 @@ export function VehicleDetailsModal({
   vehicle,
 }: VehicleDetailsModalProps) {
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Detalhes do veículo"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Detalhes do veículo">
       {vehicle ? (
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <p className="text-gray text-xs uppercase tracking-wide">ID</p>
-              <p className="break-all text-dark-gray">
-                {vehicle.vehicleId}
-              </p>
+              <p className="break-all text-dark-gray">{vehicle.vehicleId}</p>
             </div>
             <div>
-              <p className="text-gray text-xs uppercase tracking-wide">
-                Placa
-              </p>
+              <p className="text-gray text-xs uppercase tracking-wide">Placa</p>
               <p className="text-dark-gray">{vehicle.plate}</p>
             </div>
             <div>
-              <p className="text-gray text-xs uppercase tracking-wide">
-                Marca
-              </p>
+              <p className="text-gray text-xs uppercase tracking-wide">Marca</p>
               <p className="text-dark-gray">{vehicle.brand}</p>
             </div>
             <div>
@@ -54,9 +44,7 @@ export function VehicleDetailsModal({
               <p className="text-dark-gray">
                 {vehicle.owner?.name ?? "Usuário não encontrado"}
               </p>
-              <p className="text-gray text-sm">
-                {vehicle.owner?.email ?? "-"}
-              </p>
+              <p className="text-gray text-sm">{vehicle.owner?.email ?? "-"}</p>
             </div>
             <div>
               <p className="text-gray text-xs uppercase tracking-wide">
@@ -77,11 +65,7 @@ export function VehicleDetailsModal({
           </div>
 
           <div className="flex justify-end">
-            <Button
-              onClick={onClose}
-              variant="secondary"
-              type="button"
-            >
+            <Button onClick={onClose} variant="secondary" type="button">
               Fechar
             </Button>
           </div>

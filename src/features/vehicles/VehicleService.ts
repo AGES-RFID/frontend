@@ -23,19 +23,27 @@ export class VehicleService {
     this.apiClient = apiClient;
   }
 
-  async listVehicles(options?: { includeOwner: true }): Promise<VehicleWithOwnerListDto>;
-  async listVehicles(options?: { includeOwner: false } | ListVehiclesOptions): Promise<VehicleListDto>;
-  async listVehicles(options?: ListVehiclesOptions): Promise<VehicleWithOwnerListDto | VehicleListDto> {
+  async listVehicles(options?: {
+    includeOwner: true;
+  }): Promise<VehicleWithOwnerListDto>;
+  async listVehicles(
+    options?: { includeOwner: false } | ListVehiclesOptions,
+  ): Promise<VehicleListDto>;
+  async listVehicles(
+    options?: ListVehiclesOptions,
+  ): Promise<VehicleWithOwnerListDto | VehicleListDto> {
     const params = new URLSearchParams();
     const includeOwner = options?.includeOwner ?? true;
-    
+
     if (includeOwner) {
-      params.append('include', 'users');
+      params.append("include", "users");
     }
 
-    const url = `vehicles${params.toString() ? '?' + params : ''}`;
-    const schema = includeOwner ? vehicleWithOwnerListSchema : vehicleListSchema;
-    
+    const url = `vehicles${params.toString() ? "?" + params : ""}`;
+    const schema = includeOwner
+      ? vehicleWithOwnerListSchema
+      : vehicleListSchema;
+
     const vehicles = await this.apiClient.get(url).json(schema);
     return vehicles;
   }
@@ -48,9 +56,7 @@ export class VehicleService {
     return vehicle;
   }
 
-  async createVehicle(
-    createVehicleDto: CreateVehicleDto,
-  ): Promise<VehicleDto> {
+  async createVehicle(createVehicleDto: CreateVehicleDto): Promise<VehicleDto> {
     const normalized = {
       userId: createVehicleDto.userId,
       plate: this.normalizePlate(createVehicleDto.plate),

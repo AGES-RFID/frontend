@@ -1,4 +1,4 @@
-import { z } from "zod";
+import type { z } from "zod";
 import { userSchema } from "@/features/users/dtos";
 import { vehicleSchema } from "./vehicleDto";
 
