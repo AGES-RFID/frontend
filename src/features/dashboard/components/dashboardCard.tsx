@@ -28,11 +28,6 @@ export function MetricCard({
   size,
   className,
 }: MetricCardProps) {
-  if (!topLabel || !bottomLabel) {
-    throw new Error(
-      "topLabel e bottomLabel são obrigatórios e não podem ser vazios ",
-    );
-  }
   return (
     <div className={metricCard({ size, className })}>
       <span className="font-medium text-gray-500 text-sm">{topLabel}</span>
