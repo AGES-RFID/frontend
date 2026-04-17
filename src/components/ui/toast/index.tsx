@@ -1,6 +1,6 @@
+import { CheckCircle2, CircleAlert, CircleX, Info, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { CheckCircle2, CircleAlert, CircleX, Info, X } from "lucide-react";
 import { create } from "zustand";
 
 export type ToastVariant = "success" | "info" | "warning" | "error";

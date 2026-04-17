@@ -52,17 +52,7 @@ const roleLabelMap: Record<AdminUserRole, string> = {
   customer: "Cliente",
 };
 
-const datetimeFormatter = new Intl.DateTimeFormat("pt-BR", {
-  dateStyle: "short",
-  timeStyle: "short",
-});
-
-function formatDateTime(value: string) {
-  const parsedDate = new Date(value);
-  return Number.isNaN(parsedDate.getTime())
-    ? value
-    : datetimeFormatter.format(parsedDate);
-}
+import { formatDateTime } from "@/utils/formatting";
 
 function buildCreatePayload(formData: CreateUserModalValue) {
   return {

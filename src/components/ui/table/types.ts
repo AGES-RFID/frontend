@@ -5,7 +5,7 @@ export type TableColumn<
 > = {
   key: keyof T;
   title: string;
-  render?: (value: unknown, item: T) => ReactNode;
+  render?: (value: T[keyof T], item: T) => ReactNode;
   sortable?: boolean;
   className?: string;
 };
