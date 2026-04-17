@@ -1,5 +1,5 @@
-import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 
 const metricCard = cva(
   "bg-white rounded-md drop-shadow-lg p-6 flex flex-col gap-2",
@@ -30,8 +30,8 @@ export function MetricCard({
 }: MetricCardProps) {
   return (
     <div className={metricCard({ size, className })}>
-      <span className="font-medium text-gray-500 text-sm">{topLabel}</span>
-      <span className="font-bold text-4xl text-gray-900">{bottomLabel} </span>
+      <span className="font-medium text-gray text-sm">{topLabel}</span>
+      <span className="font-bold text-4xl text-dark-gray">{bottomLabel} </span>
     </div>
   );
 }
