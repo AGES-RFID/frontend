@@ -3,12 +3,9 @@ import {
   type CreateVehicleDto,
   type VehicleDto,
   type VehicleListDto,
-  type VehicleWithOwnerDto,
   type VehicleWithOwnerListDto,
-  createVehicleSchema,
   vehicleListSchema,
   vehicleSchema,
-  vehicleWithOwnerSchema,
   vehicleWithOwnerListSchema,
 } from "./dtos";
 
@@ -32,19 +29,20 @@ export class VehicleService {
   async listVehicles(
     options?: ListVehiclesOptions,
   ): Promise<VehicleWithOwnerListDto | VehicleListDto> {
-    const params = new URLSearchParams();
+    const searchParams = new URLSearchParams();
     const includeOwner = options?.includeOwner ?? true;
 
     if (includeOwner) {
-      params.append("include", "users");
+      searchParams.append("include", "users");
     }
 
-    const url = `vehicles${params.toString() ? "?" + params : ""}`;
     const schema = includeOwner
       ? vehicleWithOwnerListSchema
       : vehicleListSchema;
 
-    const vehicles = await this.apiClient.get(url).json(schema);
+    const vehicles = await this.apiClient
+      .get("vehicles", { searchParams })
+      .json(schema);
     return vehicles;
   }
 
