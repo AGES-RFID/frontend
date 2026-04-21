@@ -1,5 +1,4 @@
 
-import React from 'react';
 
 type Status = "ativa" | "livre" | "inativa";
 
@@ -33,7 +32,7 @@ export function StatusBadge({status}: StatusProps){
            className={`flex flex-shrink-0 items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${config.className}`}
         >
             <span
-             className={`w-2 h-2 rounded-full ${config.dot}`}
+             className={`w-3 h-3 rounded-full ${config.dot}`}
             />
             <span>
                 {config.label}
