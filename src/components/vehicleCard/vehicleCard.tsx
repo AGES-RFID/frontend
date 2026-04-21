@@ -29,7 +29,7 @@ export function VehicleCard({
       onClick={onClick}
       className={cn(
         "relative flex cursor-pointer flex-col items-center justify-center border-2 font-bold",
-        type === "add" ? "border-gray-300" : "border-dark-blue",
+        type === "add" ? "border-light-gray" : "border-dark-blue",
         isLarge ? "size-36 rounded-4xl" : "size-18.5 rounded-2xl",
       )}
     >
@@ -67,16 +67,20 @@ export function VehicleCard({
           <div
             className={cn(
               "flex items-center justify-center rounded-full bg-dark-blue",
-              isLarge ? "size-20" : "size-10",
+              isLarge ? "size-15" : "size-10",
             )}
           >
-            <Plus size={isLarge ? 40 : 20} className="text-white" />
+            <Plus
+              size={isLarge ? 32 : 32}
+              strokeWidth={4}
+              className="text-white"
+/>
           </div>
 
           <span
             className={cn(
-              "text-center text-dark-blue",
-              isLarge ? "mt-4 text-[28px]" : "mt-2 text-sm",
+              "text-center text-dark-blue font-bold",
+              isLarge ? "mt-3 text-[16px] leading-tight" : "mt-2 text-sm leading-tight",
             )}
           >
             {text || "Adicionar veículo"}
