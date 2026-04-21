@@ -32,7 +32,10 @@ export function StatusBadge({ status }: StatusProps) {
 
   return (
     <div
-      className={cn("flex w-24 flex-shrink-0 items-center justify-center gap-2 rounded-full px-3 py-1 text-sm font-medium", config.className)}
+      className={cn(
+        "flex w-24 flex-shrink-0 items-center justify-center gap-2 rounded-full px-3 py-1 font-medium text-sm",
+        config.className,
+      )}
     >
       <span className={cn("h-3 w-3 rounded-full", config.dot)} />
       <span>{config.label}</span>
