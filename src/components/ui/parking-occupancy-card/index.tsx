@@ -44,7 +44,7 @@ export function ParkingOccupancyCard({
     >
       <h2
         data-testid="parking-occupancy-title"
-        className="text-[32px] font-bold text-black"
+        className="font-bold text-[32px] text-black"
       >
         {title}
       </h2>
@@ -66,7 +66,7 @@ export function ParkingOccupancyCard({
 
         <span
           data-testid="parking-occupancy-label"
-          className="min-w-fit text-[56px] font-bold leading-none text-black"
+          className="min-w-fit font-bold text-[56px] text-black leading-none"
         >
           {vehiclesCount}/{totalSpots}
         </span>
