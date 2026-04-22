@@ -24,7 +24,7 @@ export function AddVehicleCard({ size = "lg", onClick }: AddVehicleCardProps) {
           isLarge ? "size-15" : "size-10",
         )}
       >
-        <Plus size={isLarge ? 28 : 16} strokeWidth={3} className="text-white" />
+        <Plus size={isLarge ? 32 : 16} strokeWidth={4} className="text-white" />
       </div>
 
       <span
