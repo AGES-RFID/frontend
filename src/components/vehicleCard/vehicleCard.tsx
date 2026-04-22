@@ -74,13 +74,15 @@ export function VehicleCard({
               size={isLarge ? 32 : 32}
               strokeWidth={4}
               className="text-white"
-/>
+            />
           </div>
 
           <span
             className={cn(
-              "text-center text-dark-blue font-bold",
-              isLarge ? "mt-3 text-[16px] leading-tight" : "mt-2 text-sm leading-tight",
+              "text-center font-bold text-dark-blue",
+              isLarge
+                ? "mt-3 text-[16px] leading-tight"
+                : "mt-2 text-sm leading-tight",
             )}
           >
             {text || "Adicionar veículo"}
