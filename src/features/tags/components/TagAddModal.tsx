@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Modal } from "@/components/ui/modal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { useCreateTag } from "../hooks";
+import { MinusIcon, PlusIcon } from "lucide-react";
 
 interface TagAddModalProps {
   isOpen: boolean;
@@ -26,9 +27,24 @@ export function TagAddModal({ isOpen, onClose }: TagAddModalProps) {
     );
   };
 
-  /** Adds a new empty input row and turns the current last into a "default" input. */
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   const handleAddInput = () => {
     setTags((prev) => [...prev, newEntry()]);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.style.pointerEvents = "none";
+    }
+    setTimeout(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop =
+          scrollContainerRef.current.scrollHeight;
+        scrollContainerRef.current.style.pointerEvents = "";
+      }
+    }, 0);
+  };
+
+  const handleRemoveInput = (id: string) => {
+    setTags((prev) => prev.filter((tag) => tag.id !== id));
   };
 
   const handleCancel = () => {
@@ -39,7 +55,6 @@ export function TagAddModal({ isOpen, onClose }: TagAddModalProps) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Filter out empty values — at least one must be filled
     const filled = tags.map((t) => t.value.trim()).filter(Boolean);
 
     if (filled.length === 0) {
@@ -48,7 +63,6 @@ export function TagAddModal({ isOpen, onClose }: TagAddModalProps) {
     }
 
     try {
-      // Send one request per filled tag ID, sequentially
       for (const tagId of filled) {
         await createTagMutation.mutateAsync({ tagId });
       }
@@ -76,31 +90,42 @@ export function TagAddModal({ isOpen, onClose }: TagAddModalProps) {
       title="Adicionar etiquetas RFID"
     >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-4 px-[50px]">
-          {tags.map((tag, index) => {
-            const isLast = index === tags.length - 1;
-            return (
-              <Input
-                key={tag.id}
-                label="ID"
-                placeholder="123456789"
-                variant={isLast ? "with-button" : "default"}
-                value={tag.value}
-                onChange={(e) => handleChange(tag.id, e.target.value)}
-                onButtonClick={isLast ? handleAddInput : undefined}
-                width={isLast ? "100%" : "calc(100% - 3rem)"}
-              />
-            );
-          })}
+        <div
+          ref={scrollContainerRef}
+          className="flex max-h-[50dvh] flex-col gap-4 overflow-y-auto"
+        >
+          <div className="mx-auto flex w-full max-w-xs flex-col gap-4">
+            {tags.map((tag, index) => {
+              const isLast = index === tags.length - 1;
+              return (
+                <div key={tag.id} className="flex items-end gap-2">
+                  <Input
+                    label="ID"
+                    placeholder="123456789"
+                    value={tag.value}
+                    width="100%"
+                    onChange={(e) => handleChange(tag.id, e.target.value)}
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    icon
+                    className="flex h-10 w-10 items-center justify-center"
+                    onClick={
+                      isLast ? handleAddInput : () => handleRemoveInput(tag.id)
+                    }
+                    aria-label={isLast ? "Adicionar campo" : "Remover campo"}
+                  >
+                    {isLast ? <PlusIcon size={16} /> : <MinusIcon size={16} />}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button
-            type="button"
-            variant="borderless"
-            className="text-dark-gray hover:bg-dark-gray/10 active:bg-dark-gray/20"
-            onClick={handleCancel}
-          >
+          <Button type="button" variant="borderless" onClick={handleCancel}>
             Cancelar
           </Button>
           <Button type="submit" disabled={isSubmitting}>
