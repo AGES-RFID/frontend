@@ -1,5 +1,5 @@
 import { CheckCircle2, CircleAlert, CircleX, Info, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { create } from "zustand";
 
@@ -102,20 +102,22 @@ function ToastCard({ toastItem }: { toastItem: ToastItem }) {
   const dismiss = useToastStore((state) => state.dismiss);
   const [isVisible, setIsVisible] = useState(false);
 
+  const hide = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => dismiss(toastItem.id), 300);
+  }, [dismiss, toastItem.id]);
+
   useEffect(() => {
     const animationFrame = window.requestAnimationFrame(() =>
       setIsVisible(true),
     );
-    const timeoutId = window.setTimeout(
-      () => dismiss(toastItem.id),
-      toastItem.duration,
-    );
+    const timeoutId = window.setTimeout(hide, toastItem.duration);
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
       window.clearTimeout(timeoutId);
     };
-  }, [dismiss, toastItem.duration, toastItem.id]);
+  }, [hide, toastItem.duration]);
 
   const config = variantConfig[toastItem.variant];
   const Icon = config.icon;
@@ -148,7 +150,7 @@ function ToastCard({ toastItem }: { toastItem: ToastItem }) {
 
       <button
         type="button"
-        onClick={() => dismiss(toastItem.id)}
+        onClick={hide}
         className={`cursor-pointer transition-colors ${config.closeClassName}`}
         aria-label="Fechar notificação"
       >
