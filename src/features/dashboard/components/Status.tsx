@@ -1,34 +1,44 @@
+import { z } from "zod";
 import { cn } from "@/utils/cn";
 
-type Status = "active" | "available" | "inactive";
+export const tagStatusSchema = z.enum([
+  "AVAILABLE",
+  "IN_USE",
+  "INACTIVE",
+] as const);
+export type TagStatus = z.infer<typeof tagStatusSchema>;
 
 type StatusProps = {
-  status: Status;
+  status: TagStatus;
 };
 
 const statusConfig: Record<
-  Status,
+  TagStatus,
   { label: string; className: string; dot: string }
 > = {
-  active: {
-    label: "Ativa",
-    className: "bg-light-green text-dark-gray",
-    dot: "bg-green",
-  },
-  available: {
+  AVAILABLE: {
     label: "Livre",
     className: "bg-yellow text-dark-gray",
     dot: "bg-dark-orange",
   },
-  inactive: {
+  IN_USE: {
+    label: "Ativa",
+    className: "bg-light-green text-dark-gray",
+    dot: "bg-green",
+  },
+  INACTIVE: {
     label: "Inativa",
     className: "bg-light-red text-dark-gray",
     dot: "bg-red",
   },
 };
 
+export type { TagStatus as Status };
+
 export function StatusBadge({ status }: StatusProps) {
   const config = statusConfig[status];
+
+  if (!config) return null;
 
   return (
     <div
