@@ -1,9 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
-import {
-  StatusBadge,
-  type Status,
-} from "@/features/dashboard/components/Status";
+import { StatusBadge } from "@/features/dashboard/components/Status";
 import type { TagListItemDto } from "../dtos";
 
 interface TagDetailsModalProps {
@@ -31,7 +28,7 @@ export function TagDetailsModal({
                 Status
               </p>
               <div className="mt-1">
-                <StatusBadge status={tag.status as Status} />
+                <StatusBadge status={tag.status} />
               </div>
             </div>
             <div>

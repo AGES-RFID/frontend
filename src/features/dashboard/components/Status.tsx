@@ -1,12 +1,5 @@
-import { z } from "zod";
 import { cn } from "@/utils/cn";
-
-export const tagStatusSchema = z.enum([
-  "AVAILABLE",
-  "IN_USE",
-  "INACTIVE",
-] as const);
-export type TagStatus = z.infer<typeof tagStatusSchema>;
+import type { TagStatus } from "@/features/tags/dtos";
 
 type StatusProps = {
   status: TagStatus;
