@@ -1,9 +1,11 @@
+import { HTTPError } from "ky";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Header } from "@/components/ui/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toast";
+import { loginSchema } from "@/features/auth/dtos";
 import { useLogin } from "@/features/auth/hooks";
 
 export function Login() {
@@ -16,11 +18,13 @@ export function Login() {
   const isLoading = loginMutation.isPending;
 
   const validateEmail = (value: string) => {
-    const isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-      value,
+    const result = loginSchema.shape.email.safeParse(value);
+    setEmailError(
+      result.success || value === ""
+        ? ""
+        : (result.error.issues[0]?.message ?? "Email inválido"),
     );
-    setEmailError(isValid || value === "" ? "" : "Email inválido");
-    return isValid;
+    return result.success;
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,8 +39,7 @@ export function Login() {
           localStorage.setItem("token", data.token);
           navigate("/");
         },
-        onError: async (error) => {
-          const { HTTPError } = await import("ky");
+        onError: (error) => {
           if (error instanceof HTTPError && error.response.status === 401) {
             toast.error("Email ou senha incorretos.");
           } else {
