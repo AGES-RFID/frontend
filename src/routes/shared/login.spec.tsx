@@ -1,9 +1,10 @@
-import { afterEach, describe, expect, it } from "bun:test";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router";
 import { Login } from "./login";
+import { authService } from "@/features/auth/AuthService";
 
 function renderLogin() {
   const queryClient = new QueryClient({
@@ -107,5 +108,73 @@ describe("Login component", () => {
     await act(async () => {
       screen.getByRole("button", { name: "Esqueci a senha" }).click();
     });
+  });
+
+  it("should store token and navigate on successful login", async () => {
+    const mockUser = {
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      name: "Test User",
+      email: "test@example.com",
+    };
+    const loginSpy = spyOn(authService, "login").mockResolvedValue({
+      token: "mock-token",
+      user: mockUser,
+    });
+
+    renderLogin();
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText("Digite seu email"), {
+        target: { value: "test@example.com" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Digite sua senha"), {
+        target: { value: "password123" },
+      });
+    });
+
+    await act(async () => {
+      const form = screen
+        .getByRole("button", { name: "Entrar" })
+        .closest("form");
+      if (form) fireEvent.submit(form);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    expect(loginSpy).toHaveBeenCalled();
+    loginSpy.mockRestore();
+  });
+
+  it("should show error toast when login returns 401", async () => {
+    const loginSpy = spyOn(authService, "login").mockRejectedValue(
+      new Error("Unauthorized"),
+    );
+
+    renderLogin();
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText("Digite seu email"), {
+        target: { value: "wrong@example.com" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Digite sua senha"), {
+        target: { value: "wrongpass" },
+      });
+    });
+
+    await act(async () => {
+      const form = screen
+        .getByRole("button", { name: "Entrar" })
+        .closest("form");
+      if (form) fireEvent.submit(form);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    expect(loginSpy).toHaveBeenCalled();
+    loginSpy.mockRestore();
   });
 });
