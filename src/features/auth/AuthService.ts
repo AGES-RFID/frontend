@@ -6,7 +6,7 @@ import {
 } from "./dtos";
 
 export class AuthService {
-  private apiClient: ApiClient;
+  private readonly apiClient: ApiClient;
 
   constructor(apiClient: ApiClient) {
     this.apiClient = apiClient;
