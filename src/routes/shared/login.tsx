@@ -16,7 +16,9 @@ export function Login() {
   const isLoading = loginMutation.isPending;
 
   const validateEmail = (value: string) => {
-    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    const isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+      value,
+    );
     setEmailError(isValid || value === "" ? "" : "Email inválido");
     return isValid;
   };
