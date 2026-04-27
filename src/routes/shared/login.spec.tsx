@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "bun:test";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router";
 import { Login } from "./login";
@@ -94,17 +95,17 @@ describe("Login component", () => {
     expect(screen.queryByText("Email inválido")).not.toBeInTheDocument();
   });
 
-  it("should trigger register navigation without throwing", () => {
+  it("should trigger register navigation without throwing", async () => {
     renderLogin();
-    expect(() =>
-      screen.getByRole("button", { name: "Criar nova conta" }).click(),
-    ).not.toThrow();
+    await act(async () => {
+      screen.getByRole("button", { name: "Criar nova conta" }).click();
+    });
   });
 
-  it("should trigger forgot password without throwing", () => {
+  it("should trigger forgot password without throwing", async () => {
     renderLogin();
-    expect(() =>
-      screen.getByRole("button", { name: "Esqueci a senha" }).click(),
-    ).not.toThrow();
+    await act(async () => {
+      screen.getByRole("button", { name: "Esqueci a senha" }).click();
+    });
   });
 });
