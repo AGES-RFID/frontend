@@ -4,9 +4,9 @@ import { StatusBadge } from "@/features/dashboard/components/Status";
 import type { TagListItemDto } from "../dtos";
 
 interface TagDetailsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  tag: TagListItemDto | null;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly tag: TagListItemDto | null;
 }
 
 export function TagDetailsModal({

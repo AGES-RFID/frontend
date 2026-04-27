@@ -5,9 +5,9 @@ import type { TagListItemDto } from "../dtos";
 import { useDeactivateTag } from "../hooks";
 
 interface TagDeactivateModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  tag: TagListItemDto | null;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly tag: TagListItemDto | null;
 }
 
 export function TagDeactivateModal({

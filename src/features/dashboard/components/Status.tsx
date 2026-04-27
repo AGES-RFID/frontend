@@ -1,5 +1,6 @@
 import { cn } from "@/utils/cn";
 import type { TagStatus } from "@/features/tags/dtos";
+export type { TagStatus as Status } from "@/features/tags/dtos";
 
 type StatusProps = {
   status: TagStatus;
@@ -25,8 +26,6 @@ const statusConfig: Record<
     dot: "bg-red",
   },
 };
-
-export type { TagStatus as Status };
 
 export function StatusBadge({ status }: StatusProps) {
   const config = statusConfig[status];
