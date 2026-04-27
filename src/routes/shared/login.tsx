@@ -3,15 +3,46 @@ import { useNavigate } from "react-router";
 import { Header } from "@/components/ui/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/toast";
+import { useLogin } from "@/features/auth/hooks";
 
 export function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  const loginMutation = useLogin();
+  const isLoading = loginMutation.isPending;
+
+  const validateEmail = (value: string) => {
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    setEmailError(isValid || value === "" ? "" : "Email inválido");
+    return isValid;
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate("/");
+
+    if (!validateEmail(email)) return;
+
+    loginMutation.mutate(
+      { email, password },
+      {
+        onSuccess: (data) => {
+          localStorage.setItem("token", data.token);
+          navigate("/");
+        },
+        onError: async (error) => {
+          const { HTTPError } = await import("ky");
+          if (error instanceof HTTPError && error.response.status === 401) {
+            toast.error("Email ou senha incorretos.");
+          } else {
+            toast.error("Erro ao fazer login. Tente novamente.");
+          }
+        },
+      },
+    );
   };
 
   const handleRegister = () => {
@@ -37,17 +68,24 @@ export function Login() {
             </div>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <Input
-                id="email"
-                type="email"
-                name="email"
-                label="Email"
-                placeholder="Digite seu email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-                width="100%"
-              />
+              <div className="space-y-1">
+                <Input
+                  id="email"
+                  type="email"
+                  name="email"
+                  label="Email"
+                  placeholder="Digite seu email"
+                  value={email}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                    if (emailError) validateEmail(event.target.value);
+                  }}
+                  onBlur={() => validateEmail(email)}
+                  required
+                  width="100%"
+                />
+                {emailError && <p className="text-red text-xs">{emailError}</p>}
+              </div>
 
               <Input
                 id="password"
@@ -81,8 +119,13 @@ export function Login() {
                 </Button>
               </div>
 
-              <Button type="submit" size="md" className="w-full">
-                Entrar
+              <Button
+                type="submit"
+                size="md"
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? "Entrando..." : "Entrar"}
               </Button>
 
               <div className="flex items-center gap-4">
