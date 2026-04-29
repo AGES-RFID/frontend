@@ -18,6 +18,7 @@ export type TableAction<
   icon?: ReactNode;
   onClick: (item: T) => void;
   className?: string;
+  show?: (item: T) => boolean;
 };
 
 export type TableProps<
