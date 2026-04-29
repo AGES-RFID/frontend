@@ -44,6 +44,12 @@ export class UserService {
   async deleteUser(userId: string): Promise<void> {
     await this.apiClient.delete(`users/${userId}`);
   }
+
+  async addCredit(userId: string, amount: number): Promise<void> {
+    await this.apiClient.patch(`users/${userId}/balance`, {
+      json: { amount },
+    });
+  }
 }
 
 export const userService = new UserService(api);

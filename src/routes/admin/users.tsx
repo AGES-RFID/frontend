@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Wallet } from "lucide-react";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AddCreditModal } from "@/components/ui/add-credit-modal";
+import { userService } from "@/features/users/UserService";
 import {
   CreateUserModal,
   type CreateUserModalValue,
@@ -79,6 +81,7 @@ export function Users() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAddCreditModalOpen, setIsAddCreditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [editForm, setEditForm] =
     useState<UpdateUserFormState>(emptyUpdateForm);
@@ -150,6 +153,27 @@ export function Users() {
     },
   });
 
+  const addCreditMutation = useMutation({
+    mutationFn: async ({
+      userId,
+      amount,
+    }: {
+      userId: string;
+      amount: number;
+    }) => userService.addCredit(userId, amount),
+    onSuccess: async () => {
+      toast.success("Crédito adicionado com sucesso.");
+      await queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      setIsAddCreditModalOpen(false);
+      setSelectedUser(null);
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao adicionar crédito.",
+      );
+    },
+  });
+
   useEffect(() => {
     if (usersQuery.error) {
       toast.error(
@@ -215,6 +239,17 @@ export function Users() {
         },
         className:
           "text-red hover:text-light-red cursor-pointer transition-colors",
+      },
+      {
+        key: "add-credit",
+        label: "Adicionar Crédito",
+        icon: <Wallet size={18} />,
+        onClick: (user) => {
+          setSelectedUser(user);
+          setIsAddCreditModalOpen(true);
+        },
+        className:
+          "text-[#00A6A6] hover:text-[#007f7f] cursor-pointer transition-colors",
       },
     ],
     [],
@@ -481,6 +516,19 @@ export function Users() {
           </div>
         </div>
       </Modal>
+
+      <AddCreditModal
+        isOpen={isAddCreditModalOpen}
+        clientBalance={0}
+        onClose={() => {
+          setIsAddCreditModalOpen(false);
+          setSelectedUser(null);
+        }}
+        onConfirm={async (amount) => {
+          if (!selectedUser) return;
+          addCreditMutation.mutate({ userId: selectedUser.userId, amount });
+        }}
+      />
     </div>
   );
 }
