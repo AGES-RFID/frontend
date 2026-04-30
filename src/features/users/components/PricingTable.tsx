@@ -50,15 +50,15 @@ export function PricingTable({ data, className }: PricingTableProps) {
             <tr
               key={row.key}
               className={cn(
-                "bg-gray-100",
-                index !== rows.length - 1 && "border-gray-200 border-b",
+                "bg-white",
+                index !== rows.length - 1 && "border-light-gray border-b",
               )}
             >
-              <td className="border-gray-300 border-r p-3 text-gray-700">
+              <td className="border-light-gray border-r p-3 text-dark-gray">
                 {row.label}
               </td>
 
-              <td className="p-3 font-medium text-gray-900">
+              <td className="p-3 font-medium text-gray">
                 {finalData[row.key]}
               </td>
             </tr>
