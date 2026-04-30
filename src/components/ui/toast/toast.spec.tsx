@@ -44,7 +44,10 @@ describe("toast", () => {
     });
 
     it("should push a success toast with optional title", () => {
-      const id = toast.success("Salvo com sucesso!", "Título");
+      const id = toast.success(
+        "MSG_HELPER_BODY_UNIQUE",
+        "MSG_HELPER_TITLE_UNIQUE",
+      );
       expect(typeof id).toBe("string");
     });
   });
@@ -102,10 +105,10 @@ describe("toast", () => {
     it("should render a success toast with title and message", async () => {
       render(<ToastViewport />);
       await act(async () => {
-        toast.success("Salvo com sucesso!", "Título");
+        toast.success("MSG_SUCCESS_BODY_UNIQUE", "MSG_SUCCESS_TITLE_UNIQUE");
       });
-      expect(screen.getByText("Título")).toBeInTheDocument();
-      expect(screen.getByText("Salvo com sucesso!")).toBeInTheDocument();
+      expect(screen.getByText("MSG_SUCCESS_TITLE_UNIQUE")).toBeInTheDocument();
+      expect(screen.getByText("MSG_SUCCESS_BODY_UNIQUE")).toBeInTheDocument();
     });
 
     it("should render close buttons for toasts", async () => {
