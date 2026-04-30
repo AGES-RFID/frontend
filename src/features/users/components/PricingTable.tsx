@@ -6,10 +6,10 @@ type PricingTableData = {
   horaAdicional?: string;
 };
 
-type PricingTableProps = {
+type PricingTableProps = Readonly<{
   data?: PricingTableData;
   className?: string;
-};
+}>;
 
 const defaultData: Required<PricingTableData> = {
   ate15Minutos: "Isento",
