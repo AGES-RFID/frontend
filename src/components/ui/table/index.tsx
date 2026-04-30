@@ -228,23 +228,27 @@ export function Table<T extends Record<string, unknown>>({
                     {actions.length > 0 && (
                       <td className="px-4 py-3">
                         <div className="flex space-x-2">
-                          {actions.map((action) => (
-                            <button
-                              key={action.key}
-                              type="button"
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                action.onClick(item);
-                              }}
-                              className={
-                                action.className ||
-                                "text-dark-blue transition-colors hover:text-dark-blue"
-                              }
-                              title={action.label}
-                            >
-                              {action.icon || action.label}
-                            </button>
-                          ))}
+                          {actions.map((action) => {
+                            if (action.show && !action.show(item)) return null;
+
+                            return (
+                              <button
+                                key={action.key}
+                                type="button"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  action.onClick(item);
+                                }}
+                                className={
+                                  action.className ||
+                                  "text-dark-blue transition-colors hover:text-dark-blue"
+                                }
+                                title={action.label}
+                              >
+                                {action.icon || action.label}
+                              </button>
+                            );
+                          })}
                         </div>
                       </td>
                     )}

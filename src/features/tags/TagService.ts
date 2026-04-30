@@ -1,5 +1,11 @@
 import { type ApiClient, api } from "@/lib/api";
-import { type CreateTagDto, type TagDto, tagSchema } from "./dtos";
+import {
+  type CreateTagDto,
+  type TagDto,
+  type TagListItemDto,
+  tagListSchema,
+  tagSchema,
+} from "./dtos";
 
 export class TagService {
   private apiClient: ApiClient;
@@ -8,12 +14,16 @@ export class TagService {
     this.apiClient = apiClient;
   }
 
-  async createTag(createTagDto: CreateTagDto): Promise<TagDto> {
-    const tag = await this.apiClient
-      .post("tags", { json: createTagDto })
-      .json(tagSchema);
+  async listTags(): Promise<TagListItemDto[]> {
+    return this.apiClient.get("tags").json(tagListSchema);
+  }
 
-    return tag;
+  async createTag(createTagDto: CreateTagDto): Promise<TagDto> {
+    return this.apiClient.post("tags", { json: createTagDto }).json(tagSchema);
+  }
+
+  async deactivateTag(tagId: string): Promise<TagDto> {
+    return this.apiClient.patch(`tags/${tagId}/deactivate`).json(tagSchema);
   }
 }
 
