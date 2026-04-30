@@ -1,6 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { CarIcon } from "./carIcon";
+import { CarIcon } from "../assets/carIcon";
 
 type VehicleCardProps = {
   size?: "lg" | "sm";

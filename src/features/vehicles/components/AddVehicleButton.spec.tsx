@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, mock } from "bun:test";
 import { cleanup, render, screen } from "@testing-library/react";
 
-import { AddVehicleCard } from "./addVehicleCard";
+import { AddVehicleCard } from "./AddVehicleButton";
 
 describe("AddVehicleCard component", () => {
   afterEach(cleanup);
