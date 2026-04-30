@@ -38,16 +38,26 @@ export function PricingTable({ data, className }: PricingTableProps) {
     >
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-blue-900 text-white">
-            <th className="p-3 text-left font-semibold">Tempo</th>
-            <th className="p-3 text-left font-semibold">Valor</th>
+          <tr className="bg-dark-blue text-white">
+            <th className="w-1/2 border-white/30 border-r p-3 text-left font-semibold">
+              Tempo
+            </th>
+            <th className="w-1/2 p-3 text-left font-semibold">Valor</th>
           </tr>
         </thead>
-
         <tbody>
-          {rows.map((row) => (
-            <tr key={row.key} className="border-gray-200 border-t bg-gray-100">
-              <td className="p-3 text-gray-700">{row.label}</td>
+          {rows.map((row, index) => (
+            <tr
+              key={row.key}
+              className={cn(
+                "bg-gray-100",
+                index !== rows.length - 1 && "border-gray-200 border-b",
+              )}
+            >
+              <td className="border-gray-300 border-r p-3 text-gray-700">
+                {row.label}
+              </td>
+
               <td className="p-3 font-medium text-gray-900">
                 {finalData[row.key]}
               </td>
