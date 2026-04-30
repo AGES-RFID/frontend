@@ -1,110 +1,144 @@
 import { afterEach, describe, expect, it } from "bun:test";
 import { act, cleanup, render, screen } from "@testing-library/react";
-import { toast, ToastViewport } from ".";
+import { ToastViewport, toast } from ".";
 
-// Reset the zustand store between tests to avoid state leaking
-const _resetStore = () => {
-  const { dismiss } =
-    (
-      toast as unknown as {
-        _store?: {
-          getState: () => {
-            toasts: { id: string }[];
-            dismiss: (id: string) => void;
-          };
-        };
-      }
-    )._store?.getState() ?? {};
-  // Use the internal store to clear state
-};
-
-// We remount ToastViewport fresh for each test so the store state is reflected
-// The store itself needs to be cleared - use toast internal reference
-function _clearToasts() {
-  // Access internals through the module's store
-  const _anyToast = screen.queryAllByRole("status");
-  // We'll rely on cleanup + re-render cycle
-}
-
-describe("toast store", () => {
-  afterEach(cleanup);
-
-  it("toast.success should add a toast with success variant", () => {
-    render(<ToastViewport />);
-    act(() => toast.success("Operação realizada com sucesso!"));
-    expect(screen.getByText("Operação realizada com sucesso!")).toBeDefined();
-  });
-
-  it("toast.error should add a toast with error variant", () => {
-    render(<ToastViewport />);
-    act(() => toast.error("Ocorreu um erro."));
-    expect(screen.getByText("Ocorreu um erro.")).toBeDefined();
-  });
-
-  it("toast.warning should add a toast with warning variant", () => {
-    render(<ToastViewport />);
-    act(() => toast.warning("Atenção ao dado informado."));
-    expect(screen.getByText("Atenção ao dado informado.")).toBeDefined();
-  });
-
-  it("toast.info should add a toast with info variant", () => {
-    render(<ToastViewport />);
-    act(() => toast.info("Informação importante."));
-    expect(screen.getByText("Informação importante.")).toBeDefined();
-  });
-
-  it("toast.show should add a toast with custom variant", () => {
-    render(<ToastViewport />);
-    act(() =>
-      toast.show({ message: "Mensagem customizada.", variant: "warning" }),
-    );
-    expect(screen.getByText("Mensagem customizada.")).toBeDefined();
-  });
-
-  it("toast.success should render the optional title", () => {
-    render(<ToastViewport />);
-    act(() => toast.success("Salvo com sucesso!", "Título"));
-    expect(screen.getByText("Título")).toBeDefined();
-    expect(screen.getByText("Salvo com sucesso!")).toBeDefined();
-  });
-
-  it("should render the close button for a toast", () => {
-    render(<ToastViewport />);
-    act(() => toast.success("Toast com fechar"));
-    const closeButtons = screen.getAllByLabelText("Fechar notificação");
-    expect(closeButtons.length).toBeGreaterThan(0);
-  });
-
-  it("should call dismiss when close button is clicked", () => {
-    render(<ToastViewport />);
-    act(() => toast.success("Toast para fechar"));
-    const closeButton = screen.getAllByLabelText("Fechar notificação")[0];
-    expect(closeButton).toBeDefined();
-    act(() => closeButton?.click());
-    // The dismiss triggers hide() which starts a 300ms timeout — no throw is good enough
-  });
-
-  it("toast.show should return a toast id string", () => {
-    const id = toast.show({ message: "Com id", variant: "info" });
-    expect(typeof id).toBe("string");
-    expect(id.length).toBeGreaterThan(0);
-  });
+afterEach(() => {
+  cleanup();
 });
 
-describe("ToastViewport", () => {
-  afterEach(cleanup);
+describe("toast", () => {
+  describe("toast helper methods", () => {
+    it("should push a success toast", () => {
+      const id = toast.success("Operação bem-sucedida");
+      expect(typeof id).toBe("string");
+      expect(id.length).toBeGreaterThan(0);
+    });
 
-  it("should render without crashing", () => {
-    const { container } = render(<ToastViewport />);
-    expect(container).toBeDefined();
+    it("should push an error toast", () => {
+      const id = toast.error("Ops, algo deu errado");
+      expect(typeof id).toBe("string");
+    });
+
+    it("should push a warning toast", () => {
+      const id = toast.warning("Atenção: verifique os dados");
+      expect(typeof id).toBe("string");
+    });
+
+    it("should push an info toast", () => {
+      const id = toast.info("Informação importante");
+      expect(typeof id).toBe("string");
+    });
+
+    it("should push a toast with title via show()", () => {
+      const id = toast.show({
+        message: "Mensagem",
+        title: "Título",
+        variant: "success",
+      });
+      expect(typeof id).toBe("string");
+    });
+
+    it("should push a toast with custom duration", () => {
+      const id = toast.show({ message: "Temporário", duration: 1000 });
+      expect(typeof id).toBe("string");
+    });
+
+    it("should push a success toast with optional title", () => {
+      const id = toast.success(
+        "MSG_HELPER_BODY_UNIQUE",
+        "MSG_HELPER_TITLE_UNIQUE",
+      );
+      expect(typeof id).toBe("string");
+    });
   });
 
-  it("should unmount cleanly (useEffect cleanup)", () => {
-    render(<ToastViewport />);
-    act(() => toast.info("Toast para unmount"));
-    // unmount triggers useEffect cleanup — cancelAnimationFrame + clearTimeout
-    cleanup();
-    // No error means cleanup ran correctly
-    expect(true).toBe(true);
+  describe("ToastViewport", () => {
+    it("should render without throwing", () => {
+      expect(() => render(<ToastViewport />)).not.toThrow();
+    });
+
+    it("should render a success toast in the viewport", async () => {
+      render(<ToastViewport />);
+      await act(async () => {
+        toast.success("MSG_SUCCESS_UNIQUE");
+      });
+      expect(screen.getByText("MSG_SUCCESS_UNIQUE")).toBeInTheDocument();
+    });
+
+    it("should render an error toast in the viewport", async () => {
+      render(<ToastViewport />);
+      await act(async () => {
+        toast.error("MSG_ERROR_UNIQUE");
+      });
+      expect(screen.getByText("MSG_ERROR_UNIQUE")).toBeInTheDocument();
+    });
+
+    it("should render a warning toast in the viewport", async () => {
+      render(<ToastViewport />);
+      await act(async () => {
+        toast.warning("MSG_WARNING_UNIQUE");
+      });
+      expect(screen.getByText("MSG_WARNING_UNIQUE")).toBeInTheDocument();
+    });
+
+    it("should render an info toast in the viewport", async () => {
+      render(<ToastViewport />);
+      await act(async () => {
+        toast.info("MSG_INFO_UNIQUE");
+      });
+      expect(screen.getByText("MSG_INFO_UNIQUE")).toBeInTheDocument();
+    });
+
+    it("should render a toast with title and message", async () => {
+      render(<ToastViewport />);
+      await act(async () => {
+        toast.show({
+          title: "MSG_TITLE_UNIQUE",
+          message: "MSG_BODY_UNIQUE",
+          variant: "info",
+        });
+      });
+      expect(screen.getByText("MSG_TITLE_UNIQUE")).toBeInTheDocument();
+      expect(screen.getByText("MSG_BODY_UNIQUE")).toBeInTheDocument();
+    });
+
+    it("should render a success toast with title and message", async () => {
+      render(<ToastViewport />);
+      await act(async () => {
+        toast.success("MSG_SUCCESS_BODY_UNIQUE", "MSG_SUCCESS_TITLE_UNIQUE");
+      });
+      expect(screen.getByText("MSG_SUCCESS_TITLE_UNIQUE")).toBeInTheDocument();
+      expect(screen.getByText("MSG_SUCCESS_BODY_UNIQUE")).toBeInTheDocument();
+    });
+
+    it("should render close buttons for toasts", async () => {
+      render(<ToastViewport />);
+      await act(async () => {
+        toast.error("MSG_CLOSE_UNIQUE");
+      });
+      const closeBtns = screen.getAllByRole("button", {
+        name: "Fechar notificação",
+      });
+      expect(closeBtns.length).toBeGreaterThan(0);
+    });
+
+    it("should dismiss a toast when close button is clicked without throwing", async () => {
+      render(<ToastViewport />);
+      await act(async () => {
+        toast.error("MSG_DISMISS_UNIQUE");
+      });
+      const closeBtns = screen.getAllByRole("button", {
+        name: "Fechar notificação",
+      });
+      expect(() => closeBtns[0]?.click()).not.toThrow();
+    });
+
+    it("should unmount cleanly (useEffect cleanup)", () => {
+      render(<ToastViewport />);
+      act(() => toast.info("Toast para unmount"));
+      cleanup();
+      // cancelAnimationFrame + clearTimeout rodados sem erros
+      expect(true).toBe(true);
+    });
   });
 });
