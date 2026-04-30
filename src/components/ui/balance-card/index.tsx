@@ -1,45 +1,27 @@
 import type * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
 import { Button } from "../button";
+import { formatCurrency } from "../../../utils/formatting";
 
-const balanceCardVariants = cva(
-  "flex flex-col items-center justify-center rounded-2xl p-8 w-full max-w-sm gap-4 shadow-sm",
-  {
-    variants: {
-      variant: {
-        default: "bg-baby-blue",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  },
-);
-export interface BalanceCardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof balanceCardVariants> {
+export interface BalanceCardProps extends React.HTMLAttributes<HTMLDivElement> {
   balance: number;
   onAddBalance: () => void;
 }
 
 export function BalanceCard({
   className,
-  variant,
   balance,
   onAddBalance,
   ...props
 }: BalanceCardProps) {
-  const formattedBalance = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(balance);
-
   return (
-    <div className={balanceCardVariants({ variant, className })} {...props}>
+    <div
+      className={`flex w-full max-w-sm flex-col items-center justify-center gap-4 rounded-2xl p-8 shadow-sm bg-baby-blue${className ? ` ${className}` : ""}`}
+      {...props}
+    >
       <span className="font-semibold text-dark-blue text-lg">Seu saldo:</span>
 
       <h2 className="my-2 font-bold text-5xl text-teal tracking-tight">
-        {formattedBalance}
+        {formatCurrency(balance)}
       </h2>
       <Button
         onClick={onAddBalance}
