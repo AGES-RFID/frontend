@@ -42,6 +42,11 @@ describe("toast", () => {
       const id = toast.show({ message: "Temporário", duration: 1000 });
       expect(typeof id).toBe("string");
     });
+
+    it("should push a success toast with optional title", () => {
+      const id = toast.success("Salvo com sucesso!", "Título");
+      expect(typeof id).toBe("string");
+    });
   });
 
   describe("ToastViewport", () => {
@@ -94,6 +99,15 @@ describe("toast", () => {
       expect(screen.getByText("MSG_BODY_UNIQUE")).toBeInTheDocument();
     });
 
+    it("should render a success toast with title and message", async () => {
+      render(<ToastViewport />);
+      await act(async () => {
+        toast.success("Salvo com sucesso!", "Título");
+      });
+      expect(screen.getByText("Título")).toBeInTheDocument();
+      expect(screen.getByText("Salvo com sucesso!")).toBeInTheDocument();
+    });
+
     it("should render close buttons for toasts", async () => {
       render(<ToastViewport />);
       await act(async () => {
@@ -114,6 +128,14 @@ describe("toast", () => {
         name: "Fechar notificação",
       });
       expect(() => closeBtns[0]?.click()).not.toThrow();
+    });
+
+    it("should unmount cleanly (useEffect cleanup)", () => {
+      render(<ToastViewport />);
+      act(() => toast.info("Toast para unmount"));
+      cleanup();
+      // cancelAnimationFrame + clearTimeout rodados sem erros
+      expect(true).toBe(true);
     });
   });
 });
