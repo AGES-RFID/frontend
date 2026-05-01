@@ -20,4 +20,4 @@ jobs:
     with:
       environment: "staging"
       version: ${{ github.sha }}
-      secrets: inherit
+    secrets: inherit
