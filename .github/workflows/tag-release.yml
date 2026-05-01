@@ -14,7 +14,8 @@ jobs:
   deploy-production:
     name: CD Production
     needs: [generate-release]
-    uses: AGES-RFID/cicd/.github/workflows/deployment.yml@main
+    uses: AGES-RFID/cicd/.github/workflows/deployment-s3.yml@main
     with:
-      environment: 'production'
+      environment: "production"
       version: ${{ github.ref_name }}
+      secrets: inherit
