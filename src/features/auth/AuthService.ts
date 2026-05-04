@@ -1,8 +1,8 @@
 import { type ApiClient, api } from "@/lib/api";
 import {
   type AuthResponseDto,
-  type LoginDto,
   authResponseSchema,
+  type LoginDto,
 } from "./dtos";
 
 export class AuthService {
@@ -16,6 +16,8 @@ export class AuthService {
     const response = await this.apiClient
       .post("auth/login", { json: loginDto })
       .json(authResponseSchema);
+
+    localStorage.setItem("rfid-auth-token", response.token);
 
     return response;
   }

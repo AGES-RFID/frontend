@@ -1,8 +1,8 @@
 import { HTTPError } from "ky";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Header } from "@/components/ui/header";
 import { Button } from "@/components/ui/button";
+import { Header } from "@/components/ui/header";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toast";
 import { loginSchema } from "@/features/auth/dtos";
@@ -35,8 +35,7 @@ export function Login() {
     loginMutation.mutate(
       { email, password },
       {
-        onSuccess: (data) => {
-          localStorage.setItem("token", data.token);
+        onSuccess: () => {
           navigate("/");
         },
         onError: (error) => {
