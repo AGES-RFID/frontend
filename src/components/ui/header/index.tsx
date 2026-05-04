@@ -127,7 +127,7 @@ export function Header({
         data-variant="logo"
         className={cn(
           "flex h-24 w-full items-center justify-center px-6",
-          "bg-[#173F67]",
+          "bg-dark-blue",
           className,
         )}
       >
@@ -150,7 +150,7 @@ export function Header({
       data-variant="default"
       className={cn(
         "flex h-24 w-full items-center px-6",
-        "bg-[#173F67]",
+        "bg-dark-blue",
         className,
       )}
     >

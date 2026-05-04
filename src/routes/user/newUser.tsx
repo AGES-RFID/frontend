@@ -58,7 +58,7 @@ export function NewUser() {
 
       <main className="mx-auto max-w-6xl px-6 py-12">
         <header className="mb-10 text-center">
-          <h1 className="font-bold text-4xl text-[#123b6d]">Cadastro</h1>
+          <h1 className="font-bold text-4xl text-dark-blue">Cadastro</h1>
           <p className="mt-2 text-gray text-sm">
             Preencha os dados abaixo para criar sua conta
           </p>
