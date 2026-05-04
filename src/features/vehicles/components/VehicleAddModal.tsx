@@ -40,7 +40,23 @@ export function VehicleAddModal({
         toast.success("Veículo criado com sucesso.");
         onClose();
       },
-      onError: () => toast.error("Erro ao criar veículo."),
+      onError: (error) => {
+        const status =
+          typeof error === "object" &&
+          error !== null &&
+          "response" in error &&
+          error.response &&
+          typeof (error.response as { status?: unknown }).status === "number"
+            ? (error.response as { status: number }).status
+            : undefined;
+
+        if (status === 409) {
+          toast.error("Placa já cadastrada");
+          return;
+        }
+
+        toast.error("Erro ao criar veículo.");
+      },
     });
   };
 

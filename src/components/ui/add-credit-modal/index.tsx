@@ -1,4 +1,4 @@
-import { type ChangeEvent, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
@@ -20,6 +20,12 @@ export function AddCreditModal({
   onConfirm,
 }: Readonly<AddCreditModalProps>) {
   const [amountInCents, setAmountInCents] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setAmountInCents(null);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -47,6 +53,11 @@ export function AddCreditModal({
     void onConfirm(amountInCents / 100);
   }
 
+  function handleClose() {
+    setAmountInCents(null);
+    onClose();
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
@@ -55,30 +66,30 @@ export function AddCreditModal({
       <section
         aria-modal="true"
         aria-labelledby="add-credit-modal-title"
-        className="w-full max-w-3xl rounded-2xl bg-white px-8 py-10 shadow-xl"
+        className="w-full max-w-sm rounded-2xl bg-white px-5 py-5 shadow-xl"
         role="dialog"
       >
         <h2
-          className="text-center font-bold text-4xl text-dark-blue md:text-5xl"
+          className="text-center font-bold text-dark-blue text-xl md:text-2xl"
           id="add-credit-modal-title"
         >
           Adicionar Crédito
         </h2>
 
-        <div className="mt-8 text-center">
-          <p className="font-bold text-2xl text-gray">Saldo atual</p>
+        <div className="mt-6 text-center">
+          <p className="font-bold text-gray text-sm">Saldo atual</p>
 
           <strong
-            className="mt-4 block font-bold text-5xl text-[#00A6A6] md:text-6xl"
+            className="mt-2 block font-bold text-3xl text-[#00A6A6] md:text-4xl"
             data-testid="client-balance"
           >
             {formatCurrency(clientBalanceInCents / 100)}
           </strong>
         </div>
 
-        <div className="mx-auto mt-8 w-full max-w-xl rounded-xl bg-[#CBD5E1] px-6 py-5">
+        <div className="mx-auto mt-5 w-full max-w-xs rounded-xl bg-[#CBD5E1] px-4 py-4">
           <label
-            className="block text-center font-bold text-2xl text-gray"
+            className="block text-center font-bold text-gray text-sm"
             htmlFor="credit-value"
           >
             Adicionar valor
@@ -87,7 +98,7 @@ export function AddCreditModal({
           <input
             aria-label="Adicionar valor"
             className={cn(
-              "mt-4 w-full border-gray border-b-4 bg-transparent text-center font-bold text-4xl text-dark-blue",
+              "mx-auto mt-3 w-11/12 border-gray border-b-2 bg-transparent text-center font-bold text-dark-blue text-xl",
               "outline-none placeholder:text-gray focus:border-dark-blue",
             )}
             data-testid="credit-value-input"
@@ -101,13 +112,13 @@ export function AddCreditModal({
           />
         </div>
 
-        <div className="mt-8 flex flex-wrap justify-center gap-6 md:gap-10">
+        <div className="mt-5 grid grid-cols-3 gap-2">
           {suggestedValuesInCents.map((valueInCents) => (
             <Button
-              className="font-bold text-2xl"
+              className="w-full whitespace-nowrap font-bold"
               key={valueInCents}
               onClick={() => handleSuggestedValue(valueInCents)}
-              size="lg"
+              size="sm"
               type="button"
               variant="borderless"
             >
@@ -116,11 +127,11 @@ export function AddCreditModal({
           ))}
         </div>
 
-        <div className="mt-10 flex flex-wrap justify-end gap-4 md:gap-6">
+        <div className="mt-6 flex flex-wrap justify-end gap-3">
           <Button
-            className="font-bold text-2xl text-black"
-            onClick={onClose}
-            size="lg"
+            className="font-bold text-black"
+            onClick={handleClose}
+            size="md"
             type="button"
             variant="borderless"
           >
@@ -128,10 +139,10 @@ export function AddCreditModal({
           </Button>
 
           <Button
-            className="font-bold text-2xl"
+            className="font-bold"
             disabled={!hasValidAmount}
             onClick={handleConfirm}
-            size="lg"
+            size="md"
             type="button"
           >
             Confirmar

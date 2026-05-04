@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "bun:test";
 import { act, cleanup, render, screen } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { ToastViewport, toast } from ".";
 
 afterEach(() => {
@@ -139,6 +140,45 @@ describe("toast", () => {
       cleanup();
       // cancelAnimationFrame + clearTimeout rodados sem erros
       expect(true).toBe(true);
+    });
+
+    it("should remove toast from viewport after duration and animation delay", async () => {
+      render(<ToastViewport />);
+
+      await act(async () => {
+        toast.show({
+          message: "MSG_AUTO_DISMISS_UNIQUE",
+          variant: "info",
+          duration: 1,
+        });
+      });
+
+      expect(screen.getByText("MSG_AUTO_DISMISS_UNIQUE")).toBeInTheDocument();
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 350));
+      });
+
+      expect(
+        screen.queryByText("MSG_AUTO_DISMISS_UNIQUE"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("should return null when document is undefined (SSR)", () => {
+      const originalDocument = (globalThis as unknown as { document?: unknown })
+        .document;
+      const hadDocument = "document" in (globalThis as object);
+
+      try {
+        (globalThis as unknown as { document?: unknown }).document = undefined;
+        const html = renderToString(<ToastViewport />);
+        expect(html).toBe("");
+      } finally {
+        if (hadDocument) {
+          (globalThis as unknown as { document?: unknown }).document =
+            originalDocument;
+        }
+      }
     });
   });
 });
