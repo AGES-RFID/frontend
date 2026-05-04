@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { toast } from "@/components/ui/toast";
-import type { VehicleWithOwnerDto } from "../dtos";
+import type { VehicleDto } from "../dtos";
 import { useDeleteVehicle } from "../hooks";
 
 interface VehicleDeleteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  vehicle: VehicleWithOwnerDto | null;
+  vehicle: Pick<VehicleDto, "vehicleId" | "plate"> | null;
 }
 
 export function VehicleDeleteModal({
@@ -26,7 +26,7 @@ export function VehicleDeleteModal({
       {
         onSuccess: () => {
           toast.success("Veículo excluído com sucesso.");
-          close();
+          onClose();
         },
         onError: () => toast.error("Erro ao excluir veículo."),
       },

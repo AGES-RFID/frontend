@@ -19,44 +19,52 @@ export function VehicleCard({
 }: VehicleCardProps) {
   const isLarge = size === "lg";
 
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "relative flex cursor-pointer flex-col items-center justify-center border-2 border-dark-blue font-bold",
-        isLarge ? "size-36 rounded-4xl" : "size-18.5 rounded-2xl",
-      )}
-    >
-      {/*ícone carro*/}
-      <CarIcon size={isLarge ? 64 : 28} className="text-dark-blue" />
+  const containerClassName = cn(
+    "relative flex flex-col items-center justify-center border-2 border-dark-blue font-bold",
+    isLarge ? "size-36 rounded-4xl" : "size-18.5 rounded-2xl",
+  );
 
-      {/*placa*/}
-      <span
+  return (
+    <div className={containerClassName}>
+      <button
+        type="button"
+        onClick={onClick}
         className={cn(
-          "text-black",
-          isLarge ? "mt-2 text-[28px]" : "mt-1 text-sm",
+          "flex size-full cursor-pointer flex-col items-center justify-center",
+          isLarge ? "rounded-4xl" : "rounded-2xl",
         )}
       >
-        {licensePlate}
-      </span>
+        {/*ícone carro*/}
+        <CarIcon size={isLarge ? 64 : 28} className="text-dark-blue" />
+
+        {/*placa*/}
+        <span
+          className={cn(
+            "text-black",
+            isLarge ? "mt-2 text-[28px]" : "mt-1 text-sm",
+          )}
+        >
+          {licensePlate}
+        </span>
+      </button>
 
       {/*delete*/}
       {hasDelete && (
         <button
           type="button"
+          aria-label="Excluir veículo"
           onClick={(e) => {
             e.stopPropagation();
             onDelete?.();
           }}
           className={cn(
             "absolute cursor-pointer text-black transition-colors hover:text-red",
-            isLarge ? "top-2 right-2" : "top-1 right-1",
+            isLarge ? "top-3 right-3" : "top-2 right-2",
           )}
         >
           <Trash2 size={isLarge ? 18 : 14} />
         </button>
       )}
-    </button>
+    </div>
   );
 }

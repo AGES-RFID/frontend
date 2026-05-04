@@ -136,4 +136,43 @@ describe("AddCreditModal", () => {
 
     expect(onClose).toHaveBeenCalled();
   });
+
+  test("should reset typed value when modal is reopened", () => {
+    const onClose = mock(() => {});
+    const onConfirm = mock(() => {});
+
+    const { rerender } = render(
+      <AddCreditModal
+        clientBalance={10.5}
+        isOpen
+        onClose={onClose}
+        onConfirm={onConfirm}
+      />,
+    );
+
+    const input = screen.getByLabelText("Adicionar valor");
+
+    fireEvent.change(input, { target: { value: "1000" } });
+    expect(input).toHaveValue("R$ 10,00");
+
+    rerender(
+      <AddCreditModal
+        clientBalance={10.5}
+        isOpen={false}
+        onClose={onClose}
+        onConfirm={onConfirm}
+      />,
+    );
+
+    rerender(
+      <AddCreditModal
+        clientBalance={10.5}
+        isOpen
+        onClose={onClose}
+        onConfirm={onConfirm}
+      />,
+    );
+
+    expect(screen.getByLabelText("Adicionar valor")).toHaveValue("");
+  });
 });

@@ -9,6 +9,7 @@ import { PricingTable } from "@/features/users/components/PricingTable";
 import { AddVehicleCard } from "@/features/vehicles/components/AddVehicleButton";
 import { VehicleAddModal } from "@/features/vehicles/components/VehicleAddModal";
 import { VehicleCard } from "@/features/vehicles/components/VehicleCard";
+import { VehicleDeleteModal } from "@/features/vehicles/components/VehicleDeleteModal";
 import { formatCurrency } from "@/utils/formatting";
 
 export function Home() {
@@ -16,8 +17,20 @@ export function Home() {
 
   const [isCreditModalOpen, setIsCreditModalOpen] = useState(false);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const [vehicleToDelete, setVehicleToDelete] = useState<{
+    vehicleId: string;
+    plate: string;
+  } | null>(null);
 
   const createTransactionMutation = useCreateTransaction();
+
+  function openDeleteVehicleModal(vehicleId: string, plate: string) {
+    setVehicleToDelete({ vehicleId, plate });
+  }
+
+  function closeDeleteVehicleModal() {
+    setVehicleToDelete(null);
+  }
 
   async function handleAddCredit(value: number) {
     createTransactionMutation.mutate(
@@ -95,6 +108,13 @@ export function Home() {
                 key={vehicle.vehicleId}
                 size="lg"
                 licensePlate={vehicle.plate}
+                hasDelete
+                onClick={() =>
+                  openDeleteVehicleModal(vehicle.vehicleId, vehicle.plate)
+                }
+                onDelete={() =>
+                  openDeleteVehicleModal(vehicle.vehicleId, vehicle.plate)
+                }
               />
             ))}
 
@@ -117,6 +137,12 @@ export function Home() {
         isOpen={isVehicleModalOpen}
         onClose={() => setIsVehicleModalOpen(false)}
         userId={meQuery.data?.userId}
+      />
+
+      <VehicleDeleteModal
+        isOpen={vehicleToDelete !== null}
+        onClose={closeDeleteVehicleModal}
+        vehicle={vehicleToDelete}
       />
     </>
   );
