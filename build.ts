@@ -6,4 +6,5 @@ await Bun.build({
   entrypoints: ["./public/index.html"],
   plugins: [tailwind],
   outdir: "./dist",
+  env: "inline",
 });
