@@ -1,7 +1,8 @@
-import { useState, type ChangeEvent } from "react";
+import { type ChangeEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
+import { formatCurrency } from "@/utils/formatting";
 
 type AddCreditModalProps = {
   isOpen: boolean;
@@ -11,17 +12,6 @@ type AddCreditModalProps = {
 };
 
 const suggestedValuesInCents = [500, 1000, 1500];
-
-function formatDecimal(valueInCents: number) {
-  return (valueInCents / 100).toLocaleString("pt-BR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
-
-function formatCurrency(valueInCents: number) {
-  return `R$ ${formatDecimal(valueInCents)}`;
-}
 
 export function AddCreditModal({
   isOpen,
@@ -82,7 +72,7 @@ export function AddCreditModal({
             className="mt-4 block font-bold text-5xl text-[#00A6A6] md:text-6xl"
             data-testid="client-balance"
           >
-            {formatCurrency(clientBalanceInCents)}
+            {formatCurrency(clientBalanceInCents / 100)}
           </strong>
         </div>
 
@@ -105,7 +95,9 @@ export function AddCreditModal({
             inputMode="numeric"
             onChange={handleAmountChange}
             placeholder="0,00"
-            value={amountInCents === null ? "" : formatDecimal(amountInCents)}
+            value={
+              amountInCents === null ? "" : formatCurrency(amountInCents / 100)
+            }
           />
         </div>
 
@@ -119,7 +111,7 @@ export function AddCreditModal({
               type="button"
               variant="borderless"
             >
-              + {formatCurrency(valueInCents)}
+              + {formatCurrency(valueInCents / 100)}
             </Button>
           ))}
         </div>

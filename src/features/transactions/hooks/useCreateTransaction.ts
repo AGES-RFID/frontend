@@ -10,6 +10,7 @@ export function useCreateTransaction() {
       transactionService.createTransaction(createTransactionDto),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 }

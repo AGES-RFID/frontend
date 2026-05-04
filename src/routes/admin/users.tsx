@@ -17,6 +17,7 @@ import {
   type CreateUserModalValue,
 } from "@/features/users/components/CreateUserModal";
 import { api } from "@/lib/api";
+import { formatCurrency } from "@/utils/formatting";
 
 const adminUserRoleSchema = z.enum(["admin", "customer"]);
 
@@ -24,6 +25,7 @@ const adminUserSchema = z.object({
   userId: z.uuid(),
   name: z.string(),
   email: z.email(),
+  balance: z.number(),
   role: adminUserRoleSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -341,12 +343,6 @@ export function Users() {
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-gray text-xs uppercase tracking-wide">ID</p>
-                <p className="break-all text-dark-gray">
-                  {selectedUser.userId}
-                </p>
-              </div>
-              <div>
                 <p className="text-gray text-xs uppercase tracking-wide">
                   Nome
                 </p>
@@ -357,6 +353,14 @@ export function Users() {
                   Email
                 </p>
                 <p className="break-all text-dark-gray">{selectedUser.email}</p>
+              </div>
+              <div>
+                <p className="text-gray text-xs uppercase tracking-wide">
+                  Saldo
+                </p>
+                <p className="text-dark-gray">
+                  {formatCurrency(selectedUser.balance)}
+                </p>
               </div>
               <div>
                 <p className="text-gray text-xs uppercase tracking-wide">
@@ -524,7 +528,7 @@ export function Users() {
 
       <AddCreditModal
         isOpen={isAddCreditModalOpen}
-        clientBalance={0}
+        clientBalance={selectedUser?.balance ?? 0}
         onClose={() => {
           setIsAddCreditModalOpen(false);
           setSelectedUser(null);
