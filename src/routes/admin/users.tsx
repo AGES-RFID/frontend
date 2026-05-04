@@ -1,14 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Edit, Trash2, Wallet } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import { Edit, Trash2 } from "lucide-react";
-import { api } from "@/lib/api";
+import { AddCreditModal } from "@/components/ui/add-credit-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  CreateUserModal,
-  type CreateUserModalValue,
-} from "@/features/users/components/CreateUserModal";
 import { Modal } from "@/components/ui/modal";
 import {
   Table,
@@ -16,6 +12,12 @@ import {
   type TableColumn,
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/toast";
+import {
+  CreateUserModal,
+  type CreateUserModalValue,
+} from "@/features/users/components/CreateUserModal";
+import { api } from "@/lib/api";
+import { formatCurrency } from "@/utils/formatting";
 
 const adminUserRoleSchema = z.enum(["admin", "customer"]);
 
@@ -23,6 +25,7 @@ const adminUserSchema = z.object({
   userId: z.uuid(),
   name: z.string(),
   email: z.email(),
+  balance: z.number(),
   role: adminUserRoleSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -52,6 +55,7 @@ const roleLabelMap: Record<AdminUserRole, string> = {
   customer: "Cliente",
 };
 
+import { useCreateTransaction } from "@/features/transactions/hooks/useCreateTransaction";
 import { formatDateTime } from "@/utils/formatting";
 
 function buildCreatePayload(formData: CreateUserModalValue) {
@@ -79,6 +83,7 @@ export function Users() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAddCreditModalOpen, setIsAddCreditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [editForm, setEditForm] =
     useState<UpdateUserFormState>(emptyUpdateForm);
@@ -150,6 +155,33 @@ export function Users() {
     },
   });
 
+  const createTransactionMutation = useCreateTransaction();
+
+  const handleAddCredit = async (userId: string, amount: number) => {
+    createTransactionMutation.mutate(
+      {
+        userId,
+        amount,
+        description: "Admin adicionando crédito",
+      },
+      {
+        onSuccess: async () => {
+          toast.success("Crédito adicionado com sucesso.");
+          await queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+          setIsAddCreditModalOpen(false);
+          setSelectedUser(null);
+        },
+        onError: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Erro ao adicionar crédito.",
+          );
+        },
+      },
+    );
+  };
+
   useEffect(() => {
     if (usersQuery.error) {
       toast.error(
@@ -165,7 +197,6 @@ export function Users() {
 
   const columns = useMemo<TableColumn<AdminUser>[]>(
     () => [
-      { key: "userId", title: "ID", className: "w-24 whitespace-nowrap" },
       { key: "name", title: "Nome", className: "w-96", sortable: true },
       { key: "email", title: "Email", className: "w-72", sortable: true },
       {
@@ -215,6 +246,17 @@ export function Users() {
         },
         className:
           "text-red hover:text-light-red cursor-pointer transition-colors",
+      },
+      {
+        key: "add-credit",
+        label: "Adicionar Crédito",
+        icon: <Wallet size={18} />,
+        onClick: (user) => {
+          setSelectedUser(user);
+          setIsAddCreditModalOpen(true);
+        },
+        className:
+          "text-[#00A6A6] hover:text-[#007f7f] cursor-pointer transition-colors",
       },
     ],
     [],
@@ -301,12 +343,6 @@ export function Users() {
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-gray text-xs uppercase tracking-wide">ID</p>
-                <p className="break-all text-dark-gray">
-                  {selectedUser.userId}
-                </p>
-              </div>
-              <div>
                 <p className="text-gray text-xs uppercase tracking-wide">
                   Nome
                 </p>
@@ -317,6 +353,14 @@ export function Users() {
                   Email
                 </p>
                 <p className="break-all text-dark-gray">{selectedUser.email}</p>
+              </div>
+              <div>
+                <p className="text-gray text-xs uppercase tracking-wide">
+                  Saldo
+                </p>
+                <p className="text-dark-gray">
+                  {formatCurrency(selectedUser.balance)}
+                </p>
               </div>
               <div>
                 <p className="text-gray text-xs uppercase tracking-wide">
@@ -481,6 +525,19 @@ export function Users() {
           </div>
         </div>
       </Modal>
+
+      <AddCreditModal
+        isOpen={isAddCreditModalOpen}
+        clientBalance={selectedUser?.balance ?? 0}
+        onClose={() => {
+          setIsAddCreditModalOpen(false);
+          setSelectedUser(null);
+        }}
+        onConfirm={async (amount) => {
+          if (!selectedUser) return;
+          handleAddCredit(selectedUser.userId, amount);
+        }}
+      />
     </div>
   );
 }

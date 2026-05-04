@@ -16,5 +16,5 @@ export const currencyFormatter = new Intl.NumberFormat("pt-BR", {
 });
 
 export function formatCurrency(value: number): string {
-  return currencyFormatter.format(value);
+  return currencyFormatter.format(value).replace(/\u00a0/g, " ");
 }
