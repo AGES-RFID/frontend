@@ -1,16 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { z } from "zod";
 import { Edit, Trash2, Wallet } from "lucide-react";
-import { api } from "@/lib/api";
+import { useEffect, useMemo, useState } from "react";
+import { z } from "zod";
+import { AddCreditModal } from "@/components/ui/add-credit-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AddCreditModal } from "@/components/ui/add-credit-modal";
-import { userService } from "@/features/users/UserService";
-import {
-  CreateUserModal,
-  type CreateUserModalValue,
-} from "@/features/users/components/CreateUserModal";
 import { Modal } from "@/components/ui/modal";
 import {
   Table,
@@ -18,6 +12,11 @@ import {
   type TableColumn,
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/toast";
+import {
+  CreateUserModal,
+  type CreateUserModalValue,
+} from "@/features/users/components/CreateUserModal";
+import { api } from "@/lib/api";
 
 const adminUserRoleSchema = z.enum(["admin", "customer"]);
 
@@ -54,6 +53,7 @@ const roleLabelMap: Record<AdminUserRole, string> = {
   customer: "Cliente",
 };
 
+import { useCreateTransaction } from "@/features/transactions/hooks/useCreateTransaction";
 import { formatDateTime } from "@/utils/formatting";
 
 function buildCreatePayload(formData: CreateUserModalValue) {
@@ -153,26 +153,32 @@ export function Users() {
     },
   });
 
-  const addCreditMutation = useMutation({
-    mutationFn: async ({
-      userId,
-      amount,
-    }: {
-      userId: string;
-      amount: number;
-    }) => userService.addCredit(userId, amount),
-    onSuccess: async () => {
-      toast.success("Crédito adicionado com sucesso.");
-      await queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      setIsAddCreditModalOpen(false);
-      setSelectedUser(null);
-    },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : "Erro ao adicionar crédito.",
-      );
-    },
-  });
+  const createTransactionMutation = useCreateTransaction();
+
+  const handleAddCredit = async (userId: string, amount: number) => {
+    createTransactionMutation.mutate(
+      {
+        userId,
+        amount,
+        description: "Admin adicionando crédito",
+      },
+      {
+        onSuccess: async () => {
+          toast.success("Crédito adicionado com sucesso.");
+          await queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+          setIsAddCreditModalOpen(false);
+          setSelectedUser(null);
+        },
+        onError: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Erro ao adicionar crédito.",
+          );
+        },
+      },
+    );
+  };
 
   useEffect(() => {
     if (usersQuery.error) {
@@ -189,7 +195,6 @@ export function Users() {
 
   const columns = useMemo<TableColumn<AdminUser>[]>(
     () => [
-      { key: "userId", title: "ID", className: "w-24 whitespace-nowrap" },
       { key: "name", title: "Nome", className: "w-96", sortable: true },
       { key: "email", title: "Email", className: "w-72", sortable: true },
       {
@@ -526,7 +531,7 @@ export function Users() {
         }}
         onConfirm={async (amount) => {
           if (!selectedUser) return;
-          addCreditMutation.mutate({ userId: selectedUser.userId, amount });
+          handleAddCredit(selectedUser.userId, amount);
         }}
       />
     </div>
