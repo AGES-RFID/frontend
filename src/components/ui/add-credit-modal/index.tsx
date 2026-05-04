@@ -80,14 +80,14 @@ export function AddCreditModal({
           <p className="font-bold text-gray text-sm">Saldo atual</p>
 
           <strong
-            className="mt-2 block font-bold text-3xl text-[#00A6A6] md:text-4xl"
+            className="mt-2 block font-bold text-3xl text-teal md:text-4xl"
             data-testid="client-balance"
           >
             {formatCurrency(clientBalanceInCents / 100)}
           </strong>
         </div>
 
-        <div className="mx-auto mt-5 w-full max-w-xs rounded-xl bg-[#CBD5E1] px-4 py-4">
+        <div className="mx-auto mt-5 w-full max-w-xs rounded-xl bg-baby-blue px-4 py-4">
           <label
             className="block text-center font-bold text-gray text-sm"
             htmlFor="credit-value"

@@ -256,7 +256,7 @@ export function Users() {
           setIsAddCreditModalOpen(true);
         },
         className:
-          "text-[#00A6A6] hover:text-[#007f7f] cursor-pointer transition-colors",
+          "text-teal hover:text-[#007f7f] cursor-pointer transition-colors",
       },
     ],
     [],
