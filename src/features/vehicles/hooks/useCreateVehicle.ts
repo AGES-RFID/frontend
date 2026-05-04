@@ -10,6 +10,7 @@ export function useCreateVehicle() {
       vehicleService.createVehicle(createVehicleDto),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["admin-vehicles"] });
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });
 }
