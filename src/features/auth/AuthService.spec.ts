@@ -2,18 +2,36 @@
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 import { type ApiClient, api } from "@/lib/api";
 import { jsonResponse } from "/test/utils/makeResponse";
+import type { UserDto } from "../users/dtos";
 import { AuthService } from "./AuthService";
 import type { LoginDto } from "./dtos";
 
-const mockUser = {
+const mockUser: UserDto = {
   userId: "550e8400-e29b-41d4-a716-446655440000",
   name: "John Doe",
   email: "john.doe@example.com",
+  balance: 0,
+  role: "admin",
 };
 
 const mockAuthResponse = {
   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mocktoken",
   user: mockUser,
+};
+
+const mockVehicle = {
+  vehicleId: "0c58e273-7cbe-4e0a-b6c0-cde9e1b5e5b1",
+  userId: mockUser.userId,
+  plate: "ABC-1234",
+  brand: "Tesla",
+  model: "Model 3",
+  createdAt: "2024-01-01T00:00:00.000Z",
+  updatedAt: "2024-01-02T00:00:00.000Z",
+};
+
+const mockUserWithVehicles = {
+  ...mockUser,
+  vehicles: [mockVehicle],
 };
 
 const loginDto: LoginDto = {
@@ -78,6 +96,18 @@ describe("AuthService", () => {
       expect(result.user).toEqual(mockUser);
     });
 
+    it("should store the token in localStorage", async () => {
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse(mockAuthResponse),
+      );
+
+      await authService.login(loginDto);
+
+      expect(localStorage.getItem("rfid-auth-token")).toBe(
+        mockAuthResponse.token,
+      );
+    });
+
     it("should throw when the response is missing the token", async () => {
       fetchMock.mockImplementationOnce(async () =>
         jsonResponse({ user: mockUser }),
@@ -100,6 +130,61 @@ describe("AuthService", () => {
       );
 
       expect(authService.login(loginDto)).rejects.toBeDefined();
+    });
+  });
+
+  describe("me", () => {
+    let fetchMock = mock();
+    let apiMock: ApiClient;
+    let authService: AuthService;
+
+    beforeEach(() => {
+      fetchMock = mock();
+      apiMock = api.extend({ fetch: fetchMock });
+      authService = new AuthService(apiMock);
+      localStorage.clear();
+    });
+
+    it("should call the api with the bearer token", async () => {
+      localStorage.setItem("rfid-auth-token", mockAuthResponse.token);
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse(mockUserWithVehicles),
+      );
+
+      await authService.me();
+
+      const [request] = fetchMock.mock.calls[0] ?? [];
+      if (!request) {
+        throw new Error("Expected a request to be sent");
+      }
+      expect(request).toBeInstanceOf(Request);
+      expect(request.url).toContain("/auth/me");
+      expect(request.method).toBe("GET");
+      expect(request.headers.get("Authorization")).toBe(
+        `Bearer ${mockAuthResponse.token}`,
+      );
+    });
+
+    it("should return the user with vehicles", async () => {
+      localStorage.setItem("rfid-auth-token", mockAuthResponse.token);
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse(mockUserWithVehicles),
+      );
+
+      const result = await authService.me();
+
+      expect(result).toEqual(mockUserWithVehicles);
+    });
+
+    it("should throw when there is no token", async () => {
+      await expect(authService.me()).rejects.toBeDefined();
+    });
+
+    it("should throw when the response body is invalid", async () => {
+      localStorage.setItem("rfid-auth-token", mockAuthResponse.token);
+      fetchMock.mockImplementationOnce(async () => jsonResponse(mockUser));
+
+      await expect(authService.me()).rejects.toBeDefined();
     });
   });
 });

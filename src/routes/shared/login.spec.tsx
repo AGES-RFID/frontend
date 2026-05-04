@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it, spyOn } from "bun:test";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router";
-import { Login } from "./login";
 import { authService } from "@/features/auth/AuthService";
+import type { UserDto } from "@/features/users/dtos";
+import { Login } from "./login";
 
 function renderLogin() {
   const queryClient = new QueryClient({
@@ -111,10 +112,12 @@ describe("Login component", () => {
   });
 
   it("should store token and navigate on successful login", async () => {
-    const mockUser = {
+    const mockUser: UserDto = {
       userId: "550e8400-e29b-41d4-a716-446655440000",
       name: "Test User",
       email: "test@example.com",
+      balance: 0,
+      role: "admin",
     };
     const loginSpy = spyOn(authService, "login").mockResolvedValue({
       token: "mock-token",

@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 import { type ApiClient, api } from "@/lib/api";
 import { jsonResponse } from "/test/utils/makeResponse";
-import type { CreateUserDto } from "./dtos";
+import type { CreateUserDto, UserDto, UserListDto } from "./dtos";
 import { UserService } from "./UserService";
 
 describe("UserService", () => {
@@ -33,16 +33,20 @@ describe("UserService", () => {
     });
 
     it("should return the user list with correct data", async () => {
-      const mockUsers = [
+      const mockUsers: UserListDto = [
         {
           userId: "550e8400-e29b-41d4-a716-446655440000",
           name: "John Doe",
           email: "john.doe@example.com",
+          balance: 0,
+          role: "admin",
         },
         {
           userId: "550e8400-e29b-41d4-a716-446655440001",
           name: "Jane Smith",
           email: "jane.smith@example.com",
+          balance: 0,
+          role: "admin",
         },
       ];
 
@@ -92,7 +96,9 @@ describe("UserService", () => {
           userId: "550e8400-e29b-41d4-a716-446655440000",
           name: "John Doe",
           email: "john.doe@example.com",
-        }),
+          balance: 0,
+          role: "admin",
+        } satisfies UserDto),
       );
 
       await userService.createUser(createUserDto);
@@ -114,10 +120,12 @@ describe("UserService", () => {
         name: "Jane Smith",
         email: "jane.smith@example.com",
       };
-      const createdUser = {
+      const createdUser: UserDto = {
         userId: "550e8400-e29b-41d4-a716-446655440001",
         name: "Jane Smith",
         email: "jane.smith@example.com",
+        balance: 0,
+        role: "admin",
       };
 
       fetchMock.mockImplementationOnce(async () => jsonResponse(createdUser));
@@ -171,7 +179,9 @@ describe("UserService", () => {
           userId,
           name: "John Doe",
           email: "john.doe@example.com",
-        }),
+          balance: 0,
+          role: "admin",
+        } satisfies UserDto),
       );
 
       await userService.getUserById(userId);
@@ -189,10 +199,12 @@ describe("UserService", () => {
 
     it("should return the user with correct data", async () => {
       const userId = "550e8400-e29b-41d4-a716-446655440000";
-      const user = {
+      const user: UserDto = {
         userId,
         name: "John Doe",
         email: "john.doe@example.com",
+        balance: 0,
+        role: "admin",
       };
 
       fetchMock.mockImplementationOnce(async () => jsonResponse(user));

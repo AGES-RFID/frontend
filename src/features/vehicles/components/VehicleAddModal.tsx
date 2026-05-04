@@ -10,12 +10,14 @@ interface VehicleAddModalProps {
   isOpen: boolean;
   onClose: () => void;
   isAdmin: boolean;
+  userId?: string;
 }
 
 export function VehicleAddModal({
   isOpen,
   onClose,
   isAdmin,
+  userId,
 }: VehicleAddModalProps) {
   const { data: owners = [], error: ownersError } = useUsers({
     enabled: isOpen && isAdmin,
@@ -31,6 +33,8 @@ export function VehicleAddModal({
   }, [ownersError]);
 
   const handleCreateVehicle = (formData: Partial<CreateVehicleDto>) => {
+    formData.userId = userId;
+
     createVehicleMutation.mutate(formData as CreateVehicleDto, {
       onSuccess: () => {
         toast.success("Veículo criado com sucesso.");

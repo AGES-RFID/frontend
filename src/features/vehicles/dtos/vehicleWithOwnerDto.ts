@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import { userSchema } from "@/features/users/dtos";
+import { userSchema } from "@/features/users/dtos/userDto";
 import { vehicleSchema } from "./vehicleDto";
 
 export const vehicleWithOwnerSchema = vehicleSchema.extend({
