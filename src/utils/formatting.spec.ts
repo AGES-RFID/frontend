@@ -3,30 +3,15 @@ import { formatCurrency, formatDateTime } from "./formatting";
 
 describe("formatCurrency", () => {
   it("should format a whole number as BRL currency", () => {
-    expect(formatCurrency(1500)).toBe(
-      new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(1500),
-    );
+    expect(formatCurrency(1500)).toBe("R$ 1.500,00");
   });
 
   it("should format zero as BRL currency", () => {
-    expect(formatCurrency(0)).toBe(
-      new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(0),
-    );
+    expect(formatCurrency(0)).toBe("R$ 0,00");
   });
 
   it("should format a decimal number as BRL currency", () => {
-    expect(formatCurrency(99.9)).toBe(
-      new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(99.9),
-    );
+    expect(formatCurrency(99.9)).toBe("R$ 99,90");
   });
 });
 

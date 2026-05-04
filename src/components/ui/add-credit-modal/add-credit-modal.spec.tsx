@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, mock, test } from "bun:test";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 
 import { AddCreditModal } from ".";
@@ -57,16 +57,16 @@ describe("AddCreditModal", () => {
     const input = screen.getByLabelText("Adicionar valor");
 
     fireEvent.change(input, { target: { value: "1" } });
-    expect(input).toHaveValue("0,01");
+    expect(input).toHaveValue("R$ 0,01");
 
     fireEvent.change(input, { target: { value: "12" } });
-    expect(input).toHaveValue("0,12");
+    expect(input).toHaveValue("R$ 0,12");
 
     fireEvent.change(input, { target: { value: "123" } });
-    expect(input).toHaveValue("1,23");
+    expect(input).toHaveValue("R$ 1,23");
 
     fireEvent.change(input, { target: { value: "1000" } });
-    expect(input).toHaveValue("10,00");
+    expect(input).toHaveValue("R$ 10,00");
   });
 
   test("should ignore non numeric characters", () => {
@@ -76,7 +76,7 @@ describe("AddCreditModal", () => {
 
     fireEvent.change(input, { target: { value: "abc1d2" } });
 
-    expect(input).toHaveValue("0,12");
+    expect(input).toHaveValue("R$ 0,12");
   });
 
   test("should clear the input and disable confirm button when value is removed", () => {
@@ -87,7 +87,7 @@ describe("AddCreditModal", () => {
 
     fireEvent.change(input, { target: { value: "1000" } });
 
-    expect(input).toHaveValue("10,00");
+    expect(input).toHaveValue("R$ 10,00");
     expect(confirmButton).toBeEnabled();
 
     fireEvent.change(input, { target: { value: "" } });
@@ -104,7 +104,7 @@ describe("AddCreditModal", () => {
     fireEvent.change(input, { target: { value: "1" } });
     fireEvent.click(screen.getByRole("button", { name: "+ R$ 5,00" }));
 
-    expect(input).toHaveValue("5,01");
+    expect(input).toHaveValue("R$ 5,01");
   });
 
   test("should add suggested value when input is empty", () => {
@@ -114,7 +114,7 @@ describe("AddCreditModal", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "+ R$ 10,00" }));
 
-    expect(input).toHaveValue("10,00");
+    expect(input).toHaveValue("R$ 10,00");
   });
 
   test("should call onConfirm with the input value", () => {
