@@ -8,17 +8,21 @@ afterEach(() => {
 });
 
 describe("HistoryCard", () => {
-  it("should render correctly for credit type", () => {
+  it("should render correctly for entry type", () => {
     render(
-      <HistoryCard type="credit" value={150} date="06/05/2026" hour="14:30" />,
+      <HistoryCard
+        type="entry"
+        date="06/05/2026"
+        hour="14:30"
+        tagId="ABC-1234"
+      />,
     );
 
     expect(screen.getByText("06/05/2026 14:30")).toBeInTheDocument();
-    expect(screen.getByText("Crédito")).toBeInTheDocument();
+    expect(screen.getByText("Entrada")).toBeInTheDocument();
 
     const valueElement = screen.getByTestId("history-card-value");
-    expect(valueElement).toHaveTextContent(/\+/);
-    expect(valueElement).toHaveTextContent(/150/);
+    expect(valueElement).toHaveTextContent(/Entrada/);
     expect(valueElement).toHaveClass("text-teal");
   });
 
@@ -26,10 +30,9 @@ describe("HistoryCard", () => {
     render(
       <HistoryCard
         type="exit"
-        value={15}
         date="05/05/2026"
         hour="18:45"
-        licensePlate="ABC-1234"
+        tagId="ABC-1234"
       />,
     );
 
@@ -37,8 +40,7 @@ describe("HistoryCard", () => {
     expect(screen.getByText("ABC-1234")).toBeInTheDocument();
 
     const valueElement = screen.getByTestId("history-card-value");
-    expect(valueElement).toHaveTextContent(/-/);
-    expect(valueElement).toHaveTextContent(/15/);
+    expect(valueElement).toHaveTextContent(/Saída/);
     expect(valueElement).toHaveClass("text-red");
   });
 });
