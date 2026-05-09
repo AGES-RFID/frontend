@@ -15,7 +15,6 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { act } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { authService } from "@/features/auth/AuthService";
 import * as authContextModule from "@/features/auth/context/AuthContext";
@@ -147,16 +146,12 @@ describe("Login component", () => {
 
   it("should trigger register navigation without throwing", async () => {
     renderLogin();
-    await act(async () => {
-      screen.getByRole("button", { name: "Criar nova conta" }).click();
-    });
+    screen.getByRole("button", { name: "Criar nova conta" }).click();
   });
 
   it("should trigger forgot password without throwing", async () => {
     renderLogin();
-    await act(async () => {
-      screen.getByRole("button", { name: "Esqueci a senha" }).click();
-    });
+    screen.getByRole("button", { name: "Esqueci a senha" }).click();
   });
 
   it("should redirect authenticated admin to admin dashboard", async () => {
@@ -200,25 +195,17 @@ describe("Login component", () => {
 
     renderLogin();
 
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText("Digite seu email"), {
-        target: { value: "test@example.com" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Digite sua senha"), {
-        target: { value: "password123" },
-      });
+    fireEvent.change(screen.getByPlaceholderText("Digite seu email"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Digite sua senha"), {
+      target: { value: "password123" },
     });
 
-    await act(async () => {
-      const form = screen
-        .getByRole("button", { name: "Entrar" })
-        .closest("form");
-      if (form) fireEvent.submit(form);
-    });
+    const form = screen.getByRole("button", { name: "Entrar" }).closest("form");
+    if (form) fireEvent.submit(form);
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    });
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(loginSpy).toHaveBeenCalled();
     loginSpy.mockRestore();
@@ -231,25 +218,17 @@ describe("Login component", () => {
 
     renderLogin();
 
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText("Digite seu email"), {
-        target: { value: "wrong@example.com" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Digite sua senha"), {
-        target: { value: "wrongpass" },
-      });
+    fireEvent.change(screen.getByPlaceholderText("Digite seu email"), {
+      target: { value: "wrong@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Digite sua senha"), {
+      target: { value: "wrongpass" },
     });
 
-    await act(async () => {
-      const form = screen
-        .getByRole("button", { name: "Entrar" })
-        .closest("form");
-      if (form) fireEvent.submit(form);
-    });
+    const form = screen.getByRole("button", { name: "Entrar" }).closest("form");
+    if (form) fireEvent.submit(form);
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    });
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(loginSpy).toHaveBeenCalled();
     loginSpy.mockRestore();
