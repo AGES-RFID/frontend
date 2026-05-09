@@ -7,7 +7,13 @@ import {
   it,
   spyOn,
 } from "bun:test";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import * as authContextModule from "@/features/auth/context/AuthContext";
 import type { UserDto } from "@/features/users/dtos";
@@ -21,6 +27,7 @@ function renderCustomerLayout(initialEntry = "/") {
     <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
         <Route path="/login" element={<div>Login page</div>} />
+        <Route path="/user/new" element={<div>Register page</div>} />
         <Route element={<CustomerLayout />}>
           <Route path="/" element={<div>Customer page</div>} />
         </Route>
@@ -72,6 +79,21 @@ describe("CustomerLayout", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Login page")).toBeInTheDocument();
+    });
+  });
+
+  it("navigates to register page when header auth action is clicked", async () => {
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: { role: "customer" } as UserDto,
+    });
+
+    renderCustomerLayout();
+
+    fireEvent.click(screen.getByTestId("header-auth-button"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Register page")).toBeInTheDocument();
     });
   });
 });
