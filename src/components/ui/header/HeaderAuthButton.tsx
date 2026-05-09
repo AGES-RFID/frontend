@@ -1,5 +1,5 @@
-import { cn } from "@/utils/cn";
 import { LogOutIcon } from "lucide-react";
+import { cn } from "@/utils/cn";
 
 type HeaderAuthButtonProps = {
   isLogged?: boolean;

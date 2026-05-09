@@ -1,9 +1,9 @@
+import { House, LayoutDashboard, LogOut, User, Wallet } from "lucide-react";
 import { useMemo } from "react";
-import { useNavigate, useLocation } from "react-router";
-import { LayoutDashboard, LogOut, House, Wallet, User } from "lucide-react";
-import { HeaderButton } from "@/components/ui/header-button";
+import { useLocation, useNavigate } from "react-router";
 import { cn } from "@/utils/cn";
-import impinjLogo from "../../../../public/impinj-logo.png";
+import impinjLogo from "/public/impinj-logo.png";
+import { HeaderButton } from "./HeaderButton";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

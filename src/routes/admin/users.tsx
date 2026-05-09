@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Edit, Trash2, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import { AddCreditModal } from "@/components/ui/add-credit-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
@@ -12,6 +11,7 @@ import {
   type TableColumn,
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/toast";
+import { AddCreditModal } from "@/features/transactions/components/add-credit-modal";
 import {
   CreateUserModal,
   type CreateUserModalValue,

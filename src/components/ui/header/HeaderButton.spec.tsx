@@ -1,7 +1,7 @@
-import { describe, expect, it, mock, afterEach } from "bun:test";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 import { cleanup, render, screen } from "@testing-library/react";
 
-import { HeaderButton } from ".";
+import { HeaderButton } from "./HeaderButton";
 
 const MockIcon = () => <svg data-testid="mock-icon" />;
 

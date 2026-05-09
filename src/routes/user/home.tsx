@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import { AddCreditModal } from "@/components/ui/add-credit-modal";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { useMe } from "@/features/auth/hooks/useMe";
+import { AddCreditModal } from "@/features/transactions/components/add-credit-modal";
 import { useCreateTransaction } from "@/features/transactions/hooks/useCreateTransaction";
 import { PricingTable } from "@/features/users/components/PricingTable";
 import { AddVehicleCard } from "@/features/vehicles/components/AddVehicleButton";

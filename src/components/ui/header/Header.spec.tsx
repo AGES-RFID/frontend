@@ -1,4 +1,4 @@
-import { describe, expect, it, mock, afterEach } from "bun:test";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 import { cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
