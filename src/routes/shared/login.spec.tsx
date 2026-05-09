@@ -1,11 +1,29 @@
-import { afterEach, describe, expect, it, spyOn } from "bun:test";
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  spyOn,
+} from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { act } from "react";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { authService } from "@/features/auth/AuthService";
+import * as authContextModule from "@/features/auth/context/AuthContext";
 import type { UserDto } from "@/features/users/dtos";
-import { Login } from "./login";
+
+const useAuthContextSpy = spyOn(authContextModule, "useAuthContext");
+
+const { Login } = await import("./login");
 
 function renderLogin() {
   const queryClient = new QueryClient({
@@ -21,8 +39,38 @@ function renderLogin() {
   );
 }
 
+function renderLoginWithRoutes(initialEntry = "/login") {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntry]}>
+        <Routes>
+          <Route path="/" element={<div>Home page</div>} />
+          <Route path="/admin/dashboard" element={<div>Admin dashboard</div>} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+}
+
 describe("Login component", () => {
+  beforeEach(() => {
+    useAuthContextSpy.mockReset();
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: undefined,
+    });
+  });
+
   afterEach(cleanup);
+
+  afterAll(() => {
+    useAuthContextSpy.mockRestore();
+  });
 
   it("should render the email input", () => {
     renderLogin();
@@ -108,6 +156,32 @@ describe("Login component", () => {
     renderLogin();
     await act(async () => {
       screen.getByRole("button", { name: "Esqueci a senha" }).click();
+    });
+  });
+
+  it("should redirect authenticated admin to admin dashboard", async () => {
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: { role: "admin" } as UserDto,
+    });
+
+    renderLoginWithRoutes();
+
+    await waitFor(() => {
+      expect(screen.getByText("Admin dashboard")).toBeInTheDocument();
+    });
+  });
+
+  it("should redirect authenticated customer to home", async () => {
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: { role: "customer" } as UserDto,
+    });
+
+    renderLoginWithRoutes();
+
+    await waitFor(() => {
+      expect(screen.getByText("Home page")).toBeInTheDocument();
     });
   });
 

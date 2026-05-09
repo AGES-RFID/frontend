@@ -1,10 +1,11 @@
 import { HTTPError } from "ky";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/ui/header";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toast";
+import { useAuthContext } from "@/features/auth/context/AuthContext";
 import { loginSchema } from "@/features/auth/dtos";
 import { useLogin } from "@/features/auth/hooks";
 
@@ -13,9 +14,18 @@ export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
+  const { currentUser, isLoading: isAuthLoading } = useAuthContext();
 
   const loginMutation = useLogin();
   const isLoading = loginMutation.isPending;
+
+  useEffect(() => {
+    if (!isAuthLoading && currentUser) {
+      navigate(currentUser.role === "admin" ? "/admin/dashboard" : "/", {
+        replace: true,
+      });
+    }
+  }, [isAuthLoading, currentUser, navigate]);
 
   const validateEmail = (value: string) => {
     const result = loginSchema.shape.email.safeParse(value);
@@ -56,6 +66,10 @@ export function Login() {
   const handleForgotPassword = () => {
     navigate("/user/new");
   };
+
+  if (isAuthLoading || currentUser) {
+    return null;
+  }
 
   return (
     <>

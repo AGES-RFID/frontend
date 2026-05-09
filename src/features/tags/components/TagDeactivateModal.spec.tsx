@@ -1,16 +1,30 @@
-import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  spyOn,
+} from "bun:test";
 import { cleanup, render, screen } from "@testing-library/react";
+import { toast } from "@/components/ui/toast";
+import * as tagHooks from "../hooks";
 import type { TagListItemDto } from "../dtos";
 
 const mutateMock = mock();
-const mockUseDeactivateTag = mock(() => ({
-  mutate: mutateMock,
-  isPending: false,
-}));
+const useDeactivateTagSpy = spyOn(tagHooks, "useDeactivateTag");
+const toastSuccessSpy = spyOn(toast, "success");
+const toastErrorSpy = spyOn(toast, "error");
 
-mock.module("../hooks", () => ({
-  useDeactivateTag: mockUseDeactivateTag,
-}));
+useDeactivateTagSpy.mockImplementation(
+  () =>
+    ({
+      mutate: mutateMock,
+      isPending: false,
+    }) as never,
+);
 
 const { TagDeactivateModal } = await import("./TagDeactivateModal");
 
@@ -26,6 +40,14 @@ describe("TagDeactivateModal component", () => {
 
   beforeEach(() => {
     mutateMock.mockReset();
+    toastSuccessSpy.mockReset();
+    toastErrorSpy.mockReset();
+  });
+
+  afterAll(() => {
+    useDeactivateTagSpy.mockRestore();
+    toastSuccessSpy.mockRestore();
+    toastErrorSpy.mockRestore();
   });
 
   it("should not render content when isOpen is false", () => {

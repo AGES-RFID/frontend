@@ -26,11 +26,11 @@ export class AuthService {
     return response;
   }
 
-  async me(): Promise<UserWithVehiclesDto> {
+  async me(): Promise<UserWithVehiclesDto | null> {
     const token = localStorage.getItem("rfid-auth-token");
 
     if (!token) {
-      throw new Error("No authentication token found");
+      return null;
     }
 
     const response = await this.apiClient

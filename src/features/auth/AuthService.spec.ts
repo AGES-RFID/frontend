@@ -176,8 +176,8 @@ describe("AuthService", () => {
       expect(result).toEqual(mockUserWithVehicles);
     });
 
-    it("should throw when there is no token", async () => {
-      await expect(authService.me()).rejects.toBeDefined();
+    it("should return null when there is no token", async () => {
+      expect(await authService.me()).toBeNull();
     });
 
     it("should throw when the response body is invalid", async () => {
