@@ -93,13 +93,6 @@ describe("Login component", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render the forgot password button", () => {
-    renderLogin();
-    expect(
-      screen.getByRole("button", { name: "Esqueci a senha" }),
-    ).toBeInTheDocument();
-  });
-
   it("should update email field value on input", () => {
     renderLogin();
     const emailInput = screen.getByPlaceholderText(
@@ -147,11 +140,6 @@ describe("Login component", () => {
   it("should trigger register navigation without throwing", async () => {
     renderLogin();
     screen.getByRole("button", { name: "Criar nova conta" }).click();
-  });
-
-  it("should trigger forgot password without throwing", async () => {
-    renderLogin();
-    screen.getByRole("button", { name: "Esqueci a senha" }).click();
   });
 
   it("should redirect authenticated admin to admin dashboard", async () => {

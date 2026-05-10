@@ -63,10 +63,6 @@ export function Login() {
     navigate("/user/new");
   };
 
-  const handleForgotPassword = () => {
-    navigate("/user/new");
-  };
-
   if (isAuthLoading || currentUser) {
     return null;
   }
@@ -118,25 +114,6 @@ export function Login() {
                 width="100%"
               />
 
-              <div className="flex items-center justify-between gap-4">
-                <label className="flex items-center gap-2 text-gray text-sm">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-dark-gray text-dark-blue focus:ring-dark-blue"
-                  />
-                  Lembrar de mim
-                </label>
-
-                <Button
-                  type="button"
-                  variant="borderless"
-                  size="sm"
-                  onClick={handleForgotPassword}
-                >
-                  Esqueci a senha
-                </Button>
-              </div>
-
               <Button
                 type="submit"
                 size="md"
@@ -162,13 +139,6 @@ export function Login() {
                 Criar nova conta
               </Button>
             </form>
-
-            <div className="text-center">
-              <p className="text-gray text-xs">
-                Ao fazer login, você concorda com nossos termos de serviço e
-                política de privacidade.
-              </p>
-            </div>
           </section>
         </main>
       </div>

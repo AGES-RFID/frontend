@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, mock } from "bun:test";
 import { type ApiClient, api } from "@/lib/api";
 import { jsonResponse } from "/test/utils/makeResponse";
 import type { UserDto } from "../users/dtos";
-import { AuthService } from "./AuthService";
+import { AuthService, TOKEN_KEY } from "./AuthService";
 import type { LoginDto } from "./dtos";
 
 const mockUser: UserDto = {
@@ -103,9 +103,7 @@ describe("AuthService", () => {
 
       await authService.login(loginDto);
 
-      expect(localStorage.getItem("rfid-auth-token")).toBe(
-        mockAuthResponse.token,
-      );
+      expect(localStorage.getItem(TOKEN_KEY)).toBe(mockAuthResponse.token);
     });
 
     it("should throw when the response is missing the token", async () => {
@@ -146,7 +144,7 @@ describe("AuthService", () => {
     });
 
     it("should call the api with the bearer token", async () => {
-      localStorage.setItem("rfid-auth-token", mockAuthResponse.token);
+      localStorage.setItem(TOKEN_KEY, mockAuthResponse.token);
       fetchMock.mockImplementationOnce(async () =>
         jsonResponse(mockUserWithVehicles),
       );
@@ -166,7 +164,7 @@ describe("AuthService", () => {
     });
 
     it("should return the user with vehicles", async () => {
-      localStorage.setItem("rfid-auth-token", mockAuthResponse.token);
+      localStorage.setItem(TOKEN_KEY, mockAuthResponse.token);
       fetchMock.mockImplementationOnce(async () =>
         jsonResponse(mockUserWithVehicles),
       );
@@ -181,7 +179,7 @@ describe("AuthService", () => {
     });
 
     it("should throw when the response body is invalid", async () => {
-      localStorage.setItem("rfid-auth-token", mockAuthResponse.token);
+      localStorage.setItem(TOKEN_KEY, mockAuthResponse.token);
       fetchMock.mockImplementationOnce(async () => jsonResponse(mockUser));
 
       await expect(authService.me()).rejects.toBeDefined();
