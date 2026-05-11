@@ -1,8 +1,13 @@
 export function Payments() {
   return (
-    <div className="p-8">
-      <h1 className="mb-4 font-bold text-3xl text-dark-gray">Cobrança</h1>
-      <p className="mb-6 text-gray">Gerenciamento de cobranças e pagamentos</p>
+    <div className="flex min-h-screen justify-center p-8">
+      <main className="w-full max-w-[760px]">
+        <h1 className="mb-16 text-center font-bold text-3xl text-dark-blue">
+          Cobrança
+        </h1>
+
+        <section className="space-y-10"></section>
+      </main>
     </div>
   );
 }
