@@ -1,8 +1,17 @@
-import { describe, expect, it } from "bun:test";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "bun:test";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+
 import { Payments } from "./payments";
 
 describe("Payments", () => {
+  afterEach(cleanup);
+
   it("should render the payments page", () => {
     render(<Payments />);
 
@@ -14,12 +23,30 @@ describe("Payments", () => {
     expect(screen.getByText("Hora adicional")).toBeDefined();
   });
 
-  it("should open the edit values modal when clicking the button", () => {
+  it("should open the edit values modal when clicking the button", async () => {
     render(<Payments />);
 
-    fireEvent.click(screen.getByText("Editar Valores"));
+    fireEvent.click(screen.getByRole("button", { name: "Editar Valores" }));
 
-    expect(screen.getByText("Editar valores")).toBeDefined();
-    expect(screen.getByText("Modal de edição")).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText("Editar valores")).toBeDefined();
+      expect(screen.getByText("Modal de edição")).toBeDefined();
+    });
+  });
+
+  it("should close the edit values modal when clicking the backdrop", async () => {
+    render(<Payments />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Editar Valores" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Modal de edição")).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByLabelText("Fechar modal"));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Modal de edição")).toBeNull();
+    });
   });
 });
