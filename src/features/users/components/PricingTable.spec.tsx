@@ -1,62 +1,80 @@
 import "@testing-library/jest-dom";
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "bun:test";
+import { render, screen, cleanup } from "@testing-library/react";
+import { describe, expect, it, afterEach, spyOn, beforeEach } from "bun:test";
 import { PricingTable } from "./PricingTable";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { parkingPricesService } from "../../parking-prices/ParkingPricesService";
 
-afterEach(() => {
-  cleanup();
-});
+const getPricingSpy = spyOn(parkingPricesService, "getPricing");
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
 
 describe("PricingTable", () => {
-  it("should render without crashing", () => {
-    const { container } = render(<PricingTable />);
-    expect(container).toBeDefined();
+  beforeEach(() => {
+    getPricingSpy.mockClear();
   });
 
-  it("should render the table headers", () => {
-    render(<PricingTable />);
-    expect(screen.getByText("Tempo")).toBeDefined();
-    expect(screen.getByText("Valor")).toBeDefined();
+  afterEach(() => {
+    cleanup();
   });
 
-  it("should render all row labels", () => {
-    render(<PricingTable />);
-    expect(screen.getByText("Até 15 minutos")).toBeDefined();
-    expect(screen.getByText("Até 3 horas")).toBeDefined();
-    expect(screen.getByText("Hora adicional")).toBeDefined();
+  it("should render skeleton when isLoading is true", () => {
+    getPricingSpy.mockImplementation(() => new Promise(() => {})); // returns a pending promise so isLoading is true
+    const { container } = render(<PricingTable />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(screen.queryByText("Tempo")).toBeNull();
   });
 
-  it("should render the default values when no data is provided", () => {
-    render(<PricingTable />);
-    expect(screen.getByText("Isento")).toBeDefined();
-    expect(screen.getByText("R$ 15,00")).toBeDefined();
-    expect(screen.getByText("R$ 5,00")).toBeDefined();
+  it("should render pricing data correctly", async () => {
+    getPricingSpy.mockResolvedValueOnce({
+      parkingPriceId: "pricing-id",
+      toleranceMinutes: 15,
+      basePrice: 10,
+      thresholdMinutes: 180,
+      hourlyRate: 5,
+    });
+    render(<PricingTable />, { wrapper: createWrapper() });
+
+    expect(await screen.findByText("Até 15 minutos")).toBeInTheDocument();
+    expect(await screen.findByText("Até 3 horas")).toBeInTheDocument();
+    expect(await screen.findByText("Hora adicional")).toBeInTheDocument();
+
+    expect(await screen.findByText("Isento")).toBeInTheDocument();
+    expect(await screen.findByText("R$ 10,00")).toBeInTheDocument();
+    expect(await screen.findByText("R$ 5,00")).toBeInTheDocument();
   });
 
-  it("should override default values with provided data", () => {
-    render(
-      <PricingTable
-        data={{
-          ate15Minutos: "Grátis",
-          ate3Horas: "R$ 20,00",
-          horaAdicional: "R$ 8,00",
-        }}
-      />,
-    );
-    expect(screen.getByText("Grátis")).toBeDefined();
-    expect(screen.getByText("R$ 20,00")).toBeDefined();
-    expect(screen.getByText("R$ 8,00")).toBeDefined();
+  it("should render error state if isError is true", async () => {
+    getPricingSpy.mockRejectedValueOnce(new Error("Failed"));
+    render(<PricingTable />, { wrapper: createWrapper() });
+    expect(
+      await screen.findByText("Erro ao carregar tabela de preços."),
+    ).toBeInTheDocument();
   });
 
-  it("should use default value for fields not provided in data", () => {
-    render(<PricingTable data={{ ate15Minutos: "Grátis" }} />);
-    expect(screen.getByText("Grátis")).toBeDefined();
-    expect(screen.getByText("R$ 15,00")).toBeDefined();
-    expect(screen.getByText("R$ 5,00")).toBeDefined();
-  });
+  it("should apply additional className to the container", async () => {
+    getPricingSpy.mockResolvedValueOnce({
+      parkingPriceId: "pricing-id",
+      toleranceMinutes: 15,
+      basePrice: 10,
+      thresholdMinutes: 180,
+      hourlyRate: 5,
+    });
+    const { container } = render(<PricingTable className="custom-class" />, {
+      wrapper: createWrapper(),
+    });
 
-  it("should apply additional className to the container", () => {
-    const { container } = render(<PricingTable className="custom-class" />);
+    // Wait for the skeleton to disappear and the real table to render
+    await screen.findByText("Tempo");
     expect(container.firstChild).toHaveClass("custom-class");
   });
 });
