@@ -1,33 +1,37 @@
 import { cn } from "@/utils/cn";
 
-type PricingTableData = {
-  ate15Minutos?: string;
-  ate3Horas?: string;
-  horaAdicional?: string;
-};
+import { usePricing } from "@/features/parking-prices/hooks";
+import { TableSkeleton } from "@/components/ui/table/TableSkeleton";
 
 type PricingTableProps = Readonly<{
-  data?: PricingTableData;
   className?: string;
 }>;
 
-const defaultData: Required<PricingTableData> = {
-  ate15Minutos: "Isento",
-  ate3Horas: "R$ 15,00",
-  horaAdicional: "R$ 5,00",
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(value);
 };
 
-const rows = [
-  { label: "Até 15 minutos", key: "ate15Minutos" },
-  { label: "Até 3 horas", key: "ate3Horas" },
-  { label: "Hora adicional", key: "horaAdicional" },
-] as const;
+export function PricingTable({ className }: PricingTableProps) {
+  const { data: pricing, isLoading, isError } = usePricing();
 
-export function PricingTable({ data, className }: PricingTableProps) {
-  const finalData = {
-    ...defaultData,
-    ...data,
-  };
+  if (isLoading) {
+    return <TableSkeleton columnsCount={2} actionsCount={0} />;
+  }
+
+  if (isError || !pricing) {
+    return (
+      <div className="text-red-500">Erro ao carregar tabela de preços.</div>
+    );
+  }
+
+  const rows = [
+    { label: `Até ${pricing.toleranceMinutes} minutos`, value: "Isento" },
+    { label: "Até 3 horas", value: formatCurrency(pricing.basePrice) },
+    { label: "Hora adicional", value: formatCurrency(pricing.hourlyRate) },
+  ];
 
   return (
     <div
@@ -48,7 +52,7 @@ export function PricingTable({ data, className }: PricingTableProps) {
         <tbody>
           {rows.map((row, index) => (
             <tr
-              key={row.key}
+              key={row.label}
               className={cn(
                 "bg-white",
                 index !== rows.length - 1 && "border-light-gray border-b",
@@ -58,9 +62,7 @@ export function PricingTable({ data, className }: PricingTableProps) {
                 {row.label}
               </td>
 
-              <td className="p-3 font-medium text-gray">
-                {finalData[row.key]}
-              </td>
+              <td className="p-3 font-medium text-gray">{row.value}</td>
             </tr>
           ))}
         </tbody>

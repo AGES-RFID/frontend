@@ -1,0 +1,366 @@
+bun test v1.3.10 (30e609e0)
+
+src/utils/formatting.spec.ts:
+(pass) formatCurrency > should format a whole number as BRL currency
+(pass) formatCurrency > should format zero as BRL currency
+(pass) formatCurrency > should format a decimal number as BRL currency
+(pass) formatDateTime > should format a valid ISO date string
+(pass) formatDateTime > should return the original value when the date string is invalid
+
+src/features/users/UserService.spec.ts:
+(pass) UserService > listUsers > should call the api route with the correct args [10.00ms]
+(pass) UserService > listUsers > should return the user list with correct data [4.00ms]
+(pass) UserService > listUsers > should throw error when json returns invalid data [2.00ms]
+(pass) UserService > listUsers > should throw error when user data is missing required fields [2.00ms]
+(pass) UserService > createUser > should call the api route with correct payload and json once [4.00ms]
+(pass) UserService > createUser > should return the created user with correct data [2.00ms]
+(pass) UserService > createUser > should throw error when json returns invalid user data [1.00ms]
+(pass) UserService > createUser > should throw error when user data is missing required fields [1.00ms]
+(pass) UserService > getUserById > should call the api route with correct userId [2.00ms]
+(pass) UserService > getUserById > should return the user with correct data [1.00ms]
+(pass) UserService > getUserById > should throw error when user data is invalid [1.00ms]
+(pass) UserService > editUser > should call the api route with correct userId and update data [3.00ms]
+(pass) UserService > editUser > should handle partial updates [1.00ms]
+(pass) UserService > deleteUser > should call the api route with correct userId [1.00ms]
+
+src/features/parking-prices/ParkingPricesService.spec.ts:
+(pass) ParkingPricesService > should get pricing [1.00ms]
+(pass) ParkingPricesService > should update pricing
+
+src/features/auth/AuthService.spec.ts:
+(pass) AuthService > login > should call the api route with correct method and payload [3.00ms]
+(pass) AuthService > login > should send the correct email and password in the body [2.00ms]
+(pass) AuthService > login > should return the token and user on success [1.00ms]
+(pass) AuthService > login > should store the token in localStorage [1.00ms]
+(pass) AuthService > login > should throw when the response is missing the token [2.00ms]
+(pass) AuthService > login > should throw when the response is missing the user
+(pass) AuthService > login > should throw when the response body is invalid [1.00ms]
+(pass) AuthService > me > should call the api with the bearer token [3.00ms]
+(pass) AuthService > me > should return the user with vehicles [2.00ms]
+(pass) AuthService > me > should throw when there is no token
+(pass) AuthService > me > should throw when the response body is invalid [2.00ms]
+
+src/features/tags/TagService.spec.ts:
+(pass) TagService > listTags > should call GET /tags [2.00ms]
+(pass) TagService > listTags > should return the tag list with correct data [1.00ms]
+(pass) TagService > listTags > should return an empty array when the api returns an empty list [1.00ms]
+(pass) TagService > listTags > should throw when the api returns invalid data [1.00ms]
+(pass) TagService > listTags > should throw when a tag item has an invalid status value [1.00ms]
+(pass) TagService > createTag > should call POST /tags with the correct payload [3.00ms]
+(pass) TagService > createTag > should return the created tag with correct data [2.00ms]
+(pass) TagService > createTag > should throw when the api returns invalid data [1.00ms]
+(pass) TagService > deactivateTag > should call PATCH /tags/:id/deactivate [2.00ms]
+(pass) TagService > deactivateTag > should return the deactivated tag with updated status [1.00ms]
+(pass) TagService > deactivateTag > should throw when the api returns invalid data [2.00ms]
+
+src/routes/shared/login.spec.tsx:
+(pass) Login component > should render the email input [47.00ms]
+(pass) Login component > should render the password input [14.00ms]
+(pass) Login component > should render the submit button [16.00ms]
+(pass) Login component > should render the register button [9.00ms]
+(pass) Login component > should render the forgot password button [9.00ms]
+(pass) Login component > should update email field value on input [12.00ms]
+(pass) Login component > should update password field value on input [7.00ms]
+(pass) Login component > should show validation error when email is invalid on blur [12.00ms]
+(pass) Login component > should not show validation error when email is valid on blur [10.00ms]
+(pass) Login component > should clear email error when a valid email is typed after an invalid one [14.00ms]
+(pass) Login component > should trigger register navigation without throwing [16.00ms]
+(pass) Login component > should trigger forgot password without throwing [11.00ms]
+(pass) Login component > should store token and navigate on successful login [84.00ms]
+(pass) Login component > should show error toast when login returns 401 [194.00ms]
+
+src/features/users/components/PricingTable.spec.tsx:
+(pass) PricingTable > should render without crashing [12.00ms]
+(pass) PricingTable > should render the table headers [6.00ms]
+(pass) PricingTable > should render dynamic row labels from API [5.00ms]
+(pass) PricingTable > should format currency from API correctly [4.00ms]
+In HTML, <tbody> cannot be a child of <div>.
+This will cause a hydration error.
+(pass) PricingTable > should render loading state [6.00ms]
+(pass) PricingTable > should render error state [1.00ms]
+(pass) PricingTable > should apply additional className to the container [5.00ms]
+
+src/features/dashboard/components/Status.spec.tsx:
+(pass) StatusBadge component > should render 'Livre' for AVAILABLE status [4.00ms]
+(pass) StatusBadge component > should render 'Ativa' for IN_USE status [2.00ms]
+(pass) StatusBadge component > should render 'Inativa' for INACTIVE status [3.00ms]
+
+src/features/vehicles/components/AddVehicleButton.spec.tsx:
+(pass) AddVehicleCard component > should render the add vehicle card [8.00ms]
+(pass) AddVehicleCard component > should trigger the click event [5.00ms]
+(pass) AddVehicleCard component > should render the small version [4.00ms]
+
+src/features/vehicles/components/VehicleCard.spec.tsx:
+(pass) VehicleCard component > should render license plate [7.00ms]
+(pass) VehicleCard component > should trigger onClick when clicking the card [5.00ms]
+(pass) VehicleCard component > should trigger onDelete when clicking the trash icon [6.00ms]
+
+src/features/parking-prices/hooks/usePricing.spec.tsx:
+
+# Unhandled error between tests
+-------------------------------
+4 | import type { ParkingPricesDto } from "../dtos/parkingPricesDto";
+5 | 
+6 | import { parkingPricesService } from "../ParkingPricesService";
+7 | import { usePricing } from "./usePricing";
+8 | 
+9 | const getPricingSpy = spyOn(parkingPricesService, "getPricing");
+                          ^
+ReferenceError: spyOn is not defined
+      at /home/eduardo/facul/7_semestre/ages_III/frontend/src/features/parking-prices/hooks/usePricing.spec.tsx:9:23
+      at loadAndEvaluateModule (2:1)
+-------------------------------
+
+
+src/features/parking-prices/hooks/useUpdatePricing.spec.tsx:
+
+# Unhandled error between tests
+-------------------------------
+4 | import type { UpdateParkingPricesDto } from "../dtos/parkingPricesDto";
+5 | 
+6 | import { parkingPricesService } from "../ParkingPricesService";
+7 | import { useUpdatePricing } from "./useUpdatePricing";
+8 | 
+9 | const updatePricingSpy = spyOn(parkingPricesService, "updatePricing");
+                             ^
+ReferenceError: spyOn is not defined
+      at /home/eduardo/facul/7_semestre/ages_III/frontend/src/features/parking-prices/hooks/useUpdatePricing.spec.tsx:9:26
+      at loadAndEvaluateModule (2:1)
+-------------------------------
+
+
+src/features/parking-prices/components/EditValuesModal.spec.tsx:
+(pass) EditValuesModal > renders correctly [12.00ms]
+(pass) EditValuesModal > handles submit [6.00ms]
+
+src/features/auth/hooks/useMe.spec.tsx:
+(pass) useMe > should return user data [68.00ms]
+(pass) useMe > should expose errors when the query fails [60.00ms]
+
+src/features/tags/hooks/useTagsModalState.spec.ts:
+(pass) useTagsModalState hook > should initialize with no active modal and no selected tag [5.00ms]
+(pass) useTagsModalState hook > should open the details modal with the given tag [2.00ms]
+(pass) useTagsModalState hook > should open the deactivate modal with the given tag [1.00ms]
+(pass) useTagsModalState hook > should open the create modal and set selectedTag to null [2.00ms]
+(pass) useTagsModalState hook > should open the create modal without a tag [1.00ms]
+(pass) useTagsModalState hook > should close the modal and clear the selected tag [1.00ms]
+(pass) useTagsModalState hook > should switch from one modal to another [1.00ms]
+
+src/features/tags/dtos/tagStatusDto.spec.ts:
+(pass) tagStatusSchema > should accept AVAILABLE [3.00ms]
+(pass) tagStatusSchema > should accept IN_USE
+(pass) tagStatusSchema > should accept INACTIVE
+(pass) tagStatusSchema > should reject an unknown status value [1.00ms]
+(pass) tagStatusSchema > should reject an empty string
+(pass) tagStatusSchema > should reject a lowercase value [1.00ms]
+
+src/features/tags/components/TagDetailsModal.spec.tsx:
+(pass) TagDetailsModal component > should not render content when tag is null [8.00ms]
+(pass) TagDetailsModal component > should render the tag id [6.00ms]
+(pass) TagDetailsModal component > should render the tag owner name [5.00ms]
+(pass) TagDetailsModal component > should render the tag plate [5.00ms]
+(pass) TagDetailsModal component > should render '—' when userName is null [5.00ms]
+(pass) TagDetailsModal component > should render '—' when plate is null [5.00ms]
+(pass) TagDetailsModal component > should call onClose when the close button is clicked [5.00ms]
+(pass) TagDetailsModal component > should not render content when isOpen is false [2.00ms]
+
+src/features/tags/components/TagDeactivateModal.spec.tsx:
+(pass) TagDeactivateModal component > should not render content when isOpen is false [3.00ms]
+(pass) TagDeactivateModal component > should render the confirmation modal when isOpen is true [4.00ms]
+(pass) TagDeactivateModal component > should render Cancelar and Desativar buttons [3.00ms]
+(pass) TagDeactivateModal component > should call onClose when Cancelar is clicked [4.00ms]
+(pass) TagDeactivateModal component > should call mutate with the tag id when Desativar is clicked [4.00ms]
+(pass) TagDeactivateModal component > should not call mutate when tag is null and Desativar is clicked [4.00ms]
+(pass) TagDeactivateModal component > should call onClose after a successful deactivation [4.00ms]
+(pass) TagDeactivateModal component > should not call onClose on a failed deactivation [4.00ms]
+
+src/components/ui/input/input.spec.tsx:
+(pass) Input component > should render with a label [6.00ms]
+(pass) Input component > should render with a placeholder [3.00ms]
+(pass) Input component > should accept user input when variant is default [4.00ms]
+(pass) Input component > should call onBlur without validation for the default input [6.00ms]
+(pass) Input component > should be disabled when variant is disabled [2.00ms]
+(pass) Input component > should have the disabled attribute when variant is disabled [3.00ms]
+(pass) Input component > should render the '+' button when variant is with-button [6.00ms]
+(pass) Input component > should call onButtonClick when the '+' button is clicked [7.00ms]
+(pass) Input component > should NOT render the '+' button when variant is default [3.00ms]
+(pass) Input component > should mask cpf input and show validation errors on blur [7.00ms]
+(pass) Input component > should mask phone input and validate the value on blur [6.00ms]
+(pass) Input component > should validate email and clear the error on focus [7.00ms]
+(pass) Input component > should validate password length [8.00ms]
+(pass) Input component > should clear password validation when the value is empty [3.00ms]
+(pass) Input component > should toggle password visibility [11.00ms]
+
+src/components/ui/balance-card/balance-card.spec.tsx:
+(pass) BalanceCard > should render without crashing [25.00ms]
+(pass) BalanceCard > should display the label 'Seu saldo:' [3.00ms]
+(pass) BalanceCard > should display the balance formatted as BRL currency [4.00ms]
+(pass) BalanceCard > should format a decimal balance correctly [4.00ms]
+(pass) BalanceCard > should format a zero balance correctly [3.00ms]
+(pass) BalanceCard > should render the 'Adicionar saldo' button [4.00ms]
+(pass) BalanceCard > should call onAddBalance when the button is clicked [3.00ms]
+(pass) BalanceCard > should apply additional className passed via props [2.00ms]
+
+src/components/ui/header/HeaderButton.spec.tsx:
+(pass) HeaderButton component > should render the button with label [6.00ms]
+(pass) HeaderButton component > should render the icon [2.00ms]
+(pass) HeaderButton component > should have aria-pressed false when isActive is not set [3.00ms]
+(pass) HeaderButton component > should have aria-pressed true when isActive is true [3.00ms]
+(pass) HeaderButton component > should trigger the action when clicked [4.00ms]
+(pass) HeaderButton component > should render without action without throwing [1.00ms]
+
+src/components/ui/header/HeaderAuthButton.spec.tsx:
+(pass) HeaderAuthButton component > should render 'Entrar/Cadastrar' by default [6.00ms]
+(pass) HeaderAuthButton component > should render 'Sair' when isLogged is true [3.00ms]
+(pass) HeaderAuthButton component > should trigger the action when clicked [4.00ms]
+(pass) HeaderAuthButton component > should not trigger the action if disabled [3.00ms]
+
+src/components/ui/header/Header.spec.tsx:
+(pass) Header component > type='logo' > should render the logo [12.00ms]
+(pass) Header component > type='logo' > should not render nav buttons [2.00ms]
+(pass) Header component > type='logo' > should trigger logo click without throwing [3.00ms]
+(pass) Header component > type='default' > should render the logo [12.00ms]
+(pass) Header component > type='default' > should render nav buttons: Home, Pagamentos, Perfil [14.00ms]
+(pass) Header component > type='default' > should render 'Entrar/Cadastrar' when isLogged is false [17.00ms]
+(pass) Header component > type='default' > should render 'Sair' when isLogged is true [11.00ms]
+(pass) Header component > type='default' > should call onAuthAction when auth button is clicked [13.00ms]
+(pass) Header component > type='default' > should trigger logo click without throwing [8.00ms]
+(pass) Header component > type='default' > should trigger Home nav button click without throwing [14.00ms]
+(pass) Header component > type='default' > should trigger Pagamentos nav button click without throwing [14.00ms]
+(pass) Header component > type='default' > should trigger Perfil nav button click without throwing [13.00ms]
+(pass) Header component > type='default' > should trigger Admin button click without throwing [10.00ms]
+(pass) Header component > type='default' > should update the active indicator on resize without throwing [4.00ms]
+
+src/components/ui/toast/toast.spec.tsx:
+(pass) toast > toast helper methods > should push a success toast
+(pass) toast > toast helper methods > should push an error toast [1.00ms]
+(pass) toast > toast helper methods > should push a warning toast
+(pass) toast > toast helper methods > should push an info toast
+(pass) toast > toast helper methods > should push a toast with title via show()
+(pass) toast > toast helper methods > should push a toast with custom duration
+(pass) toast > toast helper methods > should push a success toast with optional title
+(pass) toast > ToastViewport > should render without throwing [19.00ms]
+(pass) toast > ToastViewport > should render a success toast in the viewport [44.00ms]
+(pass) toast > ToastViewport > should render an error toast in the viewport [45.00ms]
+(pass) toast > ToastViewport > should render a warning toast in the viewport [50.00ms]
+(pass) toast > ToastViewport > should render an info toast in the viewport [51.00ms]
+(pass) toast > ToastViewport > should render a toast with title and message [63.00ms]
+(pass) toast > ToastViewport > should render a success toast with title and message [49.00ms]
+(pass) toast > ToastViewport > should render close buttons for toasts [54.00ms]
+(pass) toast > ToastViewport > should dismiss a toast when close button is clicked without throwing [62.00ms]
+(pass) toast > ToastViewport > should unmount cleanly (useEffect cleanup) [24.00ms]
+(pass) toast > ToastViewport > should remove toast from viewport after duration and animation delay [476.01ms]
+(pass) toast > ToastViewport > should return null when document is undefined (SSR) [8.00ms]
+
+src/components/ui/button/button.spec.tsx:
+(pass) Button component > should render the button [4.00ms]
+(pass) Button component > should trigger the click event [5.00ms]
+(pass) Button component > should not trigger the click event if the button is disabled [3.00ms]
+
+src/components/ui/label/label.spec.tsx:
+(pass) Label component > should render the label text [4.00ms]
+(pass) Label component > should render the value text [3.00ms]
+(pass) Label component > should render with custom label and value [3.00ms]
+
+src/features/dashboard/components/parking-occupancy-card/parking-occupancy-card.spec.tsx:
+(pass) ParkingOccupancyCard > should render the default title [12.00ms]
+(pass) ParkingOccupancyCard > should render a custom title [4.00ms]
+(pass) ParkingOccupancyCard > should render the label correctly [3.00ms]
+(pass) ParkingOccupancyCard > should render the correct progress width [10.00ms]
+(pass) ParkingOccupancyCard > should cap progress width at 100% when vehicles exceed total spots [5.00ms]
+(pass) ParkingOccupancyCard > should use the default color below 75% [4.00ms]
+(pass) ParkingOccupancyCard > should use the default color at exactly 75% [4.00ms]
+(pass) ParkingOccupancyCard > should use yellow above 75% [4.00ms]
+(pass) ParkingOccupancyCard > should use yellow at exactly 90% [4.00ms]
+(pass) ParkingOccupancyCard > should use red above 90% [3.00ms]
+(pass) ParkingOccupancyCard > should render 0% width when total spots is 0 [4.00ms]
+
+src/features/transactions/components/add-credit-modal/add-credit-modal.spec.tsx:
+(pass) AddCreditModal > should not render when isOpen is false [12.00ms]
+(pass) AddCreditModal > should render the client balance received by props [9.00ms]
+(pass) AddCreditModal > should start with an empty input and disabled confirm button [20.00ms]
+(pass) AddCreditModal > should format typed numbers from right to left [17.00ms]
+(pass) AddCreditModal > should ignore non numeric characters [10.00ms]
+(pass) AddCreditModal > should clear the input and disable confirm button when value is removed [16.00ms]
+(pass) AddCreditModal > should add suggested values to the current input value instead of replacing it [15.00ms]
+(pass) AddCreditModal > should add suggested value when input is empty [10.00ms]
+(pass) AddCreditModal > should call onConfirm with the input value [7.00ms]
+(pass) AddCreditModal > should call onClose when cancel button is clicked [5.00ms]
+(pass) AddCreditModal > should reset typed value when modal is reopened [6.00ms]
+
+src/features/accesses/components/access-card/AccessCard.spec.tsx:
+(pass) AccessCard > should render correctly for entry type [22.00ms]
+(pass) AccessCard > should render correctly for exit type [6.00ms]
+
+2 tests failed:
+--------------------------------------------------------------------|---------|---------|-------------------
+File                                                                | % Funcs | % Lines | Uncovered Line #s
+--------------------------------------------------------------------|---------|---------|-------------------
+All files                                                           |   95.16 |   97.31 |
+ src/components/ui/balance-card/index.tsx                           |  100.00 |  100.00 | 
+ src/components/ui/button/index.tsx                                 |  100.00 |  100.00 | 
+ src/components/ui/header/HeaderAuthButton.tsx                      |  100.00 |  100.00 | 
+ src/components/ui/header/HeaderButton.tsx                          |  100.00 |  100.00 | 
+ src/components/ui/header/index.tsx                                 |  100.00 |  100.00 | 
+ src/components/ui/input/index.tsx                                  |  100.00 |  100.00 | 
+ src/components/ui/label/index.tsx                                  |  100.00 |  100.00 | 
+ src/components/ui/modal/index.tsx                                  |  100.00 |  100.00 | 
+ src/components/ui/table/TableSkeleton.tsx                          |   66.67 |   91.89 | 38-40
+ src/components/ui/toast/index.tsx                                  |  100.00 |  100.00 | 
+ src/config/env.ts                                                  |  100.00 |  100.00 | 
+ src/features/accesses/components/access-card/AccessCard.tsx        |  100.00 |  100.00 | 
+ src/features/auth/AuthService.ts                                   |  100.00 |  100.00 | 
+ src/features/auth/dtos/index.ts                                    |  100.00 |  100.00 | 
+ src/features/auth/dtos/loginDto.ts                                 |  100.00 |  100.00 | 
+ src/features/auth/hooks/index.ts                                   |  100.00 |  100.00 | 
+ src/features/auth/hooks/useLogin.ts                                |  100.00 |  100.00 | 
+ src/features/auth/hooks/useMe.ts                                   |  100.00 |  100.00 | 
+ src/features/dashboard/components/Status.tsx                       |  100.00 |  100.00 | 
+ src/features/dashboard/components/parking-occupancy-card/index.tsx |  100.00 |  100.00 | 
+ src/features/parking-prices/ParkingPricesService.ts                |  100.00 |  100.00 | 
+ src/features/parking-prices/components/EditValuesModal.tsx         |   42.86 |   98.88 | 
+ src/features/parking-prices/dtos/parkingPricesDto.ts               |  100.00 |  100.00 | 
+ src/features/parking-prices/hooks/index.ts                         |  100.00 |  100.00 | 
+ src/features/parking-prices/hooks/usePricing.ts                    |    0.00 |   28.57 | 10-14
+ src/features/parking-prices/hooks/useUpdatePricing.ts              |    0.00 |   20.00 | 5-12
+ src/features/tags/TagService.ts                                    |  100.00 |  100.00 | 
+ src/features/tags/components/TagDeactivateModal.tsx                |  100.00 |  100.00 | 
+ src/features/tags/components/TagDetailsModal.tsx                   |  100.00 |  100.00 | 
+ src/features/tags/dtos/createTagDto.ts                             |  100.00 |  100.00 | 
+ src/features/tags/dtos/index.ts                                    |  100.00 |  100.00 | 
+ src/features/tags/dtos/tagDto.ts                                   |  100.00 |  100.00 | 
+ src/features/tags/dtos/tagListDto.ts                               |  100.00 |  100.00 | 
+ src/features/tags/dtos/tagStatusDto.ts                             |  100.00 |  100.00 | 
+ src/features/tags/hooks/useTagsModalState.ts                       |  100.00 |  100.00 | 
+ src/features/transactions/components/add-credit-modal/index.tsx    |  100.00 |  100.00 | 
+ src/features/users/UserService.ts                                  |  100.00 |  100.00 | 
+ src/features/users/components/PricingTable.tsx                     |  100.00 |  100.00 | 
+ src/features/users/dtos/createUserDto.ts                           |  100.00 |  100.00 | 
+ src/features/users/dtos/index.ts                                   |  100.00 |  100.00 | 
+ src/features/users/dtos/parkingPriceDto.ts                         |  100.00 |  100.00 | 
+ src/features/users/dtos/userDto.ts                                 |  100.00 |  100.00 | 
+ src/features/users/dtos/userListDto.ts                             |  100.00 |  100.00 | 
+ src/features/users/dtos/userRoleEnum.ts                            |  100.00 |  100.00 | 
+ src/features/users/dtos/userWithVehiclesDto.ts                     |  100.00 |  100.00 | 
+ src/features/vehicles/assets/carIcon.tsx                           |  100.00 |  100.00 | 
+ src/features/vehicles/components/AddVehicleButton.tsx              |  100.00 |  100.00 | 
+ src/features/vehicles/components/VehicleCard.tsx                   |  100.00 |  100.00 | 
+ src/features/vehicles/dtos/createVehicleDto.ts                     |  100.00 |  100.00 | 
+ src/features/vehicles/dtos/index.ts                                |  100.00 |  100.00 | 
+ src/features/vehicles/dtos/vehicleDto.ts                           |  100.00 |  100.00 | 
+ src/features/vehicles/dtos/vehicleListDto.ts                       |  100.00 |  100.00 | 
+ src/features/vehicles/dtos/vehicleWithOwnerDto.ts                  |  100.00 |  100.00 | 
+ src/features/vehicles/dtos/vehicleWithOwnerListDto.ts              |  100.00 |  100.00 | 
+ src/lib/api.ts                                                     |  100.00 |  100.00 | 
+ src/routes/shared/login.tsx                                        |  100.00 |   99.21 | 
+ src/utils/cn.ts                                                    |  100.00 |  100.00 | 
+ src/utils/formatting.ts                                            |  100.00 |  100.00 | 
+ test/components/setup.ts                                           |  100.00 |  100.00 | 
+ test/utils/makeResponse.ts                                         |  100.00 |  100.00 | 
+--------------------------------------------------------------------|---------|---------|-------------------
+
+ 202 pass
+ 2 fail
+ 2 errors
+ 303 expect() calls
+Ran 204 tests across 29 files. [3.36s]
