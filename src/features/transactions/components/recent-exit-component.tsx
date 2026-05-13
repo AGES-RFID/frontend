@@ -3,28 +3,18 @@ import { Table } from "@/components/ui/table";
 import type { TableColumn } from "@/components/ui/table/types";
 import { formatDateTime, formatCurrency } from "@/utils/formatting";
 import type { TransactionDto } from "@/features/transactions/dtos/transactionDto";
+import { formatPlate } from "@/utils/formatting";
 
-interface RecentExitComponentProps {
+interface RecentTransactions {
   transactions: TransactionDto[];
   isLoading?: boolean;
-}
-
-function formatarPlaca(texto: unknown): string {
-  if (!texto || typeof texto !== "string") return "-";
-
-  const placaLimpa = texto.replace(/[^a-zA-Z0-9]/g, "");
-
-  if (placaLimpa.length >= 7) {
-    return `${placaLimpa.slice(0, 4)}-${placaLimpa.slice(4)}`.toUpperCase();
-  }
-  return texto.toUpperCase();
 }
 
 export function RecentExitComponent({
   transactions,
   isLoading = false,
-}: RecentExitComponentProps) {
-  const transacoesOrdenadas = useMemo(() => {
+}: RecentTransactions) {
+  const orderedTransactions = useMemo(() => {
     if (!Array.isArray(transactions)) return [];
 
     return [...transactions].sort((a, b) => {
@@ -53,7 +43,7 @@ export function RecentExitComponent({
       key: "description",
       title: "Placa",
       sortable: false,
-      render: (value) => formatarPlaca(value),
+      render: (value) => formatPlate(value),
     },
     {
       key: "amount",
@@ -73,7 +63,7 @@ export function RecentExitComponent({
 
   return (
     <Table
-      data={transacoesOrdenadas}
+      data={orderedTransactions}
       columns={columns}
       loading={isLoading}
       searchable={false}
