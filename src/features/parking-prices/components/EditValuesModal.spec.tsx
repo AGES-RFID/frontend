@@ -129,8 +129,9 @@ describe("EditValuesModal", () => {
     const form = screen.getByRole("button", { name: "Salvar" }).closest("form");
 
     expect(form).not.toBeNull();
-
-    fireEvent.submit(form!);
+    if (form) {
+      fireEvent.submit(form);
+    }
 
     await waitFor(() => {
       expect(updateMock).toHaveBeenCalledWith({
@@ -177,9 +178,11 @@ describe("EditValuesModal", () => {
       );
     });
 
-    fireEvent.submit(
-      screen.getByRole("button", { name: "Salvar" }).closest("form")!,
-    );
+    const form = screen.getByRole("button", { name: "Salvar" }).closest("form");
+    expect(form).not.toBeNull();
+    if (form) {
+      fireEvent.submit(form);
+    }
 
     await waitFor(() => {
       expect(

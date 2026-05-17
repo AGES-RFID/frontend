@@ -27,7 +27,7 @@ describe("PricingTable", () => {
 
   it("should render skeleton when isLoading is true", () => {
     getPricingSpy.mockImplementation(() => new Promise(() => {})); // returns a pending promise so isLoading is true
-    const { container } = render(<PricingTable />, {
+    render(<PricingTable />, {
       wrapper: createWrapper(),
     });
 
