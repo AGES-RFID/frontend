@@ -1,5 +1,6 @@
-import { cn } from "@/utils/cn";
 import type { TagStatus } from "@/features/tags/dtos";
+import { cn } from "@/utils/cn";
+
 export type { TagStatus as Status } from "@/features/tags/dtos";
 
 type StatusProps = {

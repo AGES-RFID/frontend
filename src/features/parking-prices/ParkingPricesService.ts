@@ -1,10 +1,10 @@
+import { z } from "zod";
 import { type ApiClient, api } from "@/lib/api";
 import {
   type ParkingPricesDto,
-  type UpdateParkingPricesDto,
   parkingPricesSchema,
+  type UpdateParkingPricesDto,
 } from "./dtos/parkingPricesDto";
-import { z } from "zod";
 
 export class ParkingPricesService {
   private apiClient: ApiClient;

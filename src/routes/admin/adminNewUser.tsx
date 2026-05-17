@@ -2,11 +2,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
-import { api } from "@/lib/api";
 import {
   UserForm,
   type UserFormValues,
 } from "@/features/users/components/UserForm";
+import { api } from "@/lib/api";
 
 type AdminCreateUserPayload = {
   name: string;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
 
 export type CreateUserModalValue = {
   fullName: string;
