@@ -18,7 +18,26 @@ export function PricingTable({ className }: PricingTableProps) {
   const { data: pricing, isLoading, isError } = usePricing();
 
   if (isLoading) {
-    return <TableSkeleton columnsCount={2} actionsCount={0} />;
+    return (
+      <div
+        className={cn(
+          "overflow-hidden rounded-2xl border border-gray-300",
+          className,
+        )}
+      >
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-dark-blue text-white">
+              <th className="w-1/2 border-white/30 border-r p-3 text-left font-semibold">
+                Tempo
+              </th>
+              <th className="w-1/2 p-3 text-left font-semibold">Valor</th>
+            </tr>
+          </thead>
+          <TableSkeleton columnsCount={2} actionsCount={0} />
+        </table>
+      </div>
+    );
   }
 
   if (isError || !pricing) {
