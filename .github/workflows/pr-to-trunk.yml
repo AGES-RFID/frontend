@@ -9,7 +9,16 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
+  gitlab-sync:
+    name: GitLab Sync
+    uses: AGES-RFID/cicd/.github/workflows/gitlab-sync.yml@main
+    secrets:
+      gitlab_token: ${{ secrets.GITLAB_TOKEN }}
+
   validate:
     name: CI
     uses: AGES-RFID/cicd/.github/workflows/ci-bun.yml@main
