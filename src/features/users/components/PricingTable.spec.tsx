@@ -27,11 +27,12 @@ describe("PricingTable", () => {
 
   it("should render skeleton when isLoading is true", () => {
     getPricingSpy.mockImplementation(() => new Promise(() => {})); // returns a pending promise so isLoading is true
-    render(<PricingTable />, {
+    const { container } = render(<PricingTable />, {
       wrapper: createWrapper(),
     });
 
-    expect(screen.queryByText("Tempo")).toBeNull();
+    expect(screen.getByText("Tempo")).toBeInTheDocument();
+    expect(container.querySelectorAll(".animate-pulse")).toHaveLength(10);
   });
 
   it("should render pricing data correctly", async () => {
