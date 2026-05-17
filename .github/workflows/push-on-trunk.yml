@@ -5,12 +5,19 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   validate-and-build:
-    name: CI
+    name: CI & Build (Staging)
     uses: AGES-RFID/cicd/.github/workflows/ci-bun.yml@main
     with:
-      public_api_url: ${{ vars.PUBLIC_API_URL }}
+      environment: "staging"
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -18,8 +25,10 @@ jobs:
   deploy-staging:
     name: CD Staging
     needs: [validate-and-build]
-    uses: AGES-RFID/cicd/.github/workflows/deployment-s3.yml@main
+    uses: AGES-RFID/cicd/.github/workflows/cd-s3.yml@main
     with:
       environment: "staging"
       version: ${{ github.sha }}
+      role-to-assume: "arn:aws:iam::507099298238:role/ages-rfid-cicd-role"
+      s3-bucket-name: ${{ vars.S3_BUCKET_NAME_STAGING }}
     secrets: inherit
