@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  spyOn,
+} from "bun:test";
 import {
   cleanup,
   fireEvent,
@@ -10,10 +18,18 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 
 import { parkingPricesService } from "@/features/parking-prices/ParkingPricesService";
-import { transactionService } from "@/features/transactions/TransactionService";
-import { Payments } from "./payments";
 
-const getTransactionsMock = spyOn(transactionService, "getTransactions");
+const useGetTransactionsMock = mock(() => ({
+  data: [],
+  isLoading: false,
+}));
+
+mock.module("@/features/transactions/hooks/useGetTransactions", () => ({
+  useGetTransactions: useGetTransactionsMock,
+}));
+
+const { Payments } = await import("./payments");
+
 const getPricingMock = spyOn(parkingPricesService, "getPricing");
 
 const pricingMock = {
@@ -40,13 +56,17 @@ const createWrapper = () => {
 
 describe("Payments", () => {
   beforeEach(() => {
-    getTransactionsMock.mockResolvedValue([]);
+    useGetTransactionsMock.mockReturnValue({
+      data: [],
+      isLoading: false,
+    });
+
     getPricingMock.mockResolvedValue(pricingMock);
   });
 
   afterEach(() => {
     cleanup();
-    getTransactionsMock.mockClear();
+    useGetTransactionsMock.mockClear();
     getPricingMock.mockClear();
   });
 
@@ -62,6 +82,7 @@ describe("Payments", () => {
     expect(await screen.findByText("Hora adicional")).toBeDefined();
 
     expect(screen.getByText("Saídas recentes")).toBeDefined();
+    expect(useGetTransactionsMock).toHaveBeenCalled();
   });
 
   it("should open the edit values modal when clicking the button", async () => {
