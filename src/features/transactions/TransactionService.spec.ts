@@ -14,13 +14,13 @@ describe("TransactionService", () => {
     service = new TransactionService(apiMock);
   });
 
-  it("should call the api route with correct method to fetch my transactions", async () => {
+  it("should call the api route with correct method to fetch transactions", async () => {
     fetchMock.mockImplementationOnce(async () => jsonResponse([]));
 
     await service.myTransactions();
 
     const [request] = fetchMock.mock.calls[0] ?? [];
-    expect(request.url).toContain("/transactions/me");
+    expect(request.url).toContain("/transactions");
     expect(request.method).toBe("GET");
   });
 

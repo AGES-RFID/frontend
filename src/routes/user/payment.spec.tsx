@@ -200,7 +200,7 @@ describe("Payment Route", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render transactions list and extract tag/plate for withdrawal", () => {
+  it("should render transaction cards for deposit and withdrawal", () => {
     spyOn(useMeHook, "useMe").mockReturnValue({
       isLoading: false,
       isError: false,
@@ -248,6 +248,10 @@ describe("Payment Route", () => {
     );
 
     expect(screen.getByText("Pagamentos")).toBeInTheDocument();
+
+    const transactionCards = screen.getAllByTestId("transaction-card");
+    expect(transactionCards).toHaveLength(2);
+
     expect(screen.getByText(/\+R\$\s*50,00/)).toBeInTheDocument();
     expect(screen.getByText(/-R\$\s*15,50/)).toBeInTheDocument();
     expect(screen.getByText("ABC1234")).toBeInTheDocument();

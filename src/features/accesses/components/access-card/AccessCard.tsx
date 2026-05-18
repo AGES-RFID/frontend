@@ -1,22 +1,18 @@
-import { CircleDollarSign, Clock, LogIn, LogOut } from "lucide-react";
+import { Clock, LogIn, LogOut } from "lucide-react";
 
 import { VehicleCard } from "@/features/vehicles/components/VehicleCard";
 import { cn } from "@/utils/cn";
-import { formatCurrency } from "@/utils/formatting";
 
 export type AccessCardProps = {
-  type: "entry" | "exit" | "deposit" | "withdrawal";
+  type: "entry" | "exit";
   date: string;
   hour: string;
-  tagId?: string; // Optional for deposits
-  amount?: number; // Used for transactions
+  tagId: string; // From AccessDto
 };
 
-const typeLabels = {
+const historyTypeLabel = {
   exit: "Saída",
   entry: "Entrada",
-  deposit: "Crédito",
-  withdrawal: "Saída",
 } as const;
 
 export function AccessCard({
@@ -24,10 +20,8 @@ export function AccessCard({
   date,
   hour,
   tagId,
-  amount,
 }: Readonly<AccessCardProps>) {
-  const isNegative = type === "exit" || type === "withdrawal";
-  const isFinancial = type === "deposit" || type === "withdrawal";
+  const isExit = type === "exit";
 
   return (
     <article
@@ -45,44 +39,21 @@ export function AccessCard({
         <strong
           className={cn(
             "flex items-center gap-2 font-bold text-xl md:text-2xl",
-            isNegative ? "text-red" : "text-teal",
+            isExit ? "text-red" : "text-teal",
           )}
           data-testid="access-card-value"
         >
-          {/* For accesses, show icon + "Entrada"/"Saída". For financials, show formatted amount */}
-          {!isFinancial &&
-            (isNegative ? (
-              <LogOut className="size-6" />
-            ) : (
-              <LogIn className="size-6" />
-            ))}
-          {!isFinancial && typeLabels[type]}
-
-          {isFinancial && amount !== undefined && (
-            <span>
-              {isNegative ? "-" : "+"}
-              {formatCurrency(amount)}
-            </span>
+          {isExit ? (
+            <LogOut className="size-6" />
+          ) : (
+            <LogIn className="size-6" />
           )}
+          {historyTypeLabel[type]}
         </strong>
       </div>
 
       <div className="shrink-0">
-        {type === "deposit" ? (
-          <div className="relative flex size-18.5 flex-col items-center justify-center rounded-2xl border-2 border-dark-blue font-bold">
-            <button
-              type="button"
-              className="flex size-full cursor-default flex-col items-center justify-center rounded-2xl"
-            >
-              <CircleDollarSign size={28} className="text-dark-blue" />
-              <span className="mt-1 text-black text-sm">
-                {typeLabels[type]}
-              </span>
-            </button>
-          </div>
-        ) : (
-          <VehicleCard licensePlate={tagId ?? "-"} size="sm" />
-        )}
+        <VehicleCard licensePlate={tagId} size="sm" />
       </div>
     </article>
   );

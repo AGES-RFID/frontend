@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { BalanceCard } from "@/components/ui/balance-card";
 import { toast } from "@/components/ui/toast";
-import { AccessCard } from "@/features/accesses/components/access-card/AccessCard";
 import { useMe } from "@/features/auth/hooks/useMe";
 import { AddCreditModal } from "@/features/transactions/components/add-credit-modal";
+import { TransactionCard } from "@/features/transactions/components/TransactionCard";
 import { useCreateTransaction } from "@/features/transactions/hooks/useCreateTransaction";
 import { useMyTransactions } from "@/features/transactions/hooks/useMyTransactions";
 import { PricingTable } from "@/features/users/components/PricingTable";
@@ -105,40 +105,9 @@ export function Payment() {
               )}
 
             {transactionsQuery.isSuccess &&
-              transactionsQuery.data.map((tx) => {
-                const dateObj = new Date(tx.createdAt);
-
-                const dateStr = dateObj.toLocaleDateString("pt-BR", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                });
-
-                const hourStr = dateObj.toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-
-                // Attempt to parse vehicle plate from description if it's a withdrawal and has a format like "(placa ABC1234)"
-                let tagId = "-";
-                if (tx.transactionType === "withdrawal") {
-                  const match = tx.description.match(/placa\s+([A-Z0-9]+)/i);
-                  if (match) {
-                    tagId = match[1] || "-";
-                  }
-                }
-
-                return (
-                  <AccessCard
-                    key={tx.transactionId}
-                    type={tx.transactionType}
-                    date={dateStr}
-                    hour={hourStr}
-                    amount={tx.amount}
-                    tagId={tagId}
-                  />
-                );
-              })}
+              transactionsQuery.data.map((tx) => (
+                <TransactionCard key={tx.transactionId} transaction={tx} />
+              ))}
           </div>
         </section>
       </main>

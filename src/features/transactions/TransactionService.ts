@@ -25,7 +25,7 @@ export class TransactionService {
 
   async myTransactions(): Promise<TransactionDto[]> {
     const transactions = await this.apiClient
-      .get("transactions/me")
+      .get("transactions")
       .json(z.array(transactionDtoSchema));
 
     return transactions;
