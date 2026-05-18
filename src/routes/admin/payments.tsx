@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import { PricingTable } from "@/features/users/components/PricingTable";
+import { RecentExitComponent } from "@/features/transactions/components/recent-exit-component";
+import { useGetTransactions } from "@/features/transactions/hooks/useGetTransactions";
 
 export function Payments() {
   const [isEditValuesModalOpen, setIsEditValuesModalOpen] = useState(false);
+  const { data: transactions = [], isLoading } = useGetTransactions();
 
   return (
     <div className="flex min-h-screen justify-center p-16">
@@ -29,6 +32,17 @@ export function Payments() {
             </div>
 
             <PricingTable />
+          </div>
+
+          <div>
+            <h2 className="mb-1 font-semibold text-2xl text-dark-blue">
+              Saídas recentes
+            </h2>
+
+            <RecentExitComponent
+              transactions={transactions}
+              isLoading={isLoading}
+            />
           </div>
         </section>
       </main>

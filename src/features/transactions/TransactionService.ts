@@ -21,6 +21,14 @@ export class TransactionService {
 
     return transaction;
   }
+
+  async getTransactions(): Promise<TransactionDto[]> {
+    const transactions = await this.apiClient
+      .get("transactions")
+      .json(transactionDtoSchema.array());
+
+    return transactions;
+  }
 }
 
 export const transactionService = new TransactionService(api);
