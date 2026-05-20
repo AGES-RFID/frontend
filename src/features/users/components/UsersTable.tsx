@@ -1,10 +1,10 @@
+import { Edit, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Table,
-  type TableColumn,
   type TableAction,
+  type TableColumn,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
 import type { User } from "@/features/users/model/user";
 
 interface UsersTableProps {

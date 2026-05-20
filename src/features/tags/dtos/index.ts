@@ -1,8 +1,8 @@
-export { tagStatusSchema, type TagStatus } from "./tagStatusDto";
-export { createTagSchema, type CreateTagDto } from "./createTagDto";
-export { tagSchema, type TagDto } from "./tagDto";
+export { type CreateTagDto, createTagSchema } from "./createTagDto";
+export { type TagDto, tagSchema } from "./tagDto";
 export {
+  type TagListItemDto,
   tagListItemSchema,
   tagListSchema,
-  type TagListItemDto,
 } from "./tagListDto";
+export { type TagStatus, tagStatusSchema } from "./tagStatusDto";

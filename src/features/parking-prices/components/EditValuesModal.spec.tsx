@@ -1,14 +1,5 @@
 import "@testing-library/jest-dom";
 import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { ReactNode } from "react";
-import {
   afterEach,
   beforeEach,
   describe,
@@ -17,9 +8,17 @@ import {
   mock,
   spyOn,
 } from "bun:test";
-
-import { EditValuesModal } from "./EditValuesModal";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import type { ReactNode } from "react";
 import { parkingPricesService } from "../ParkingPricesService";
+import { EditValuesModal } from "./EditValuesModal";
 
 const getPricingMock = spyOn(parkingPricesService, "getPricing");
 const updateMock = spyOn(parkingPricesService, "updatePricing");

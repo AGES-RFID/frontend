@@ -1,7 +1,7 @@
+import { describe, expect, it } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "bun:test";
-import { RecentExitComponent } from "./recent-exit-component";
 import type { TransactionDto } from "@/features/transactions/dtos/transactionDto";
+import { RecentExitComponent } from "./recent-exit-component";
 
 const mockTransactions: TransactionDto[] = [
   {

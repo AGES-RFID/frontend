@@ -1,6 +1,6 @@
 import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { userService } from "../UserService";
 import type { UserListDto } from "../dtos";
+import { userService } from "../UserService";
 
 type UseUsersOptions = Omit<
   UseQueryOptions<UserListDto, Error>,

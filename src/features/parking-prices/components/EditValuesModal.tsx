@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Modal } from "@/components/ui/modal";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
 import { usePricing, useUpdatePricing } from "../hooks";
 
 interface EditValuesModalProps {

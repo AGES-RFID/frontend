@@ -1,7 +1,7 @@
+import { cva } from "class-variance-authority";
+import { Eye, EyeOff, Plus } from "lucide-react";
 import type React from "react";
 import { useId, useState } from "react";
-import { Plus, Eye, EyeOff } from "lucide-react";
-import { cva } from "class-variance-authority";
 import { cn } from "@/utils/cn";
 
 // Border: 2px (dobro do padrão 1px), radius 6px, cor #999 (light-gray)
