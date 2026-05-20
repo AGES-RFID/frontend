@@ -12,11 +12,15 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  gitlab-sync:
+    name: GitLab Sync
+    uses: AGES-RFID/cicd/.github/workflows/gitlab-sync.yml@main
+    secrets:
+      gitlab_token: ${{ secrets.GITLAB_TOKEN }}
+
   validate-and-build:
     name: CI & Build (Production)
     uses: AGES-RFID/cicd/.github/workflows/ci-bun.yml@main
-    with:
-      environment: "production"
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -24,10 +28,9 @@ jobs:
   deploy-production:
     name: CD Production
     needs: [validate-and-build]
-    uses: AGES-RFID/cicd/.github/workflows/cd-s3.yml@main
+    uses: AGES-RFID/cicd/.github/workflows/cd-s3-cloudfront.yml@main
     with:
       environment: "production"
       version: ${{ github.ref_name }}
       role-to-assume: "arn:aws:iam::507099298238:role/ages-rfid-cicd-role"
-      s3-bucket-name: ${{ vars.S3_BUCKET_NAME_PRODUCTION }}
     secrets: inherit
