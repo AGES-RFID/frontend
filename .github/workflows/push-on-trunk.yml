@@ -13,19 +13,18 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  validate-and-build:
+  ci-build:
     name: CI & Build (Staging)
     uses: AGES-RFID/cicd/.github/workflows/ci-bun.yml@main
-    secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    with:
+      environment: "staging"
+    secrets: inherit
 
-  deploy-staging:
-    name: CD Staging
-    needs: [validate-and-build]
+  cd-deploy:
+    name: CD (Staging)
+    needs: [ci-build]
     uses: AGES-RFID/cicd/.github/workflows/cd-s3-cloudfront.yml@main
     with:
       environment: "staging"
-      version: ${{ github.sha }}
       role-to-assume: "arn:aws:iam::507099298238:role/ages-rfid-cicd-role"
     secrets: inherit
