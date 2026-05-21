@@ -25,10 +25,9 @@ jobs:
   deploy-staging:
     name: CD Staging
     needs: [validate-and-build]
-    uses: AGES-RFID/cicd/.github/workflows/cd-s3.yml@main
+    uses: AGES-RFID/cicd/.github/workflows/cd-s3-cloudfront.yml@main
     with:
       environment: "staging"
       version: ${{ github.sha }}
       role-to-assume: "arn:aws:iam::507099298238:role/ages-rfid-cicd-role"
-      s3-bucket-name: ${{ vars.S3_BUCKET_NAME_STAGING }}
     secrets: inherit
