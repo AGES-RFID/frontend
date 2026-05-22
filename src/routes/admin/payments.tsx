@@ -4,7 +4,6 @@ import { toast } from "@/components/ui/toast";
 import { PricingTable } from "@/features/users/components/PricingTable";
 import { EditValues } from "@/features/parkingPrices/components/editValues";
 import { useParkingPrices } from "@/features/parkingPrices/hooks";
-import { formatCurrency } from "@/utils/formatting";
 
 export function Payments() {
   const [isEditValuesModalOpen, setIsEditValuesModalOpen] = useState(false);
@@ -27,15 +26,6 @@ export function Payments() {
 
     toast.error("Nao foi possivel carregar os valores.");
   }, [parkingPricesQuery.error, parkingPricesQuery.isError]);
-
-  const pricingTableData = useMemo(() => {
-    if (!activeParkingPrice) return undefined;
-
-    return {
-      ate3Horas: formatCurrency(activeParkingPrice.basePrice),
-      horaAdicional: formatCurrency(activeParkingPrice.hourlyRate),
-    };
-  }, [activeParkingPrice]);
 
   return (
     <div className="flex min-h-screen justify-center p-16">
@@ -60,7 +50,7 @@ export function Payments() {
               </button>
             </div>
 
-            <PricingTable data={pricingTableData} />
+            <PricingTable />
           </div>
         </section>
       </main>
