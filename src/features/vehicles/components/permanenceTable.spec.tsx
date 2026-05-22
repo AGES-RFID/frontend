@@ -82,4 +82,61 @@ describe("PermanenceTable", () => {
       expect((btn as HTMLButtonElement).disabled).toBe(true);
     });
   });
+  it("should render complex pagination with ellipsis when total pages > 5", () => {
+    const manyVehicles = Array.from({ length: 20 }).map((_, index) => ({
+      rfidTag: `TAG-${index}`,
+      plate: `ABC${(1000 + index).toString()}`,
+      minutesParked: 10 + index,
+    }));
+
+    render(<PermanenceTable vehicles={manyVehicles} />);
+
+    expect(screen.getByText("1")).toBeTruthy();
+    expect(screen.getByText("4")).toBeTruthy();
+    expect(screen.getByText("7")).toBeTruthy();
+    expect(screen.getAllByText("...").length).toBe(1);
+
+    fireEvent.click(screen.getByText("4"));
+
+    expect(screen.getByText("3")).toBeTruthy();
+    expect(screen.getByText("5")).toBeTruthy();
+    expect(screen.getAllByText("...").length).toBe(2);
+
+    fireEvent.click(screen.getByText("7"));
+
+    expect(screen.getByText("6")).toBeTruthy();
+    expect(screen.getAllByText("...").length).toBe(1);
+  });
+  it("should render a fallback dash (-) if rfidTag is not a string", () => {
+    const edgeCaseVehicle = {
+      rfidTag: null as unknown as string,
+      plate: "abc1234",
+      minutesParked: 10,
+    };
+
+    render(<PermanenceTable vehicles={[edgeCaseVehicle]} />);
+
+    expect(screen.getByText("-")).toBeTruthy();
+  });
+
+  it("should navigate correctly using first («), previous (‹), and last (») buttons", () => {
+    const navVehicles = Array.from({ length: 5 }).map((_, index) => ({
+      rfidTag: `TAG-NAV-${index}`,
+      plate: `ABC100${index}`,
+      minutesParked: 100 - index,
+    }));
+
+    render(<PermanenceTable vehicles={navVehicles} />);
+
+    fireEvent.click(screen.getByText("»"));
+    expect(screen.getByText("TAG-NAV-4")).toBeTruthy();
+
+    fireEvent.click(screen.getByText("‹"));
+    expect(screen.getByText("TAG-NAV-0")).toBeTruthy();
+
+    fireEvent.click(screen.getByText("»"));
+
+    fireEvent.click(screen.getByText("«"));
+    expect(screen.getByText("TAG-NAV-0")).toBeTruthy();
+  });
 });
