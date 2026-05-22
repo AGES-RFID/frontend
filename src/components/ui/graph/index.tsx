@@ -1,19 +1,55 @@
-import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 
-export function Chart() {
+import { renderD3 } from "./renderd3";
+
+import type { GraphData, GraphProps } from "./types";
+
+const mockData: GraphData[] = [
+  {
+    hour: "14",
+    entry: 20,
+    exit: 35,
+  },
+  {
+    hour: "13",
+    entry: 15,
+    exit: 10,
+  },
+  {
+    hour: "12",
+    entry: 30,
+    exit: 25,
+  },
+  {
+    hour: "11",
+    entry: 12,
+    exit: 18,
+  },
+];
+
+export function Graph({
+  data = mockData,
+  width = 800,
+  height = 400,
+}: GraphProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const width = 800;
-  const height = 400;
-
   useEffect(() => {
-    const svg = d3.select(svgRef.current);
+    if (!svgRef.current) return;
 
-    svg.selectAll("*").remove();
+    renderD3({
+      svgElement: svgRef.current,
+      data,
+      width,
+      height,
+    });
+  }, [data, width, height]);
 
-    svg.append("text").attr("x", 50).attr("y", 50).text("Chart initialized");
-  }, []);
+  return (
+    <div className="rounded-xl bg-white p-4">
+      <h2 className="mb-4 font-bold text-xl">Fluxo de veículos por hora</h2>
 
-  return <svg ref={svgRef} width={width} height={height} />;
+      <svg ref={svgRef} width={width} height={height} />
+    </div>
+  );
 }

@@ -1,11 +1,18 @@
+export type AccessApiResponse = {
+  access_id: string;
+  tag_id: string;
+  type: "Entry" | "Exit";
+  timestamp: string;
+};
+
 export type GraphData = {
   hour: string;
-  entrada: number;
-  saida: number;
+  entry: number;
+  exit: number;
 };
 
 export type GraphProps = {
-  data: GraphData[];
+  data?: GraphData[];
   width?: number;
   height?: number;
 };
