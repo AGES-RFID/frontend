@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { useMe } from "@/features/auth/hooks/useMe";
-import { getUserMetadata } from "@/utils/userMetadata";
 
 export function Profile() {
   const navigate = useNavigate();
@@ -29,8 +28,6 @@ export function Profile() {
       </main>
     );
   }
-
-  const metadata = getUserMetadata(user.userId);
 
   return (
     <main className="flex min-h-[calc(100vh-96px)] flex-col items-center justify-center px-4 py-12">
@@ -66,7 +63,7 @@ export function Profile() {
             <h2 className="font-bold text-dark-gray text-lg">CPF</h2>
             <ul className="mt-1 list-disc pl-5 text-gray">
               <li className="font-medium text-[16px] leading-relaxed">
-                {metadata.cpf}
+                {user.cpf || "999.999.999-99"}
               </li>
             </ul>
           </div>
@@ -77,7 +74,7 @@ export function Profile() {
             <h2 className="font-bold text-dark-gray text-lg">Telefone</h2>
             <ul className="mt-1 list-disc pl-5 text-gray">
               <li className="font-medium text-[16px] leading-relaxed">
-                {metadata.cellphone}
+                {user.cellphone || "(99) 99999-9999"}
               </li>
             </ul>
           </div>

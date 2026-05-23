@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toast";
 import { useMe } from "@/features/auth/hooks/useMe";
 import { useEditUser } from "@/features/users/hooks/useEditUser";
-import { getUserMetadata, saveUserMetadata } from "@/utils/userMetadata";
 
 export function EditProfile() {
   const navigate = useNavigate();
@@ -23,11 +22,10 @@ export function EditProfile() {
 
   useEffect(() => {
     if (user && !initialized) {
-      const metadata = getUserMetadata(user.userId);
       setFormData({
         name: user.name,
         email: user.email,
-        cellphone: metadata.cellphone,
+        cellphone: user.cellphone || "(99) 99999-9999",
       });
       setInitialized(true);
     }
@@ -55,8 +53,6 @@ export function EditProfile() {
       </main>
     );
   }
-
-  const metadata = getUserMetadata(user.userId);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -92,7 +88,7 @@ export function EditProfile() {
       return;
     }
 
-    const payload: { name?: string; email?: string } = {};
+    const payload: { name?: string; email?: string; cellphone?: string } = {};
     let hasBackendChanges = false;
 
     if (formData.name.trim() !== user.name) {
@@ -105,40 +101,32 @@ export function EditProfile() {
       hasBackendChanges = true;
     }
 
-    const hasPhoneChanges = formData.cellphone !== metadata.cellphone;
+    if (formData.cellphone !== (user.cellphone || "")) {
+      payload.cellphone = formData.cellphone;
+      hasBackendChanges = true;
+    }
 
-    if (!hasBackendChanges && !hasPhoneChanges) {
+    if (!hasBackendChanges) {
       toast.warning("Nenhuma alteração foi realizada.");
       return;
     }
 
-    // Save phone number locally if changed
-    if (hasPhoneChanges) {
-      saveUserMetadata(user.userId, { cellphone: formData.cellphone });
-    }
-
-    if (hasBackendChanges) {
-      editUserMutation.mutate(
-        {
-          userId: user.userId,
-          updateUserDto: payload,
+    editUserMutation.mutate(
+      {
+        userId: user.userId,
+        updateUserDto: payload,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Informações salvas com sucesso!");
+          navigate("/profile");
         },
-        {
-          onSuccess: () => {
-            toast.success("Informações salvas com sucesso!");
-            navigate("/profile");
-          },
-          onError: (err) => {
-            console.error("Erro ao salvar:", err);
-            toast.error("Ocorreu um erro ao atualizar suas informações.");
-          },
+        onError: (err) => {
+          console.error("Erro ao salvar:", err);
+          toast.error("Ocorreu um erro ao atualizar suas informações.");
         },
-      );
-    } else {
-      // If only phone number was changed
-      toast.success("Informações salvas com sucesso!");
-      navigate("/profile");
-    }
+      },
+    );
   };
 
   const handlePasswordResetClick = (e: React.MouseEvent) => {
@@ -194,7 +182,7 @@ export function EditProfile() {
             label="CPF"
             variant="disabled"
             placeholder="000.000.000-00"
-            value={metadata.cpf}
+            value={user.cpf || "999.999.999-99"}
             readOnly
             tabIndex={-1}
             width="100%"
