@@ -7,6 +7,7 @@ import {
   type UserFormValues,
 } from "@/features/users/components/UserForm";
 import { api } from "@/lib/api";
+import { saveUserMetadata } from "@/utils/userMetadata";
 
 type PublicCreateUserPayload = {
   name: string;
@@ -39,7 +40,14 @@ export function NewUser() {
     };
 
     createUserMutation.mutate(payload, {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        const createdUser = data as { userId?: string };
+        if (createdUser?.userId) {
+          saveUserMetadata(createdUser.userId, {
+            cpf: formData.cpf?.trim(),
+            cellphone: formData.cellphone?.trim(),
+          });
+        }
         toast.success("Usuário criado com sucesso.");
         navigate("/");
       },
