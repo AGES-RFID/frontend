@@ -62,7 +62,17 @@ export function EditProfile() {
   };
 
   const isValidEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    const trimmed = email.trim();
+    const atIndex = trimmed.indexOf("@");
+    if (atIndex <= 0 || atIndex !== trimmed.lastIndexOf("@")) {
+      return false;
+    }
+    const dotIndex = trimmed.lastIndexOf(".");
+    return (
+      dotIndex > atIndex + 1 &&
+      dotIndex < trimmed.length - 1 &&
+      !trimmed.includes(" ")
+    );
   };
 
   const isValidPhone = (phone: string) => {
@@ -155,7 +165,11 @@ export function EditProfile() {
 
       {/* Premium White Card Layout */}
       <div className="w-full max-w-[420px] rounded-2xl border border-[#eef3f8] bg-white p-10 shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="flex flex-col gap-6"
+        >
           {/* Nome Completo */}
           <Input
             label="Nome Completo"
