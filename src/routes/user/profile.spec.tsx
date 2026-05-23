@@ -59,6 +59,11 @@ describe("Profile Component", () => {
       new Error("Failed to fetch"),
     );
     spies.push(meSpy);
+    const navigateMock = mock();
+    const navigateSpy = spyOn(ReactRouter, "useNavigate").mockReturnValue(
+      navigateMock,
+    );
+    spies.push(navigateSpy);
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
@@ -71,6 +76,11 @@ describe("Profile Component", () => {
     expect(
       screen.getByText("Não foi possível carregar as informações do perfil."),
     ).toBeInTheDocument();
+
+    const homeButton = screen.getByRole("button", { name: "Voltar para Home" });
+    fireEvent.click(homeButton);
+
+    expect(navigateMock).toHaveBeenCalledWith("/");
   });
 
   it("should render user profile details correctly when loaded", async () => {
