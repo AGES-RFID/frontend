@@ -1,6 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { authService } from "@/features/auth/AuthService";
-import { api } from "@/lib/api";
+import {
+  type AuthService,
+  authService as defaultAuthService,
+} from "@/features/auth/AuthService";
+import { type ApiClient, api as defaultApi } from "@/lib/api";
 
 export type ResetPasswordVariables = {
   userId: string;
@@ -15,20 +18,30 @@ export class InvalidCurrentPasswordException extends Error {
   }
 }
 
+// Função exportada com injeção de dependências para facilitar testes unitários
+export async function resetPasswordFn(
+  variables: ResetPasswordVariables,
+  deps: { authService: AuthService; apiClient: ApiClient } = {
+    authService: defaultAuthService,
+    apiClient: defaultApi,
+  },
+): Promise<void> {
+  const { userId, userEmail, currentPassword, password } = variables;
+
+  try {
+    await deps.authService.login({
+      email: userEmail,
+      password: currentPassword,
+    });
+  } catch {
+    throw new InvalidCurrentPasswordException();
+  }
+
+  await deps.apiClient.patch(`users/${userId}`, { json: { password } });
+}
+
 export function useResetPassword() {
   return useMutation<void, Error, ResetPasswordVariables>({
-    mutationFn: async ({ userId, userEmail, currentPassword, password }) => {
-      // Verifica se a senha atual está correta antes de atualizar
-      try {
-        await authService.login({
-          email: userEmail,
-          password: currentPassword,
-        });
-      } catch {
-        throw new InvalidCurrentPasswordException();
-      }
-
-      await api.patch(`users/${userId}`, { json: { password } });
-    },
+    mutationFn: (variables) => resetPasswordFn(variables),
   });
 }
