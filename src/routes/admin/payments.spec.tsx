@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import {
   afterEach,
   beforeEach,
@@ -43,9 +44,8 @@ const pricingMock = {
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
-      queries: {
-        retry: false,
-      },
+      queries: { retry: false },
+      mutations: { retry: false },
     },
   });
 
@@ -73,15 +73,21 @@ describe("Payments", () => {
   it("should render the payments page", async () => {
     render(<Payments />, { wrapper: createWrapper() });
 
-    expect(screen.getByText("Cobrança")).toBeDefined();
-    expect(screen.getByText("Valores do estacionamento")).toBeDefined();
-    expect(screen.getByText("Editar Valores")).toBeDefined();
+    expect(screen.getByText("Cobrança")).toBeInTheDocument();
+    expect(screen.getByText("Valores do estacionamento")).toBeInTheDocument();
 
-    expect(await screen.findByText("Até 15 minutos")).toBeDefined();
-    expect(await screen.findByText("Até 3 horas")).toBeDefined();
-    expect(await screen.findByText("Hora adicional")).toBeDefined();
+    // Target the button specifically
+    expect(
+      screen.getByRole("button", { name: "Editar Valores" }),
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("Saídas recentes")).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText("Até 15 minutos")).toBeInTheDocument();
+      expect(screen.getByText("Até 3 horas")).toBeInTheDocument();
+      expect(screen.getByText("Hora adicional")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Saídas recentes")).toBeInTheDocument();
     expect(useGetTransactionsMock).toHaveBeenCalled();
   });
 
@@ -91,24 +97,28 @@ describe("Payments", () => {
     fireEvent.click(screen.getByRole("button", { name: "Editar Valores" }));
 
     await waitFor(() => {
-      expect(screen.getByText("Editar valores")).toBeDefined();
-      expect(screen.getByText("Modal de edição")).toBeDefined();
+      // Use getByLabelText which is unique to the modal
+      expect(
+        screen.getByLabelText("Tempo de Isenção (minutos)"),
+      ).toBeInTheDocument();
     });
   });
 
-  it("should close the edit values modal when clicking the backdrop", async () => {
+  it("should close the edit values modal when clicking the cancel button", async () => {
     render(<Payments />, { wrapper: createWrapper() });
 
     fireEvent.click(screen.getByRole("button", { name: "Editar Valores" }));
 
     await waitFor(() => {
-      expect(screen.getByText("Modal de edição")).toBeDefined();
+      expect(
+        screen.getByLabelText("Tempo de Isenção (minutos)"),
+      ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByLabelText("Fechar modal"));
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
 
     await waitFor(() => {
-      expect(screen.queryByText("Modal de edição")).toBeNull();
+      expect(screen.queryByLabelText("Tempo de Isenção (minutos)")).toBeNull();
     });
   });
 });

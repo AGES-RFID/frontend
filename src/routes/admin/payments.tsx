@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Modal } from "@/components/ui/modal";
 import { PricingTable } from "@/features/users/components/PricingTable";
+import { EditValuesModal } from "@/features/parking-prices/components/EditValuesModal";
 import { RecentExitComponent } from "@/features/transactions/components/recent-exit-component";
 import { useGetTransactions } from "@/features/transactions/hooks/useGetTransactions";
 
@@ -47,13 +47,10 @@ export function Payments() {
         </section>
       </main>
 
-      <Modal
+      <EditValuesModal
         isOpen={isEditValuesModalOpen}
         onClose={() => setIsEditValuesModalOpen(false)}
-        title="Editar valores"
-      >
-        <p>Modal de edição</p>
-      </Modal>
+      />
     </div>
   );
 }
