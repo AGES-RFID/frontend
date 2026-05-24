@@ -1,26 +1,29 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Table } from "@/components/ui/table";
 import { formatPlate, formatPermanenceTime } from "@/utils/formatting";
 import type { PermanenceDto } from "../dtos/permanenceDto";
 
 interface PermanenceTableProps {
-  vehicles: (PermanenceDto & Record<string, unknown>)[];
+  readonly vehicles: PermanenceDto[];
 }
 
 export function PermanenceTable({ vehicles }: PermanenceTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
-  const sortedVehicles = [...vehicles].sort(
-    (a, b) => b.minutesParked - a.minutesParked,
-  );
+  const sortedVehicles = useMemo(() => {
+    return [...vehicles].sort((a, b) => b.minutesParked - a.minutesParked);
+  }, [vehicles]);
 
-  const totalItems = sortedVehicles.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+  const totalPages = Math.ceil(sortedVehicles.length / itemsPerPage) || 1;
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedVehicles.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = useMemo(() => {
+    const indexOfLastItem = currentPage * itemsPerPage;
+    return sortedVehicles.slice(
+      indexOfLastItem - itemsPerPage,
+      indexOfLastItem,
+    );
+  }, [sortedVehicles, currentPage]);
 
   const columns = [
     {
@@ -46,7 +49,11 @@ export function PermanenceTable({ vehicles }: PermanenceTableProps) {
   return (
     <div className="w-full">
       <div className="overflow-hidden rounded-t-lg border border-light-gray">
-        <Table columns={columns} data={currentItems} searchable={false} />
+        <Table
+          columns={columns}
+          data={currentItems as (PermanenceDto & Record<string, unknown>)[]}
+          searchable={false}
+        />
       </div>
 
       <div className="flex select-none items-center justify-center gap-2 rounded-b-lg border-light-gray border-x border-b bg-white p-4">
@@ -73,33 +80,31 @@ export function PermanenceTable({ vehicles }: PermanenceTableProps) {
 
           if (totalPages <= 5) {
             for (let i = 1; i <= totalPages; i++) pages.push(i);
+          } else if (currentPage <= 3) {
+            pages.push(1, 2, 3, 4, "ellipsis-1", totalPages);
+          } else if (currentPage >= totalPages - 2) {
+            pages.push(
+              1,
+              "ellipsis-1",
+              totalPages - 3,
+              totalPages - 2,
+              totalPages - 1,
+              totalPages,
+            );
           } else {
-            if (currentPage <= 3) {
-              pages.push(1, 2, 3, 4, "ellipsis-1", totalPages);
-            } else if (currentPage >= totalPages - 2) {
-              pages.push(
-                1,
-                "ellipsis-1",
-                totalPages - 3,
-                totalPages - 2,
-                totalPages - 1,
-                totalPages,
-              );
-            } else {
-              pages.push(
-                1,
-                "ellipsis-1",
-                currentPage - 1,
-                currentPage,
-                currentPage + 1,
-                "ellipsis-2",
-                totalPages,
-              );
-            }
+            pages.push(
+              1,
+              "ellipsis-1",
+              currentPage - 1,
+              currentPage,
+              currentPage + 1,
+              "ellipsis-2",
+              totalPages,
+            );
           }
 
           return pages.map((page) => {
-            if (typeof page === "string" && page.startsWith("ellipsis")) {
+            if (typeof page === "string") {
               return (
                 <span key={page} className="px-2 text-sm text-zinc-400">
                   ...
@@ -113,7 +118,7 @@ export function PermanenceTable({ vehicles }: PermanenceTableProps) {
               <button
                 key={`page-${page}`}
                 type="button"
-                onClick={() => setCurrentPage(page as number)}
+                onClick={() => setCurrentPage(page)}
                 className={`flex h-8 w-8 items-center justify-center rounded-full border font-medium text-sm transition-colors ${
                   isCurrent
                     ? "border-blue bg-blue text-white"
