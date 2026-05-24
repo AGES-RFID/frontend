@@ -1,31 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
-import { HTTPError } from "ky";
-import { toast } from "@/components/ui/toast";
+import { useState } from "react";
 import { PricingTable } from "@/features/users/components/PricingTable";
-import { EditValues } from "@/features/parkingPrices/components/editValues";
-import { useParkingPrices } from "@/features/parkingPrices/hooks";
+import { EditValuesModal } from "@/features/parking-prices/components/EditValuesModal";
 
 export function Payments() {
   const [isEditValuesModalOpen, setIsEditValuesModalOpen] = useState(false);
-  const parkingPricesQuery = useParkingPrices();
-
-  const activeParkingPrice = useMemo(() => {
-    return parkingPricesQuery.data?.[0] ?? null;
-  }, [parkingPricesQuery.data]);
-
-  useEffect(() => {
-    if (!parkingPricesQuery.isError) return;
-
-    const error = parkingPricesQuery.error;
-    if (error instanceof HTTPError) {
-      toast.error(
-        `Nao foi possivel carregar os valores. (status ${error.response.status})`,
-      );
-      return;
-    }
-
-    toast.error("Nao foi possivel carregar os valores.");
-  }, [parkingPricesQuery.error, parkingPricesQuery.isError]);
 
   return (
     <div className="flex min-h-screen justify-center p-16">
@@ -55,10 +33,9 @@ export function Payments() {
         </section>
       </main>
 
-      <EditValues
+      <EditValuesModal
         isOpen={isEditValuesModalOpen}
         onClose={() => setIsEditValuesModalOpen(false)}
-        parkingPriceId={activeParkingPrice?.parkingPriceId}
       />
     </div>
   );
