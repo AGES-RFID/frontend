@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { PricingTable } from "@/features/users/components/PricingTable";
-import { EditValuesModal } from "@/features/parking-prices/components/EditValuesModal";
-import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { EditValuesModal } from "@/features/parking-prices/components/EditValuesModal";
+import { PricingTable } from "@/features/users/components/PricingTable";
 
 export function System() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

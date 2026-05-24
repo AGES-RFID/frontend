@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom";
-import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, mock } from "bun:test";
-import { BalanceCard } from ".";
+import { cleanup, render, screen } from "@testing-library/react";
 import { formatCurrency } from "../../../utils/formatting";
+import { BalanceCard } from ".";
 
 afterEach(() => {
   cleanup();
