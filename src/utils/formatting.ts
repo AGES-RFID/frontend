@@ -32,3 +32,23 @@ export function formatPlate(text: unknown): string {
 
   return text.toUpperCase();
 }
+export function formatPermanenceTime(minutes: unknown): string {
+  if (typeof minutes !== "number" || Number.isNaN(minutes) || minutes < 0) {
+    return "-";
+  }
+  if (minutes === 0) return "0m";
+
+  const days = Math.floor(minutes / (24 * 60));
+  const hours = Math.floor((minutes % (24 * 60)) / 60);
+  const remainingMinutes = minutes % 60;
+  const parts: string[] = [];
+
+  if (days > 0) {
+    parts.push(days === 1 ? "1 dia" : `${days} dias`);
+  }
+  if (hours > 0) parts.push(`${hours}h`);
+
+  if (remainingMinutes > 0 && days === 0) parts.push(`${remainingMinutes}m`);
+
+  return parts.join(" ");
+}
