@@ -1,13 +1,5 @@
 import "@testing-library/jest-dom";
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  mock,
-  spyOn,
-} from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import {
   cleanup,
   fireEvent,
@@ -18,19 +10,12 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 
+import { accessesService } from "@/features/accesses/AccessesService";
 import { parkingPricesService } from "@/features/parking-prices/ParkingPricesService";
-
-const useGetTransactionsMock = mock(() => ({
-  data: [],
-  isLoading: false,
-}));
-
-mock.module("@/features/transactions/hooks/useGetTransactions", () => ({
-  useGetTransactions: useGetTransactionsMock,
-}));
 
 const { Payments } = await import("./payments");
 
+const getRecentExitsMock = spyOn(accessesService, "getRecentExits");
 const getPricingMock = spyOn(parkingPricesService, "getPricing");
 
 const pricingMock = {
@@ -56,17 +41,13 @@ const createWrapper = () => {
 
 describe("Payments", () => {
   beforeEach(() => {
-    useGetTransactionsMock.mockReturnValue({
-      data: [],
-      isLoading: false,
-    });
-
+    getRecentExitsMock.mockResolvedValue([]);
     getPricingMock.mockResolvedValue(pricingMock);
   });
 
   afterEach(() => {
     cleanup();
-    useGetTransactionsMock.mockClear();
+    getRecentExitsMock.mockClear();
     getPricingMock.mockClear();
   });
 
@@ -88,7 +69,7 @@ describe("Payments", () => {
     });
 
     expect(screen.getByText("Saídas recentes")).toBeInTheDocument();
-    expect(useGetTransactionsMock).toHaveBeenCalled();
+    expect(getRecentExitsMock).toHaveBeenCalled();
   });
 
   it("should open the edit values modal when clicking the button", async () => {
