@@ -6,6 +6,15 @@ import {
   type UpdateParkingPricesDto,
 } from "./dtos/parkingPricesDto";
 
+const parkingPricesListSchema = z.array(parkingPricesSchema);
+
+const getDateTimestamp = (value?: string): number => {
+  if (!value) return 0;
+
+  const parsed = new Date(value).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
+};
+
 export class ParkingPricesService {
   private apiClient: ApiClient;
 
@@ -16,15 +25,29 @@ export class ParkingPricesService {
   async getPricing(): Promise<ParkingPricesDto> {
     const prices = await this.apiClient
       .get("parking-prices")
-      .json(z.union([parkingPricesSchema, z.array(parkingPricesSchema)]));
-    const result = Array.isArray(prices) ? prices[0] : prices;
-    if (!result) throw new Error("Preços não encontrados");
-    return result;
+      .json(parkingPricesListSchema);
+
+    const [currentPricing] = [...prices].sort((a, b) => {
+      const byUpdatedAt =
+        getDateTimestamp(b.updatedAt) - getDateTimestamp(a.updatedAt);
+
+      if (byUpdatedAt !== 0) return byUpdatedAt;
+
+      return getDateTimestamp(b.createdAt) - getDateTimestamp(a.createdAt);
+    });
+
+    if (!currentPricing) throw new Error("Preços não encontrados");
+
+    return currentPricing;
   }
 
-  async updatePricing(updateDto: UpdateParkingPricesDto): Promise<void> {
-    // Como só há 1 registro global ou ele pega o ativo, assumimos endpoint PUT global ou passando current
-    await this.apiClient.put("parking-prices", { json: updateDto }).json();
+  async updatePricing(
+    parkingPriceId: string,
+    updateDto: UpdateParkingPricesDto,
+  ): Promise<void> {
+    await this.apiClient
+      .patch(`parking-prices/${parkingPriceId}`, { json: updateDto })
+      .json();
   }
 }
 

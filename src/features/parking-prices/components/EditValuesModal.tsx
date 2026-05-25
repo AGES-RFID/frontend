@@ -8,6 +8,19 @@ interface EditValuesModalProps {
   onClose: () => void;
 }
 
+const getThresholdLabel = (thresholdMinutes?: number) => {
+  if (!thresholdMinutes || thresholdMinutes < 1) {
+    return "até o limite configurado";
+  }
+
+  if (thresholdMinutes % 60 === 0) {
+    const hours = thresholdMinutes / 60;
+    return `até ${hours} ${hours === 1 ? "hora" : "horas"}`;
+  }
+
+  return `até ${thresholdMinutes} minutos`;
+};
+
 export function EditValuesModal({ isOpen, onClose }: EditValuesModalProps) {
   const { data: pricing } = usePricing();
   const { mutate: updatePricing, isPending } = useUpdatePricing();
@@ -26,11 +39,16 @@ export function EditValuesModal({ isOpen, onClose }: EditValuesModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!pricing?.parkingPriceId) return;
+
     updatePricing(
       {
-        toleranceMinutes,
-        basePrice,
-        hourlyRate,
+        parkingPriceId: pricing.parkingPriceId,
+        updateDto: {
+          toleranceMinutes,
+          basePrice,
+          hourlyRate,
+        },
       },
       {
         onSuccess: () => {
@@ -66,7 +84,7 @@ export function EditValuesModal({ isOpen, onClose }: EditValuesModalProps) {
             htmlFor="basePrice"
             className="mb-1 block font-medium text-gray-700 text-sm"
           >
-            Valor até 3 Horas (R$)
+            Valor {getThresholdLabel(pricing?.thresholdMinutes)} (R$)
           </label>
           <input
             id="basePrice"
@@ -103,7 +121,10 @@ export function EditValuesModal({ isOpen, onClose }: EditValuesModalProps) {
           <Button type="button" onClick={onClose} variant="secondary">
             Cancelar
           </Button>
-          <Button type="submit" disabled={isPending}>
+          <Button
+            type="submit"
+            disabled={isPending || !pricing?.parkingPriceId}
+          >
             {isPending ? "Salvando..." : "Salvar"}
           </Button>
         </div>

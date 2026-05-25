@@ -7,6 +7,7 @@ export const parkingPricesSchema = z.object({
   thresholdMinutes: z.number(),
   hourlyRate: z.number(),
   createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
 export type ParkingPricesDto = z.infer<typeof parkingPricesSchema>;
@@ -15,6 +16,7 @@ export const updateParkingPricesSchema = z.object({
   toleranceMinutes: z.number(),
   basePrice: z.number(),
   hourlyRate: z.number(),
+  thresholdMinutes: z.number().optional(),
 });
 
 export type UpdateParkingPricesDto = z.infer<typeof updateParkingPricesSchema>;
