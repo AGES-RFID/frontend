@@ -256,7 +256,7 @@ describe("UserService", () => {
       }
       expect(request).toBeInstanceOf(Request);
       expect(request.url).toContain(`/users/${userId}`);
-      expect(request.method).toBe("PUT");
+      expect(request.method).toBe("PATCH");
       expect(request.headers.get("Content-Type")).toBe("application/json");
       const body = await request.clone().json();
       expect(body).toEqual(updateUserDto);
@@ -278,7 +278,7 @@ describe("UserService", () => {
       }
       expect(request).toBeInstanceOf(Request);
       expect(request.url).toContain(`/users/${userId}`);
-      expect(request.method).toBe("PUT");
+      expect(request.method).toBe("PATCH");
       expect(request.headers.get("Content-Type")).toBe("application/json");
       const body = await request.clone().json();
       expect(body).toEqual(updateUserDto);

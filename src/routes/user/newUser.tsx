@@ -34,8 +34,8 @@ export function NewUser() {
       email: formData.email.trim(),
       password: formData.password,
       role: "customer",
-      // cpf: formData.cpf?.trim(),
-      // cellphone: formData.cellphone?.trim(),
+      cpf: formData.cpf?.trim(),
+      cellphone: formData.cellphone?.trim(),
     };
 
     createUserMutation.mutate(payload, {
