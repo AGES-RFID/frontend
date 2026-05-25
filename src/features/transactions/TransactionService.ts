@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { type ApiClient, api } from "@/lib/api";
 import type { CreateTransactionDto } from "./dtos/createTransactionDto";
 import {
@@ -22,10 +23,10 @@ export class TransactionService {
     return transaction;
   }
 
-  async getTransactions(): Promise<TransactionDto[]> {
+  async myTransactions(): Promise<TransactionDto[]> {
     const transactions = await this.apiClient
       .get("transactions")
-      .json(transactionDtoSchema.array());
+      .json(z.array(transactionDtoSchema));
 
     return transactions;
   }

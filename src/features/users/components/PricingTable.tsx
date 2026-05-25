@@ -1,7 +1,7 @@
-import { cn } from "@/utils/cn";
+import { TableSkeleton } from "@/components/ui/table/TableSkeleton";
 
 import { usePricing } from "@/features/parking-prices/hooks";
-import { TableSkeleton } from "@/components/ui/table/TableSkeleton";
+import { cn } from "@/utils/cn";
 
 type PricingTableProps = Readonly<{
   className?: string;

@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
-import { Modal } from "@/components/ui/modal";
-import { Input } from "@/components/ui/input";
+import { MinusIcon, PlusIcon } from "lucide-react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
 import { toast } from "@/components/ui/toast";
 import { useCreateTag } from "../hooks";
-import { MinusIcon, PlusIcon } from "lucide-react";
 
 interface TagAddModalProps {
   isOpen: boolean;

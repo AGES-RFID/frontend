@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
-import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "bun:test";
+import { cleanup, render } from "@testing-library/react";
 
 import { TableSkeleton } from "./TableSkeleton";
 
