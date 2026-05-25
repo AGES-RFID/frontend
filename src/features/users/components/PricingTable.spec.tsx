@@ -35,18 +35,18 @@ describe("PricingTable", () => {
     expect(container.querySelectorAll(".animate-pulse")).toHaveLength(10);
   });
 
-  it("should render pricing data correctly", async () => {
+  it("should render pricing data correctly with dynamic threshold label", async () => {
     getPricingSpy.mockResolvedValueOnce({
       parkingPriceId: "pricing-id",
       toleranceMinutes: 15,
       basePrice: 10,
-      thresholdMinutes: 180,
+      thresholdMinutes: 90,
       hourlyRate: 5,
     });
     render(<PricingTable />, { wrapper: createWrapper() });
 
     expect(await screen.findByText("Até 15 minutos")).toBeInTheDocument();
-    expect(await screen.findByText("Até 3 horas")).toBeInTheDocument();
+    expect(await screen.findByText("Até 90 minutos")).toBeInTheDocument();
     expect(await screen.findByText("Hora adicional")).toBeInTheDocument();
 
     expect(await screen.findByText("Isento")).toBeInTheDocument();

@@ -40,11 +40,14 @@ describe("useUpdatePricing", () => {
       hourlyRate: 8,
     };
 
-    result.current.mutate(updateDto);
+    result.current.mutate({
+      parkingPriceId: "pricing-id",
+      updateDto,
+    });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(updatePricingSpy).toHaveBeenCalledWith(updateDto);
+    expect(updatePricingSpy).toHaveBeenCalledWith("pricing-id", updateDto);
     expect(updatePricingSpy).toHaveBeenCalledTimes(1);
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: ["pricing"],
@@ -64,7 +67,10 @@ describe("useUpdatePricing", () => {
       hourlyRate: 8,
     };
 
-    result.current.mutate(updateDto);
+    result.current.mutate({
+      parkingPriceId: "pricing-id",
+      updateDto,
+    });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
   });

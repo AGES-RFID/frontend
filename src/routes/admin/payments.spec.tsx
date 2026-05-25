@@ -9,9 +9,13 @@ import {
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import { Payments } from "./payments";
+
+import { accessesService } from "@/features/accesses/AccessesService";
 import { parkingPricesService } from "@/features/parking-prices/ParkingPricesService";
 
+const { Payments } = await import("./payments");
+
+const getRecentExitsMock = spyOn(accessesService, "getRecentExits");
 const getPricingMock = spyOn(parkingPricesService, "getPricing");
 
 const pricingMock = {
@@ -37,11 +41,13 @@ const createWrapper = () => {
 
 describe("Payments", () => {
   beforeEach(() => {
+    getRecentExitsMock.mockResolvedValue([]);
     getPricingMock.mockResolvedValue(pricingMock);
   });
 
   afterEach(() => {
     cleanup();
+    getRecentExitsMock.mockClear();
     getPricingMock.mockClear();
   });
 
@@ -61,6 +67,9 @@ describe("Payments", () => {
       expect(screen.getByText("Até 3 horas")).toBeInTheDocument();
       expect(screen.getByText("Hora adicional")).toBeInTheDocument();
     });
+
+    expect(screen.getByText("Saídas recentes")).toBeInTheDocument();
+    expect(getRecentExitsMock).toHaveBeenCalled();
   });
 
   it("should open the edit values modal when clicking the button", async () => {

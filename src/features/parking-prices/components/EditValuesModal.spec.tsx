@@ -60,7 +60,7 @@ describe("EditValuesModal", () => {
     updateMock.mockClear();
   });
 
-  it("renders correctly", () => {
+  it("renders correctly", async () => {
     render(<EditValuesModal isOpen={true} onClose={() => {}} />, {
       wrapper: createWrapper(),
     });
@@ -71,7 +71,9 @@ describe("EditValuesModal", () => {
       screen.getByLabelText("Tempo de Isenção (minutos)"),
     ).toBeInTheDocument();
 
-    expect(screen.getByLabelText("Valor até 3 Horas (R$)")).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText("Valor até 3 horas (R$)"),
+    ).toBeInTheDocument();
 
     expect(
       screen.getByLabelText("Valor da Hora Adicional (R$)"),
@@ -94,7 +96,7 @@ describe("EditValuesModal", () => {
       );
     });
 
-    expect(screen.getByLabelText("Valor até 3 Horas (R$)")).toHaveValue(15);
+    expect(screen.getByLabelText("Valor até 3 horas (R$)")).toHaveValue(15);
     expect(screen.getByLabelText("Valor da Hora Adicional (R$)")).toHaveValue(
       5,
     );
@@ -117,7 +119,7 @@ describe("EditValuesModal", () => {
       target: { value: "20" },
     });
 
-    fireEvent.change(screen.getByLabelText("Valor até 3 Horas (R$)"), {
+    fireEvent.change(screen.getByLabelText("Valor até 3 horas (R$)"), {
       target: { value: "18.5" },
     });
 
@@ -133,7 +135,7 @@ describe("EditValuesModal", () => {
     }
 
     await waitFor(() => {
-      expect(updateMock).toHaveBeenCalledWith({
+      expect(updateMock).toHaveBeenCalledWith("pricing-id", {
         toleranceMinutes: 20,
         basePrice: 18.5,
         hourlyRate: 7.5,

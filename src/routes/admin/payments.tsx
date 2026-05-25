@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { PricingTable } from "@/features/users/components/PricingTable";
 import { EditValuesModal } from "@/features/parking-prices/components/EditValuesModal";
+import { RecentExitsTable } from "@/features/accesses/components/recent-exits-table";
+import { useRecentExits } from "@/features/accesses/hooks/useRecentExits";
 
 export function Payments() {
   const [isEditValuesModalOpen, setIsEditValuesModalOpen] = useState(false);
+  const { data: recentExits = [], isLoading } = useRecentExits();
 
   return (
     <div className="flex min-h-screen justify-center p-16">
-      <main className="w-full max-w-760px">
+      <main className="w-full max-w-[760px]">
         <h1 className="mb-16 text-center font-bold text-3xl text-dark-blue">
           Cobrança
         </h1>
@@ -29,6 +32,14 @@ export function Payments() {
             </div>
 
             <PricingTable />
+          </div>
+
+          <div>
+            <h2 className="mb-1 font-semibold text-2xl text-dark-blue">
+              Saídas recentes
+            </h2>
+
+            <RecentExitsTable accesses={recentExits} isLoading={isLoading} />
           </div>
         </section>
       </main>
