@@ -33,8 +33,14 @@ export function Tags() {
   const columns = useMemo<TableColumn<TagListItemDto>[]>(
     () => [
       {
-        key: "id",
-        title: "ID",
+        key: "tid",
+        title: "TID",
+        className: "w-48 whitespace-nowrap",
+        sortable: true,
+      },
+      {
+        key: "epc",
+        title: "EPC",
         className: "w-48 whitespace-nowrap",
         sortable: true,
       },

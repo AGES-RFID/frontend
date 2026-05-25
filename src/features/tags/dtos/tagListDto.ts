@@ -2,7 +2,9 @@ import { z } from "zod";
 import { tagStatusSchema } from "./tagStatusDto";
 
 export const tagListItemSchema = z.object({
-  id: z.string(),
+  tagId: z.string(),
+  tid: z.string(),
+  epc: z.string(),
   userName: z.string().nullable(),
   plate: z.string().nullable(),
   status: tagStatusSchema,

@@ -21,7 +21,7 @@ export function TagDeactivateModal({
   const handleConfirm = () => {
     if (!tag) return;
 
-    deactivateMutation.mutate(tag.id, {
+    deactivateMutation.mutate(tag.tagId, {
       onSuccess: () => {
         toast.success("Etiqueta desativada com sucesso.");
         onClose();

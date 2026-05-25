@@ -15,7 +15,9 @@ mock.module("../hooks", () => ({
 const { TagDeactivateModal } = await import("./TagDeactivateModal");
 
 const mockTag: TagListItemDto = {
-  id: "tag-001",
+  tagId: "tag-001",
+  epc: "epc-001",
+  tid: "tid-001",
   userName: "John Doe",
   plate: "ABC-1234",
   status: "IN_USE",

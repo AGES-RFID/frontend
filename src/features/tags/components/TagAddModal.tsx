@@ -100,7 +100,7 @@ export function TagAddModal({ isOpen, onClose }: TagAddModalProps) {
               return (
                 <div key={tag.id} className="flex items-end gap-2">
                   <Input
-                    label="ID"
+                    label="TID"
                     placeholder="123456789"
                     value={tag.value}
                     width="100%"
