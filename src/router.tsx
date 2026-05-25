@@ -9,6 +9,7 @@ import { Tags } from "./routes/admin/tags.tsx";
 import { Users } from "./routes/admin/users.tsx";
 import { Vehicles } from "./routes/admin/vehicles.tsx";
 import { Login } from "./routes/shared/login.tsx";
+import { EditProfile } from "./routes/user/editProfile.tsx";
 import { EditUser } from "./routes/user/editUser.tsx";
 import { Home } from "./routes/user/home.tsx";
 import { NewUser } from "./routes/user/newUser.tsx";
@@ -35,6 +36,7 @@ export function Router() {
           <Route index element={<Home />} />
           <Route path="/payments" element={<Payment />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/edit" element={<EditProfile />} />
           <Route path="/user/profile" element={<Profile />} />
         </Route>
 

@@ -7,6 +7,8 @@ export const userSchema = z.object({
   email: z.email(),
   role: userRoleEnumSchema,
   balance: z.number(),
+  cpf: z.string().optional(),
+  cellphone: z.string().optional(),
 });
 
 export type UserDto = z.infer<typeof userSchema>;
