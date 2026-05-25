@@ -149,7 +149,7 @@ export function EditProfile() {
   return (
     <main className="flex min-h-[calc(100vh-96px)] flex-col items-center justify-center px-4 py-12">
       {/* Header Container with Centered Title and Left Back Button */}
-      <div className="relative mb-8 flex w-full max-w-[420px] items-center justify-center">
+      <div className="relative mb-8 flex w-full max-w-md items-center justify-center">
         <button
           type="button"
           onClick={() => navigate("/profile")}
@@ -164,7 +164,7 @@ export function EditProfile() {
       </div>
 
       {/* Premium White Card Layout */}
-      <div className="w-full max-w-[420px] rounded-2xl border border-[#eef3f8] bg-white p-10 shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
+      <div className="w-full max-w-md rounded-2xl border border-baby-blue bg-white p-10 shadow-md transition-all duration-300 hover:shadow-lg">
         <form
           onSubmit={handleSubmit}
           noValidate

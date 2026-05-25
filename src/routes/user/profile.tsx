@@ -35,7 +35,7 @@ export function Profile() {
         Meu Perfil
       </h1>
 
-      <div className="w-full max-w-[420px] rounded-2xl border border-[#eef3f8] bg-white p-10 shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
+      <div className="w-full max-w-md rounded-2xl border border-baby-blue bg-white p-10 shadow-md transition-all duration-300 hover:shadow-lg">
         <div className="flex flex-col gap-6">
           <div>
             <h2 className="font-bold text-dark-gray text-lg">Nome</h2>
@@ -46,7 +46,7 @@ export function Profile() {
             </ul>
           </div>
 
-          <div className="h-px w-full bg-[#f1f5f9]" />
+          <div className="h-px w-full bg-baby-blue/40" />
 
           <div>
             <h2 className="font-bold text-dark-gray text-lg">E-mail</h2>
@@ -57,7 +57,7 @@ export function Profile() {
             </ul>
           </div>
 
-          <div className="h-px w-full bg-[#f1f5f9]" />
+          <div className="h-px w-full bg-baby-blue/40" />
 
           <div>
             <h2 className="font-bold text-dark-gray text-lg">CPF</h2>
@@ -68,7 +68,7 @@ export function Profile() {
             </ul>
           </div>
 
-          <div className="h-px w-full bg-[#f1f5f9]" />
+          <div className="h-px w-full bg-baby-blue/40" />
 
           <div>
             <h2 className="font-bold text-dark-gray text-lg">Telefone</h2>
