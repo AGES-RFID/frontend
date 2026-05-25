@@ -4,6 +4,6 @@ import { transactionService } from "../TransactionService";
 export function useGetTransactions() {
   return useQuery({
     queryKey: ["transactions"],
-    queryFn: () => transactionService.getTransactions(),
+    queryFn: () => transactionService.myTransactions(),
   });
 }
