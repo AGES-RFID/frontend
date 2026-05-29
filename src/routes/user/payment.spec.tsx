@@ -25,40 +25,74 @@ const queryClient = new QueryClient({
   },
 });
 
+const useMeResult = (result: Partial<ReturnType<typeof useMeHook.useMe>>) =>
+  result as ReturnType<typeof useMeHook.useMe>;
+
+const useMyTransactionsResult = (
+  result: Partial<ReturnType<typeof useMyTransactionsHook.useMyTransactions>>,
+) => result as ReturnType<typeof useMyTransactionsHook.useMyTransactions>;
+
+const useCreateTransactionResult = (
+  result: Partial<
+    ReturnType<typeof useCreateTransactionHook.useCreateTransaction>
+  >,
+) => result as ReturnType<typeof useCreateTransactionHook.useCreateTransaction>;
+
+const usePricingResult = (
+  result: Partial<ReturnType<typeof usePricingHook.usePricing>>,
+) => result as ReturnType<typeof usePricingHook.usePricing>;
+
+const mockUser = {
+  userId: "1",
+  name: "Eduardo",
+  email: "eduardo@example.com",
+  role: "customer",
+  balance: 150,
+  vehicles: [],
+} satisfies NonNullable<ReturnType<typeof useMeHook.useMe>["data"]>;
+
 describe("Payment Route", () => {
   beforeEach(() => {
-    spyOn(usePricingHook, "usePricing").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: {
-        parkingPriceId: "550e8400-e29b-41d4-a716-446655440000",
-        toleranceMinutes: 15,
-        basePrice: 10,
-        hourlyRate: 5,
-        thresholdMinutes: 180,
-      },
-      refetch: mock(),
-    } as any);
+    spyOn(usePricingHook, "usePricing").mockReturnValue(
+      usePricingResult({
+        isLoading: false,
+        isError: false,
+        data: {
+          parkingPriceId: "550e8400-e29b-41d4-a716-446655440000",
+          toleranceMinutes: 15,
+          basePrice: 10,
+          hourlyRate: 5,
+          thresholdMinutes: 180,
+        },
+        refetch: mock(),
+      }),
+    );
   });
 
   it("should render loading state when user data is loading", () => {
-    spyOn(useMeHook, "useMe").mockReturnValue({
-      isLoading: true,
-      isError: false,
-      data: undefined,
-      refetch: mock(),
-    } as any);
+    spyOn(useMeHook, "useMe").mockReturnValue(
+      useMeResult({
+        isLoading: true,
+        isError: false,
+        data: undefined,
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: [],
-      refetch: mock(),
-    } as any);
+    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue(
+      useMyTransactionsResult({
+        isLoading: false,
+        isError: false,
+        data: [],
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue({
-      mutate: mock(),
-    } as any);
+    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue(
+      useCreateTransactionResult({
+        mutate: mock(),
+      }),
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -70,23 +104,29 @@ describe("Payment Route", () => {
   });
 
   it("should render error state when user data fetching fails", () => {
-    spyOn(useMeHook, "useMe").mockReturnValue({
-      isLoading: false,
-      isError: true,
-      data: undefined,
-      refetch: mock(),
-    } as any);
+    spyOn(useMeHook, "useMe").mockReturnValue(
+      useMeResult({
+        isLoading: false,
+        isError: true,
+        data: undefined,
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: [],
-      refetch: mock(),
-    } as any);
+    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue(
+      useMyTransactionsResult({
+        isLoading: false,
+        isError: false,
+        data: [],
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue({
-      mutate: mock(),
-    } as any);
+    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue(
+      useCreateTransactionResult({
+        mutate: mock(),
+      }),
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -100,27 +140,29 @@ describe("Payment Route", () => {
   });
 
   it("should render loading text when transactions are loading", () => {
-    spyOn(useMeHook, "useMe").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: {
-        userId: "1",
-        name: "Eduardo",
-        balance: 150,
-      },
-      refetch: mock(),
-    } as any);
+    spyOn(useMeHook, "useMe").mockReturnValue(
+      useMeResult({
+        isLoading: false,
+        isError: false,
+        data: mockUser,
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue({
-      isLoading: true,
-      isError: false,
-      data: undefined,
-      refetch: mock(),
-    } as any);
+    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue(
+      useMyTransactionsResult({
+        isLoading: true,
+        isError: false,
+        data: undefined,
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue({
-      mutate: mock(),
-    } as any);
+    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue(
+      useCreateTransactionResult({
+        mutate: mock(),
+      }),
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -132,27 +174,29 @@ describe("Payment Route", () => {
   });
 
   it("should render error text when transactions load fails", () => {
-    spyOn(useMeHook, "useMe").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: {
-        userId: "1",
-        name: "Eduardo",
-        balance: 150,
-      },
-      refetch: mock(),
-    } as any);
+    spyOn(useMeHook, "useMe").mockReturnValue(
+      useMeResult({
+        isLoading: false,
+        isError: false,
+        data: mockUser,
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue({
-      isLoading: false,
-      isError: true,
-      data: undefined,
-      refetch: mock(),
-    } as any);
+    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue(
+      useMyTransactionsResult({
+        isLoading: false,
+        isError: true,
+        data: undefined,
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue({
-      mutate: mock(),
-    } as any);
+    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue(
+      useCreateTransactionResult({
+        mutate: mock(),
+      }),
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -166,28 +210,30 @@ describe("Payment Route", () => {
   });
 
   it("should render empty text when user has no transactions", () => {
-    spyOn(useMeHook, "useMe").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: {
-        userId: "1",
-        name: "Eduardo",
-        balance: 150,
-      },
-      refetch: mock(),
-    } as any);
+    spyOn(useMeHook, "useMe").mockReturnValue(
+      useMeResult({
+        isLoading: false,
+        isError: false,
+        data: mockUser,
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      isSuccess: true,
-      data: [],
-      refetch: mock(),
-    } as any);
+    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue(
+      useMyTransactionsResult({
+        isLoading: false,
+        isError: false,
+        isSuccess: true,
+        data: [],
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue({
-      mutate: mock(),
-    } as any);
+    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue(
+      useCreateTransactionResult({
+        mutate: mock(),
+      }),
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -201,45 +247,47 @@ describe("Payment Route", () => {
   });
 
   it("should render transaction cards for deposit and withdrawal", () => {
-    spyOn(useMeHook, "useMe").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: {
-        userId: "1",
-        name: "Eduardo",
-        balance: 150,
-      },
-      refetch: mock(),
-    } as any);
+    spyOn(useMeHook, "useMe").mockReturnValue(
+      useMeResult({
+        isLoading: false,
+        isError: false,
+        data: mockUser,
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      isSuccess: true,
-      data: [
-        {
-          transactionId: "t1",
-          transactionType: "deposit",
-          amount: 50,
-          createdAt: new Date().toISOString(),
-          userId: "1",
-          description: "Depósito PIX",
-        },
-        {
-          transactionId: "t2",
-          transactionType: "withdrawal",
-          amount: 15.5,
-          createdAt: new Date().toISOString(),
-          userId: "1",
-          description: "Saída de veículo com placa ABC1234",
-        },
-      ],
-      refetch: mock(),
-    } as any);
+    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue(
+      useMyTransactionsResult({
+        isLoading: false,
+        isError: false,
+        isSuccess: true,
+        data: [
+          {
+            transactionId: "t1",
+            transactionType: "deposit",
+            amount: 50,
+            createdAt: new Date().toISOString(),
+            userId: "1",
+            description: "Depósito PIX",
+          },
+          {
+            transactionId: "t2",
+            transactionType: "withdrawal",
+            amount: 15.5,
+            createdAt: new Date().toISOString(),
+            userId: "1",
+            description: "Saída de veículo com placa ABC1234",
+          },
+        ],
+        refetch: mock(),
+      }),
+    );
 
-    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue({
-      mutate: mock(),
-    } as any);
+    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue(
+      useCreateTransactionResult({
+        mutate: mock(),
+      }),
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -261,33 +309,46 @@ describe("Payment Route", () => {
     const refetchMeMock = mock();
     const refetchTransactionsMock = mock();
 
-    spyOn(useMeHook, "useMe").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: {
-        userId: "1",
-        name: "Eduardo",
-        balance: 150,
+    spyOn(useMeHook, "useMe").mockReturnValue(
+      useMeResult({
+        isLoading: false,
+        isError: false,
+        data: mockUser,
+        refetch: refetchMeMock,
+      }),
+    );
+
+    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue(
+      useMyTransactionsResult({
+        isLoading: false,
+        isError: false,
+        isSuccess: true,
+        data: [],
+        refetch: refetchTransactionsMock,
+      }),
+    );
+
+    type CreateTransactionMutate = ReturnType<
+      typeof useCreateTransactionHook.useCreateTransaction
+    >["mutate"];
+    type CreateTransactionPayload = Parameters<CreateTransactionMutate>[0];
+    type CreateTransactionOptions = Parameters<CreateTransactionMutate>[1];
+
+    let mutateOptions: CreateTransactionOptions;
+    const mutateMock = mock(
+      (
+        _payload: CreateTransactionPayload,
+        options?: CreateTransactionOptions,
+      ) => {
+        mutateOptions = options;
       },
-      refetch: refetchMeMock,
-    } as any);
+    );
 
-    spyOn(useMyTransactionsHook, "useMyTransactions").mockReturnValue({
-      isLoading: false,
-      isError: false,
-      isSuccess: true,
-      data: [],
-      refetch: refetchTransactionsMock,
-    } as any);
-
-    let mutateOptions: any;
-    const mutateMock = mock((_payload, options) => {
-      mutateOptions = options;
-    });
-
-    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue({
-      mutate: mutateMock,
-    } as any);
+    spyOn(useCreateTransactionHook, "useCreateTransaction").mockReturnValue(
+      useCreateTransactionResult({
+        mutate: mutateMock,
+      }),
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -323,13 +384,15 @@ describe("Payment Route", () => {
     });
 
     const toastSuccessSpy = spyOn(toast, "success");
-    mutateOptions.onSuccess();
+    const onSuccess = mutateOptions?.onSuccess as (() => void) | undefined;
+    onSuccess?.();
     expect(toastSuccessSpy).toHaveBeenCalled();
     expect(refetchMeMock).toHaveBeenCalled();
     expect(refetchTransactionsMock).toHaveBeenCalled();
 
     const toastErrorSpy = spyOn(toast, "error");
-    mutateOptions.onError();
+    const onError = mutateOptions?.onError as (() => void) | undefined;
+    onError?.();
     expect(toastErrorSpy).toHaveBeenCalled();
   });
 });
