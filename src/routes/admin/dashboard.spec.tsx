@@ -44,28 +44,24 @@ describe("Dashboard Route Component", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render MetricCard with top label 'Horário com mais entradas'", () => {
+  it("should render entries metric card", () => {
     render(<Dashboard />, { wrapper: createWrapper() });
-    expect(screen.getByText("Horário com mais entradas")).toBeInTheDocument();
+
+    expect(screen.getByText("Entradas (Última Hora)")).toBeInTheDocument();
   });
 
-  it("should display peak entry time from API metrics when loaded", async () => {
+  it("should render exits metric card", () => {
     render(<Dashboard />, { wrapper: createWrapper() });
-    await waitFor(() => {
-      expect(screen.getByText("10:00")).toBeInTheDocument();
-    });
+
+    expect(screen.getByText("Saídas (Última Hora)")).toBeInTheDocument();
   });
 
-  it("should render fallback text when peakEntryTime is null", async () => {
-    getMetricsMock.mockResolvedValue({
-      entriesLastHour: 0,
-      exitsLastHour: 0,
-      peakEntryTime: null,
-    });
-
+  it("should display metrics from API when loaded", async () => {
     render(<Dashboard />, { wrapper: createWrapper() });
+
     await waitFor(() => {
-      expect(screen.getByText("--:--")).toBeInTheDocument();
+      expect(screen.getByText("5")).toBeInTheDocument();
+      expect(screen.getByText("2")).toBeInTheDocument();
     });
   });
 });
