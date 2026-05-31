@@ -14,7 +14,7 @@ export function CustomerLayout() {
   }, [isLoading, currentUser, navigate]);
 
   const handleAuthAction = () => {
-    navigate("/user/new");
+    navigate("/login");
   };
 
   if (isLoading) {
@@ -27,7 +27,7 @@ export function CustomerLayout() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f4f7fb_0%,#eef3f8_100%)]">
-      <Header onAuthAction={handleAuthAction} />
+      <Header isLogged={!!currentUser} onAuthAction={handleAuthAction} />
       <Outlet />
     </div>
   );

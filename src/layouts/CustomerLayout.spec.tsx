@@ -17,10 +17,9 @@ import {
 import { MemoryRouter, Route, Routes } from "react-router";
 import * as authContextModule from "@/features/auth/context/AuthContext";
 import type { UserDto } from "@/features/users/dtos";
+import { CustomerLayout } from "./CustomerLayout";
 
 const useAuthContextSpy = spyOn(authContextModule, "useAuthContext");
-
-const { CustomerLayout } = await import("./CustomerLayout");
 
 function renderCustomerLayout(initialEntry = "/") {
   return render(
@@ -41,7 +40,9 @@ describe("CustomerLayout", () => {
     useAuthContextSpy.mockReset();
   });
 
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+  });
 
   afterAll(() => {
     useAuthContextSpy.mockRestore();
@@ -82,7 +83,7 @@ describe("CustomerLayout", () => {
     });
   });
 
-  it("navigates to register page when header auth action is clicked", async () => {
+  it("navigates to login when header auth action is clicked", async () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: false,
       currentUser: { role: "customer" } as UserDto,
@@ -93,7 +94,7 @@ describe("CustomerLayout", () => {
     fireEvent.click(screen.getByTestId("header-auth-button"));
 
     await waitFor(() => {
-      expect(screen.getByText("Register page")).toBeInTheDocument();
+      expect(screen.getByText("Login page")).toBeInTheDocument();
     });
   });
 });

@@ -38,7 +38,9 @@ export class UserService {
     userId: string,
     updateUserDto: Partial<CreateUserDto>,
   ): Promise<void> {
-    await this.apiClient.put(`users/${userId}`, { json: updateUserDto }).json();
+    await this.apiClient
+      .patch(`users/${userId}`, { json: updateUserDto })
+      .json();
   }
 
   async deleteUser(userId: string): Promise<void> {

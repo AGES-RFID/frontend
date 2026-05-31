@@ -1,5 +1,5 @@
-import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
 import type { User } from "@/features/users/model/user";
 
 interface DeleteUserModalProps {

@@ -1,15 +1,15 @@
-import { ButtonSidebar, type MenuItem } from "./sidebarButton/buttonSidebar";
-import impinjLogo from "../../../../public/impinj-logo.png";
 import {
-  LayoutDashboard,
   Car,
-  Users,
-  Radio,
   CreditCard,
-  Settings,
+  LayoutDashboard,
   LogOut,
+  Radio,
+  Settings,
+  Users,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router";
+import impinjLogo from "../../../../public/impinj-logo.png";
+import { ButtonSidebar, type MenuItem } from "./sidebarButton/buttonSidebar";
 
 const menuItems: MenuItem[] = [
   {

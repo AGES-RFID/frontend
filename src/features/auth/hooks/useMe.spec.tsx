@@ -1,12 +1,13 @@
-import { afterAll, describe, expect, it, spyOn } from "bun:test";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderHook, waitFor } from "@testing-library/react";
-import { authService } from "../AuthService";
+import { cleanup, renderHook, waitFor } from "@testing-library/react";
 import type { UserWithVehiclesDto } from "@/features/users/dtos";
+import { authService } from "../AuthService";
+import { useMe } from "./useMe";
 
-const meSpy = spyOn(authService, "me");
-
-const { useMe } = await import("./useMe");
+afterEach(() => {
+  cleanup();
+});
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -28,12 +29,10 @@ const mockUserWithVehicles: UserWithVehiclesDto = {
 };
 
 describe("useMe", () => {
-  afterAll(() => {
-    meSpy.mockRestore();
-  });
-
   it("should return user data", async () => {
-    meSpy.mockResolvedValueOnce(mockUserWithVehicles);
+    const meSpy = spyOn(authService, "me").mockResolvedValueOnce(
+      mockUserWithVehicles,
+    );
 
     const { result } = renderHook(() => useMe(), {
       wrapper: createWrapper(),
@@ -46,12 +45,15 @@ describe("useMe", () => {
   });
 
   it("should expose errors when the query fails", async () => {
-    meSpy.mockRejectedValueOnce(new Error("Request failed"));
+    const meSpy = spyOn(authService, "me").mockRejectedValueOnce(
+      new Error("Request failed"),
+    );
 
     const { result } = renderHook(() => useMe(), {
       wrapper: createWrapper(),
     });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(meSpy).toHaveBeenCalled();
   });
 });

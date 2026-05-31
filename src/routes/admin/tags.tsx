@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/toast";
 import {
-  StatusBadge,
   type Status,
+  StatusBadge,
 } from "@/features/dashboard/components/Status";
 import { TagAddModal } from "@/features/tags/components/TagAddModal";
 import { TagDeactivateModal } from "@/features/tags/components/TagDeactivateModal";
