@@ -14,13 +14,13 @@ export function Dashboard() {
       <div className="max-w-[704px]">
         <div className="flex max-w-[704px] flex-col gap-4">
           <MetricCard
-            topLabel="Entradas (Última hora)"
+            topLabel="Entradas (Última Hora)"
             bottomLabel={String(metrics?.entriesLastHour ?? 0)}
             size="lg"
           />
 
           <MetricCard
-            topLabel="Saídas (Última hora)"
+            topLabel="Saídas (Última Hora)"
             bottomLabel={String(metrics?.exitsLastHour ?? 0)}
             size="lg"
           />
