@@ -147,6 +147,28 @@ describe("EditValuesModal", () => {
     });
   });
 
+  it("allows clearing numeric inputs before typing a new value", async () => {
+    render(<EditValuesModal isOpen={true} onClose={() => {}} />, {
+      wrapper: createWrapper(),
+    });
+
+    const basePriceInput = await screen.findByLabelText(
+      "Valor até 3 horas (R$)",
+    );
+
+    fireEvent.change(basePriceInput, {
+      target: { value: "" },
+    });
+
+    expect(basePriceInput).toHaveValue(null);
+
+    fireEvent.change(basePriceInput, {
+      target: { value: "35" },
+    });
+
+    expect(basePriceInput).toHaveValue(35);
+  });
+
   it("calls onClose when cancel button is clicked", () => {
     const onCloseMock = mock(() => {});
 
