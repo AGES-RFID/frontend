@@ -1,5 +1,6 @@
-import { cn } from "@/utils/cn";
 import type { TagStatus } from "@/features/tags/dtos";
+import { cn } from "@/utils/cn";
+
 export type { TagStatus as Status } from "@/features/tags/dtos";
 
 type StatusProps = {
@@ -35,7 +36,7 @@ export function StatusBadge({ status }: StatusProps) {
   return (
     <div
       className={cn(
-        "flex w-24 flex-shrink-0 items-center justify-center gap-2 rounded-full px-3 py-1 font-medium text-sm",
+        "flex w-24 shrink-0 items-center justify-center gap-2 rounded-full px-3 py-1 font-medium text-sm",
         config.className,
       )}
     >

@@ -2,10 +2,10 @@ import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { HighlightText } from "./HighlightText";
 import { TableSkeleton } from "./TableSkeleton";
-import { compareTableValues, formatTableCellValue } from "./utils";
 import type { SortConfig, TableColumn, TableProps } from "./types";
+import { compareTableValues, formatTableCellValue } from "./utils";
 
-export type { TableAction, TableColumn, TableProps, SortConfig } from "./types";
+export type { SortConfig, TableAction, TableColumn, TableProps } from "./types";
 
 export function Table<T extends Record<string, unknown>>({
   data,

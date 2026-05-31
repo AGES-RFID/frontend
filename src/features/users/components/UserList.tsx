@@ -1,7 +1,7 @@
 import { useEffect } from "react";
+import { toast } from "@/components/ui/toast";
 import { useUsers } from "../hooks/useUsers";
 import { UserCard } from "./UserCard";
-import { toast } from "@/components/ui/toast";
 
 export function UserList() {
   const { data: users, status, error } = useUsers();

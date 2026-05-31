@@ -1,17 +1,20 @@
-import { cn } from "@/utils/cn";
+import { TableSkeleton } from "@/components/ui/table/TableSkeleton";
 
 import { usePricing } from "@/features/parking-prices/hooks";
-import { TableSkeleton } from "@/components/ui/table/TableSkeleton";
+import { cn } from "@/utils/cn";
+import { formatCurrency } from "@/utils/formatting";
 
 type PricingTableProps = Readonly<{
   className?: string;
 }>;
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(value);
+const formatThresholdLabel = (thresholdMinutes: number) => {
+  if (thresholdMinutes > 0 && thresholdMinutes % 60 === 0) {
+    const hours = thresholdMinutes / 60;
+    return `Até ${hours} ${hours === 1 ? "hora" : "horas"}`;
+  }
+
+  return `Até ${thresholdMinutes} minutos`;
 };
 
 export function PricingTable({ className }: PricingTableProps) {
@@ -48,7 +51,10 @@ export function PricingTable({ className }: PricingTableProps) {
 
   const rows = [
     { label: `Até ${pricing.toleranceMinutes} minutos`, value: "Isento" },
-    { label: "Até 3 horas", value: formatCurrency(pricing.basePrice) },
+    {
+      label: formatThresholdLabel(pricing.thresholdMinutes),
+      value: formatCurrency(pricing.basePrice),
+    },
     { label: "Hora adicional", value: formatCurrency(pricing.hourlyRate) },
   ];
 

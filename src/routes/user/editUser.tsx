@@ -1,12 +1,12 @@
-import { useNavigate, useParams } from "react-router";
 import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router";
+import { Header } from "@/components/ui/header";
+import { toast } from "@/components/ui/toast";
 import {
   UserForm,
   type UserFormValues,
 } from "@/features/users/components/UserForm";
 import { useEditUser, useGetUser } from "@/features/users/hooks";
-import { Header } from "@/components/ui/header";
-import { toast } from "@/components/ui/toast";
 
 export function EditUser() {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import type * as React from "react";
-import { Button } from "../button";
 import { formatCurrency } from "../../../utils/formatting";
+import { Button } from "../button";
 
 export interface BalanceCardProps extends React.HTMLAttributes<HTMLDivElement> {
   balance: number;

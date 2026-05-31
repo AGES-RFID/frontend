@@ -1,12 +1,12 @@
-import { Link, useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
+import { Link, useNavigate } from "react-router";
+import { Header } from "@/components/ui/header";
+import { toast } from "@/components/ui/toast";
 import {
   UserForm,
   type UserFormValues,
 } from "@/features/users/components/UserForm";
-import { Header } from "@/components/ui/header";
 import { api } from "@/lib/api";
-import { toast } from "@/components/ui/toast";
 
 type PublicCreateUserPayload = {
   name: string;
@@ -34,8 +34,8 @@ export function NewUser() {
       email: formData.email.trim(),
       password: formData.password,
       role: "customer",
-      // cpf: formData.cpf?.trim(),
-      // cellphone: formData.cellphone?.trim(),
+      cpf: formData.cpf?.trim(),
+      cellphone: formData.cellphone?.trim(),
     };
 
     createUserMutation.mutate(payload, {

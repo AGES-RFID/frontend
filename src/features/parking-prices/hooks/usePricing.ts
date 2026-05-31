@@ -1,6 +1,6 @@
 import { type UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { parkingPricesService } from "../ParkingPricesService";
 import type { ParkingPricesDto } from "../dtos/parkingPricesDto";
+import { parkingPricesService } from "../ParkingPricesService";
 
 type UsePricingOptions = Omit<
   UseQueryOptions<ParkingPricesDto, Error>,
