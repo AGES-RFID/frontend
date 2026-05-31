@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { PricingTable } from "@/features/users/components/PricingTable";
-import { EditValuesModal } from "@/features/parking-prices/components/EditValuesModal";
 import { RecentExitsTable } from "@/features/accesses/components/recent-exits-table";
 import { useRecentExits } from "@/features/accesses/hooks/useRecentExits";
+import { EditValuesModal } from "@/features/parking-prices/components/EditValuesModal";
+import { PricingTable } from "@/features/parking-prices/components/PricingTable";
 
 export function Payments() {
   const [isEditValuesModalOpen, setIsEditValuesModalOpen] = useState(false);
