@@ -40,7 +40,7 @@ describe("useCreateTransaction", () => {
     const invalidateSpy = spyOn(
       queryClient,
       "invalidateQueries",
-    ).mockResolvedValue(undefined as any);
+    ).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useCreateTransaction(), { wrapper });
 
