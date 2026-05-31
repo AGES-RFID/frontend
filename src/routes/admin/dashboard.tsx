@@ -12,11 +12,19 @@ export function Dashboard() {
       </p>
 
       <div className="max-w-[704px]">
-        <MetricCard
-          topLabel="Horário com mais entradas"
-          bottomLabel={metrics?.peakEntryTime ?? "--:--"}
-          size="lg"
-        />
+        <div className="flex max-w-[704px] flex-col gap-4">
+          <MetricCard
+            topLabel="Entradas (Última hora)"
+            bottomLabel={String(metrics?.entriesLastHour ?? 0)}
+            size="lg"
+          />
+
+          <MetricCard
+            topLabel="Saídas (Última hora)"
+            bottomLabel={String(metrics?.exitsLastHour ?? 0)}
+            size="lg"
+          />
+        </div>
       </div>
     </div>
   );
