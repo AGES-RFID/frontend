@@ -24,6 +24,11 @@ export function Dashboard() {
             bottomLabel={String(metrics?.exitsLastHour ?? 0)}
             size="lg"
           />
+          <MetricCard
+            topLabel="Horário com mais entradas"
+            bottomLabel={metrics?.peakEntryTime ?? "--:--"}
+            size="lg"
+          />
         </div>
       </div>
     </div>
