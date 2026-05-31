@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { parseNumber } from "@/utils/parseNumber";
 import { usePricing, useUpdatePricing } from "../hooks";
 
 interface EditValuesModalProps {
@@ -41,20 +42,22 @@ export function EditValuesModal({ isOpen, onClose }: EditValuesModalProps) {
     e.preventDefault();
     if (!pricing?.parkingPriceId) return;
 
+    const tolerance = parseNumber(toleranceMinutes);
+    const base = parseNumber(basePrice);
+    const hourly = parseNumber(hourlyRate);
+
+    if (tolerance === null || base === null || hourly === null) return;
+
     updatePricing(
       {
         parkingPriceId: pricing.parkingPriceId,
         updateDto: {
-          toleranceMinutes: Number(toleranceMinutes),
-          basePrice: Number(basePrice),
-          hourlyRate: Number(hourlyRate),
+          toleranceMinutes: tolerance,
+          basePrice: base,
+          hourlyRate: hourly,
         },
       },
-      {
-        onSuccess: () => {
-          onClose();
-        },
-      },
+      { onSuccess: onClose },
     );
   };
 
