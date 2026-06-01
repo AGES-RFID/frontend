@@ -52,6 +52,7 @@ describe("CustomerLayout", () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: false,
       currentUser: { role: "customer" } as UserDto,
+      logout: async () => {},
     });
 
     renderCustomerLayout();
@@ -63,6 +64,7 @@ describe("CustomerLayout", () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: true,
       currentUser: undefined,
+      logout: async () => {},
     });
 
     renderCustomerLayout();
@@ -74,6 +76,7 @@ describe("CustomerLayout", () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: false,
       currentUser: undefined,
+      logout: async () => {},
     });
 
     renderCustomerLayout();
@@ -87,6 +90,7 @@ describe("CustomerLayout", () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: false,
       currentUser: { role: "customer" } as UserDto,
+      logout: async () => {},
     });
 
     renderCustomerLayout();

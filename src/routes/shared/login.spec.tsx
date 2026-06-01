@@ -62,6 +62,7 @@ describe("Login component", () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: false,
       currentUser: undefined,
+      logout: async () => {},
     });
   });
 
@@ -146,6 +147,7 @@ describe("Login component", () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: false,
       currentUser: { role: "admin" } as UserDto,
+      logout: async () => {},
     });
 
     renderLoginWithRoutes();
@@ -159,6 +161,7 @@ describe("Login component", () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: false,
       currentUser: { role: "customer" } as UserDto,
+      logout: async () => {},
     });
 
     renderLoginWithRoutes();

@@ -131,6 +131,23 @@ describe("AuthService", () => {
     });
   });
 
+  describe("logout", () => {
+    let authService: AuthService;
+
+    beforeEach(() => {
+      authService = new AuthService(api);
+      localStorage.clear();
+    });
+
+    it("should remove the token from localStorage", () => {
+      localStorage.setItem(TOKEN_KEY, mockAuthResponse.token);
+
+      authService.logout();
+
+      expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
+    });
+  });
+
   describe("me", () => {
     let fetchMock = mock();
     let apiMock: ApiClient;

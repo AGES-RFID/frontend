@@ -5,7 +5,7 @@ import { useAuthContext } from "@/features/auth/context/AuthContext";
 
 export function CustomerLayout() {
   const navigate = useNavigate();
-  const { currentUser, isLoading } = useAuthContext();
+  const { currentUser, isLoading, logout } = useAuthContext();
 
   useEffect(() => {
     if (!isLoading && !currentUser) {
@@ -13,8 +13,9 @@ export function CustomerLayout() {
     }
   }, [isLoading, currentUser, navigate]);
 
-  const handleAuthAction = () => {
-    navigate("/login");
+  const handleAuthAction = async () => {
+    await logout();
+    navigate("/login", { replace: true });
   };
 
   if (isLoading) {
@@ -27,7 +28,12 @@ export function CustomerLayout() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f4f7fb_0%,#eef3f8_100%)]">
-      <Header isLogged={!!currentUser} onAuthAction={handleAuthAction} />
+      <Header
+        isLogged={!!currentUser}
+        onAuthAction={() => {
+          void handleAuthAction();
+        }}
+      />
       <Outlet />
     </div>
   );

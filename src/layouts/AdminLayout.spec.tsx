@@ -7,7 +7,13 @@ import {
   it,
   spyOn,
 } from "bun:test";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import * as toastModule from "@/components/ui/toast";
 import * as authContextModule from "@/features/auth/context/AuthContext";
@@ -23,6 +29,7 @@ function renderAdminLayout(initialEntry = "/admin") {
     <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
         <Route path="/" element={<div>Home page</div>} />
+        <Route path="/login" element={<div>Login page</div>} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<div>Admin page</div>} />
         </Route>
@@ -48,6 +55,7 @@ describe("AdminLayout", () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: false,
       currentUser: { role: "admin" } as UserDto,
+      logout: async () => {},
     });
 
     renderAdminLayout();
@@ -60,6 +68,7 @@ describe("AdminLayout", () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: true,
       currentUser: undefined,
+      logout: async () => {},
     });
 
     renderAdminLayout();
@@ -72,6 +81,7 @@ describe("AdminLayout", () => {
     useAuthContextSpy.mockReturnValue({
       isLoading: false,
       currentUser: undefined,
+      logout: async () => {},
     });
 
     renderAdminLayout();
@@ -83,5 +93,29 @@ describe("AdminLayout", () => {
     expect(toastErrorSpy).toHaveBeenCalledWith(
       "Você não tem permissão para acessar essa página.",
     );
+  });
+
+  it("logs out and redirects to login when SAIR is clicked", async () => {
+    const logoutSpy = spyOn(
+      {
+        logout: async () => {},
+      },
+      "logout",
+    );
+
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: { role: "admin" } as UserDto,
+      logout: logoutSpy,
+    });
+
+    renderAdminLayout();
+
+    fireEvent.click(screen.getByRole("button", { name: "SAIR" }));
+
+    await waitFor(() => {
+      expect(logoutSpy).toHaveBeenCalledTimes(1);
+      expect(screen.getByText("Login page")).toBeInTheDocument();
+    });
   });
 });

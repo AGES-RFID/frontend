@@ -29,6 +29,10 @@ export class AuthService {
     return response;
   }
 
+  logout(): void {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+
   async me(): Promise<UserWithVehiclesDto | null> {
     const token = localStorage.getItem(TOKEN_KEY);
 

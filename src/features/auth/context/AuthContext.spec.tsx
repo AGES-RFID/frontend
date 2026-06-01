@@ -1,11 +1,28 @@
 import { afterAll, beforeEach, describe, expect, it, spyOn } from "bun:test";
-import { renderHook } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { act, renderHook } from "@testing-library/react";
 import type { UserDto } from "@/features/users/dtos";
 import * as authHooks from "../hooks";
+import { authService } from "../AuthService";
 
 const useMeSpy = spyOn(authHooks, "useMe");
 
 const { AuthContextProvider, useAuthContext } = await import("./AuthContext");
+
+function createWrapper() {
+  const queryClient = new QueryClient();
+
+  return {
+    queryClient,
+    Wrapper: function Wrapper({ children }: { children: React.ReactNode }) {
+      return (
+        <QueryClientProvider client={queryClient}>
+          <AuthContextProvider>{children}</AuthContextProvider>
+        </QueryClientProvider>
+      );
+    },
+  };
+}
 
 describe("AuthContext", () => {
   beforeEach(() => {
@@ -37,11 +54,9 @@ describe("AuthContext", () => {
       data: user,
     } as never);
 
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <AuthContextProvider>{children}</AuthContextProvider>
-    );
+    const { Wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAuthContext(), { wrapper });
+    const { result } = renderHook(() => useAuthContext(), { wrapper: Wrapper });
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.currentUser).toEqual(user);
@@ -54,13 +69,35 @@ describe("AuthContext", () => {
       data: null,
     } as never);
 
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <AuthContextProvider>{children}</AuthContextProvider>
-    );
+    const { Wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAuthContext(), { wrapper });
+    const { result } = renderHook(() => useAuthContext(), { wrapper: Wrapper });
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.currentUser).toBeUndefined();
+  });
+
+  it("proxies logout to authService and resets me query", async () => {
+    useMeSpy.mockReturnValue({
+      isLoading: false,
+      isFetching: false,
+      data: null,
+    } as never);
+
+    const logoutSpy = spyOn(authService, "logout").mockImplementation(() => {});
+    const { queryClient, Wrapper } = createWrapper();
+    const resetQueriesSpy = spyOn(queryClient, "resetQueries");
+
+    const { result } = renderHook(() => useAuthContext(), { wrapper: Wrapper });
+
+    await act(async () => {
+      await result.current.logout();
+    });
+
+    expect(logoutSpy).toHaveBeenCalledTimes(1);
+    expect(resetQueriesSpy).toHaveBeenCalledWith({ queryKey: ["me"] });
+
+    logoutSpy.mockRestore();
+    resetQueriesSpy.mockRestore();
   });
 });

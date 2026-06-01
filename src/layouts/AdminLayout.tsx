@@ -7,7 +7,7 @@ import { useAuthContext } from "@/features/auth/context/AuthContext";
 export function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentUser, isLoading } = useAuthContext();
+  const { currentUser, isLoading, logout } = useAuthContext();
 
   useEffect(() => {
     if (!isLoading && currentUser?.role !== "admin") {
@@ -15,6 +15,11 @@ export function AdminLayout() {
       navigate("/");
     }
   }, [isLoading, currentUser, navigate]);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   if (isLoading) {
     return <div></div>;
@@ -24,7 +29,11 @@ export function AdminLayout() {
 
   return (
     <div className="flex min-h-screen">
-      <SidebarDrawer />
+      <SidebarDrawer
+        onLogout={() => {
+          void handleLogout();
+        }}
+      />
       <main key={location.pathname} className="admin-page-enter flex-1">
         {isLoading ? (
           <p className="animate-pulse text-center text-xl">Carregando...</p>
