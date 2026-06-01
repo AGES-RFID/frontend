@@ -26,7 +26,7 @@ export function AntennaCard({
   labels,
   className,
   ...props
-}: AntennaCardProps) {
+}: Readonly<AntennaCardProps>) {
   const mergedLabels = {
     status: labels?.status ?? "Status:",
     sensitivity: labels?.sensitivity ?? "Sensitivity:",
