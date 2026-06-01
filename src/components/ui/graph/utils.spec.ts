@@ -1,3 +1,4 @@
+import { describe, expect, it } from "bun:test";
 import { getLast12Hours, getMaxValue } from "./utils";
 
 describe("utils", () => {
