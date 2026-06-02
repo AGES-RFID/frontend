@@ -70,7 +70,7 @@ export function ParkingOccupancyCard({
             type="button"
             data-testid="edit-capacity-button"
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center rounded-full p-2 text-zinc-600 transition-all hover:bg-zinc-100 hover:text-[#1f304c]"
+            className="flex items-center justify-center rounded-full p-2 text-dark-gray transition-all hover:bg-gray/10 hover:text-dark-gray"
             title="Editar lotação"
           >
             <Pencil className="h-6 w-6" strokeWidth={2.5} />

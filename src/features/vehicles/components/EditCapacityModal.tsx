@@ -37,7 +37,7 @@ export function EditCapacityModal({
         <div className="mb-10">
           <label
             htmlFor="capacity-input"
-            className="mb-2 block font-bold text-zinc-800"
+            className="mb-2 block font-bold text-dark-gray"
           >
             Número de vagas
           </label>
@@ -47,7 +47,7 @@ export function EditCapacityModal({
             min="0"
             value={capacity}
             onChange={(e) => setCapacity(e.target.value)}
-            className="w-full rounded-lg border border-zinc-300 p-3 text-lg text-zinc-800 outline-none transition-all focus:border-dark-blue focus:ring-1 focus:ring-dark-blue"
+            className="w-full rounded-lg border border-light-gray p-3 text-dark-gray text-lg outline-none transition-all focus:border-dark-blue focus:ring-1 focus:ring-dark-blue"
           />
         </div>
 
@@ -55,14 +55,14 @@ export function EditCapacityModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 font-bold text-zinc-800 transition-colors hover:text-black"
+            className="px-4 py-2 font-bold text-dark-gray transition-colors hover:text-black"
           >
             Cancelar
           </button>
           <button
             type="button"
             onClick={handleConfirm}
-            className="rounded-lg bg-dark-blue px-6 py-3 font-bold text-white transition-colors hover:bg-dark-blue"
+            className="rounded-lg bg-dark-blue px-6 py-3 font-bold text-white transition-colors hover:bg-dark-blue-75"
           >
             Confirmar
           </button>
