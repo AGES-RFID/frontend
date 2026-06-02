@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
-import { afterEach, describe, expect, test } from "bun:test";
-import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, test, mock } from "bun:test";
+import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import { ParkingOccupancyCard } from ".";
 
 afterEach(() => {
@@ -96,5 +96,38 @@ describe("ParkingOccupancyCard", () => {
 
     const progressBar = screen.getByTestId("parking-occupancy-progress-bar");
     expect(progressBar).toHaveStyle("width: 0%");
+  });
+
+  test("should open edit modal and call onEditCapacity when isEditable is true", () => {
+    const onEditCapacityMock = mock();
+
+    render(
+      <ParkingOccupancyCard
+        vehiclesCount={10}
+        totalSpots={100}
+        isEditable={true}
+        onEditCapacity={onEditCapacityMock}
+      />,
+    );
+
+    const editButton = screen.getByTestId("edit-capacity-button");
+    fireEvent.click(editButton);
+
+    expect(screen.getByText("Editar lotação")).toBeTruthy();
+
+    const input = screen.getByLabelText("Número de vagas");
+    fireEvent.change(input, { target: { value: "200" } });
+
+    const confirmButton = screen.getByText("Confirmar");
+    fireEvent.click(confirmButton);
+
+    expect(onEditCapacityMock).toHaveBeenCalledWith(200);
+  });
+
+  test("should not render the edit button when isEditable is false", () => {
+    render(<ParkingOccupancyCard vehiclesCount={10} totalSpots={100} />);
+
+    const editButton = screen.queryByTestId("edit-capacity-button");
+    expect(editButton).toBeNull();
   });
 });
