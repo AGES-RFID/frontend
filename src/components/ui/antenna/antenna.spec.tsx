@@ -8,8 +8,8 @@ describe("AntennaCard component", () => {
   const defaultProps = {
     name: "Antena 1",
     status: "On" as const,
-    sensitivity: "-50 dBm",
-    power: "28.0 dBm",
+    sensitivity: -50,
+    power: 28.0,
   };
 
   it("should render the antenna details correctly", () => {
@@ -22,6 +22,22 @@ describe("AntennaCard component", () => {
     expect(screen.getByText("-50 dBm")).toBeInTheDocument();
     expect(screen.getByText("Power:")).toBeInTheDocument();
     expect(screen.getByText("28.0 dBm")).toBeInTheDocument();
+  });
+
+  it("should format raw sensitivity and power values correctly", () => {
+    render(<AntennaCard {...defaultProps} sensitivity={-45} power={30} />);
+
+    expect(screen.getByText("-45 dBm")).toBeInTheDocument();
+    expect(screen.getByText("30.0 dBm")).toBeInTheDocument();
+  });
+
+  it("should not double-format already formatted strings", () => {
+    render(
+      <AntennaCard {...defaultProps} sensitivity="-45 dBm" power="30.0 dBm" />,
+    );
+
+    expect(screen.getByText("-45 dBm")).toBeInTheDocument();
+    expect(screen.getByText("30.0 dBm")).toBeInTheDocument();
   });
 
   it("should not show the edit button if editable is false", () => {
@@ -69,7 +85,7 @@ describe("AntennaCard component", () => {
       ".relative.inline-flex.rounded-full",
     );
     expect(indicator?.className).toContain("bg-green");
-    expect(indicator?.className).toContain("shadow-[0_0_12px_#20952c]");
+    expect(indicator?.className).toContain("shadow-glow-green");
   });
 
   it("should apply correct status styles for 'Off' state", () => {
@@ -85,6 +101,6 @@ describe("AntennaCard component", () => {
       ".relative.inline-flex.rounded-full",
     );
     expect(indicator?.className).toContain("bg-red");
-    expect(indicator?.className).toContain("shadow-[0_0_12px_#f7323f]");
+    expect(indicator?.className).toContain("shadow-glow-red");
   });
 });

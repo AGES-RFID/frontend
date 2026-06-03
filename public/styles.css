@@ -43,6 +43,10 @@
   --color-bg-overlay: rgba(0, 0, 0, 0.3);
   --color-bg-light: rgba(255, 255, 255, 0.9);
   --color-bg-dark: rgba(0, 0, 0, 0.8);
+
+  /* Glowing indicators shadows */
+  --shadow-glow-green: 0 0 12px var(--color-green);
+  --shadow-glow-red: 0 0 12px var(--color-red);
 }
 
 /* Aliases for color mixes */

@@ -5,8 +5,8 @@ import { cn } from "@/utils/cn";
 export interface AntennaCardProps extends React.HTMLAttributes<HTMLDivElement> {
   name: string;
   status: "On" | "Off";
-  sensitivity: string;
-  power: string;
+  sensitivity: number | string;
+  power: number | string;
   editable?: boolean;
   onEdit?: () => void;
   labels?: {
@@ -15,6 +15,26 @@ export interface AntennaCardProps extends React.HTMLAttributes<HTMLDivElement> {
     power?: string;
   };
 }
+
+const formatSensitivity = (value: number | string): string => {
+  if (value === undefined || value === null || value === "") return "";
+  if (typeof value === "string" && value.includes("dBm")) {
+    return value;
+  }
+  const num = typeof value === "string" ? Number.parseFloat(value) : value;
+  if (Number.isNaN(num)) return `${value} dBm`;
+  return `${num} dBm`;
+};
+
+const formatPower = (value: number | string): string => {
+  if (value === undefined || value === null || value === "") return "";
+  if (typeof value === "string" && value.includes("dBm")) {
+    return value;
+  }
+  const num = typeof value === "string" ? Number.parseFloat(value) : value;
+  if (Number.isNaN(num)) return `${value} dBm`;
+  return `${num.toFixed(1)} dBm`;
+};
 
 export function AntennaCard({
   name,
@@ -34,6 +54,8 @@ export function AntennaCard({
   };
 
   const isOn = status === "On";
+  const formattedSensitivity = formatSensitivity(sensitivity);
+  const formattedPower = formatPower(power);
 
   return (
     <div
@@ -44,7 +66,7 @@ export function AntennaCard({
       {...props}
     >
       {/* Left Column: Antenna Icon and Glowing Status Indicator */}
-      <div className="relative mt-[34px] flex shrink-0 items-center justify-center">
+      <div className="relative flex shrink-0 items-center justify-center self-center">
         <SatelliteDish className="h-16 w-16 text-dark-gray" strokeWidth={1.5} />
 
         {/* Glowing Indicator Circle with Micro-Animation */}
@@ -58,9 +80,7 @@ export function AntennaCard({
           <span
             className={cn(
               "relative inline-flex h-4 w-4 rounded-full transition-all duration-300",
-              isOn
-                ? "bg-green shadow-[0_0_12px_#20952c]"
-                : "bg-red shadow-[0_0_12px_#f7323f]",
+              isOn ? "bg-green shadow-glow-green" : "bg-red shadow-glow-red",
             )}
           />
         </span>
@@ -80,12 +100,12 @@ export function AntennaCard({
 
           <span className="text-gray">{mergedLabels.sensitivity}</span>
           <span className="whitespace-nowrap font-semibold text-dark-gray">
-            {sensitivity}
+            {formattedSensitivity}
           </span>
 
           <span className="text-gray">{mergedLabels.power}</span>
           <span className="whitespace-nowrap font-semibold text-dark-gray">
-            {power}
+            {formattedPower}
           </span>
         </div>
       </div>
