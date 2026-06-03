@@ -1,0 +1,1 @@
+export { useUpdateAntenna } from "./useUpdateAntenna";
