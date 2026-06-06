@@ -1,8 +1,8 @@
-import type { GraphData } from "./types";
+import type { GraphSeries } from "./types";
 
 export type ChartRenderParams = {
   svgElement: SVGSVGElement;
-  data: GraphData[];
+  series: GraphSeries[];
   width: number;
   height: number;
 };

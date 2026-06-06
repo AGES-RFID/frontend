@@ -1,17 +1,19 @@
-export type GraphData = {
-  hour: string;
-  entry: number;
-  exit: number;
+export type GraphPoint = {
+  timestamp: string;
+  value: number;
 };
+
+export type GraphSeries = {
+  name: string;
+  points: GraphPoint[];
+  color?: string;
+};
+
+export type GraphData = GraphSeries[];
 
 export type GraphProps = {
-  data?: GraphData[];
+  title?: string;
+  series?: GraphSeries[];
   width?: number;
   height?: number;
-};
-
-export type VehicleFlowApiResponse = {
-  hour: number;
-  entries: number;
-  exits: number;
 };

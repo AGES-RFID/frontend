@@ -1,15 +1,22 @@
-import type { GraphData } from "./types";
+import type { GraphSeries } from "./types";
 
-export function getMaxValue(data: GraphData[]) {
-  return Math.max(...data.flatMap((item) => [item.entry, item.exit]));
+export function getMaxValue(series: GraphSeries[]) {
+  const values = series.flatMap((line) =>
+    line.points.map((point) => point.value),
+  );
+
+  return values.length === 0 ? 0 : Math.max(...values);
 }
 
-export function getLast12Hours() {
-  return Array.from({ length: 12 }, (_, index) => {
-    const date = new Date();
+export function getDateDomain(series: GraphSeries[]): [Date, Date] {
+  const dates = series.flatMap((line) =>
+    line.points.map((point) => new Date(point.timestamp)),
+  );
 
-    date.setHours(date.getHours() - index);
+  if (dates.length === 0) return [new Date(), new Date()];
 
-    return date.getHours().toString();
-  });
+  const min = Math.min(...dates.map(Number));
+  const max = Math.max(...dates.map(Number));
+
+  return [new Date(min), new Date(max)];
 }

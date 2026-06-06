@@ -1,9 +1,34 @@
+import type { GraphData } from "@/components/ui/graph";
 import { Graph } from "@/components/ui/graph";
-import { useVehicleFlow } from "@/features/dashboard/hooks/useVehicleFlow";
+
+const mockVehicleFlowSeries: GraphData = [
+  {
+    name: "Entradas",
+    color: "var(--color-blue)",
+    points: [
+      { timestamp: "2026-06-06T10:00:00", value: 20 },
+      { timestamp: "2026-06-06T11:00:00", value: 35 },
+      { timestamp: "2026-06-06T12:00:00", value: 10 },
+      { timestamp: "2026-06-06T13:00:00", value: 28 },
+      { timestamp: "2026-06-06T14:00:00", value: 42 },
+      { timestamp: "2026-06-06T15:00:00", value: 30 },
+    ],
+  },
+  {
+    name: "Saídas",
+    color: "var(--color-dark-orange)",
+    points: [
+      { timestamp: "2026-06-06T10:00:00", value: 15 },
+      { timestamp: "2026-06-06T11:00:00", value: 28 },
+      { timestamp: "2026-06-06T12:00:00", value: 40 },
+      { timestamp: "2026-06-06T13:00:00", value: 22 },
+      { timestamp: "2026-06-06T14:00:00", value: 34 },
+      { timestamp: "2026-06-06T15:00:00", value: 27 },
+    ],
+  },
+];
 
 export function Dashboard() {
-  const { data: flowData = [], isLoading } = useVehicleFlow();
-
   return (
     <div className="p-8">
       <h1 className="mb-4 font-bold text-3xl text-dark-gray">Dashboard</h1>
@@ -38,7 +63,12 @@ export function Dashboard() {
         </div>
       </div>
 
-      <Graph data={isLoading ? [] : flowData} width={900} height={400} />
+      <Graph
+        title="Fluxo de veículos por hora"
+        series={mockVehicleFlowSeries}
+        width={900}
+        height={400}
+      />
     </div>
   );
 }

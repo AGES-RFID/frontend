@@ -1,37 +1,52 @@
 import { describe, expect, it } from "bun:test";
-import { getLast12Hours, getMaxValue } from "./utils";
+import { getMaxValue, getDateDomain } from "./utils";
+import type { GraphSeries } from "./types";
 
-describe("utils", () => {
-  describe("getLast12Hours", () => {
-    it("should return 12 hours", () => {
-      const result = getLast12Hours();
+const makePoint = (timestamp: string, value: number) => ({ timestamp, value });
 
-      expect(result).toHaveLength(12);
-    });
+const series: GraphSeries[] = [
+  {
+    name: "Série A",
+    points: [
+      makePoint("2026-06-06T10:00:00", 20),
+      makePoint("2026-06-06T11:00:00", 35),
+      makePoint("2026-06-06T12:00:00", 10),
+    ],
+  },
+  {
+    name: "Série B",
+    points: [
+      makePoint("2026-06-06T10:00:00", 15),
+      makePoint("2026-06-06T11:00:00", 28),
+      makePoint("2026-06-06T12:00:00", 40),
+    ],
+  },
+];
 
-    it("should return strings", () => {
-      const result = getLast12Hours();
-
-      expect(typeof result[0]).toBe("string");
-    });
+describe("getMaxValue", () => {
+  it("deve retornar o maior valor entre todas as séries", () => {
+    expect(getMaxValue(series)).toBe(40);
   });
 
-  describe("getMaxValue", () => {
-    it("should return max value", () => {
-      const result = getMaxValue([
-        {
-          hour: "14",
-          entry: 20,
-          exit: 35,
-        },
-        {
-          hour: "13",
-          entry: 10,
-          exit: 15,
-        },
-      ]);
+  it("deve retornar 0 quando não há séries", () => {
+    expect(getMaxValue([])).toBe(0);
+  });
 
-      expect(result).toBe(35);
-    });
+  it("deve retornar 0 quando as séries estão vazias", () => {
+    expect(getMaxValue([{ name: "X", points: [] }])).toBe(0);
+  });
+});
+
+describe("getDateDomain", () => {
+  it("deve retornar o intervalo de datas entre todas as séries", () => {
+    const [min, max] = getDateDomain(series);
+    expect(min.toISOString()).toBe("2026-06-06T10:00:00.000Z");
+    expect(max.toISOString()).toBe("2026-06-06T12:00:00.000Z");
+  });
+
+  it("deve retornar [now, now] quando não há séries", () => {
+    const [min, max] = getDateDomain([]);
+    expect(min.getTime()).toBeGreaterThan(0);
+    expect(max.getTime()).toBeGreaterThan(0);
   });
 });

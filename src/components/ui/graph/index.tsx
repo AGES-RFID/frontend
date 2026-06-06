@@ -1,9 +1,14 @@
 import { useEffect, useRef } from "react";
-import { D3ChartRenderer } from "./renderd3";
 import type { IChartRenderer } from "./IChartRenderer";
+import { D3ChartRenderer, getColor } from "./renderd3";
 import type { GraphData, GraphProps } from "./types";
 
-export function Graph({ data = [], width = 800, height = 400 }: GraphProps) {
+export function Graph({
+  title = "Gráfico de linhas",
+  series = [],
+  width = 800,
+  height = 400,
+}: GraphProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const rendererRef = useRef<IChartRenderer | null>(null);
 
@@ -19,46 +24,44 @@ export function Graph({ data = [], width = 800, height = 400 }: GraphProps) {
   }, []);
 
   useEffect(() => {
-    if (!svgRef.current || data.length === 0) return;
+    if (!svgRef.current || series.length === 0) return;
 
     rendererRef.current?.render({
       svgElement: svgRef.current,
-      data,
+      series,
       width,
       height,
     });
-  }, [data, width, height]);
+  }, [series, width, height]);
+
+  const hasData = series.some((line) => line.points.length > 0);
 
   return (
     <div className="rounded-xl bg-white p-6 shadow-sm">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="font-bold text-dark-gray text-xl">
-          Fluxo de veículos por hora
-        </h2>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <span
-              className="inline-block h-3 w-3 rounded-full"
-              style={{ backgroundColor: "var(--color-blue)" }}
-            />
-            <span className="text-gray text-sm">Entradas</span>
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <h2 className="font-bold text-dark-gray text-xl">{title}</h2>
+
+        {series.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-6">
+            {series.map((lineSeries, i) => (
+              <div key={lineSeries.name} className="flex items-center gap-2">
+                <span
+                  className="inline-block h-3 w-3 rounded-full"
+                  style={{ backgroundColor: getColor(lineSeries.color, i) }}
+                />
+                <span className="text-gray text-sm">{lineSeries.name}</span>
+              </div>
+            ))}
           </div>
-          <div className="flex items-center gap-2">
-            <span
-              className="inline-block h-3 w-3 rounded-full"
-              style={{ backgroundColor: "var(--color-dark-orange)" }}
-            />
-            <span className="text-gray text-sm">Saídas</span>
-          </div>
-        </div>
+        ) : null}
       </div>
 
-      {data.length === 0 ? (
+      {!hasData ? (
         <div
           className="flex items-center justify-center text-gray text-sm"
           style={{ height }}
         >
-          Carregando dados...
+          Sem dados para exibir.
         </div>
       ) : (
         <svg ref={svgRef} width={width} height={height} />

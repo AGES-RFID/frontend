@@ -3,11 +3,25 @@ import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { Graph } from ".";
+import type { GraphSeries } from "./types";
 
-const mockData = [
-  { hour: "10", entry: 20, exit: 15 },
-  { hour: "11", entry: 35, exit: 28 },
-  { hour: "12", entry: 10, exit: 40 },
+const mockSeries: GraphSeries[] = [
+  {
+    name: "Entradas",
+    color: "var(--color-blue)",
+    points: [
+      { timestamp: "2026-06-06T10:00:00", value: 20 },
+      { timestamp: "2026-06-06T11:00:00", value: 35 },
+    ],
+  },
+  {
+    name: "Saídas",
+    color: "var(--color-dark-orange)",
+    points: [
+      { timestamp: "2026-06-06T10:00:00", value: 15 },
+      { timestamp: "2026-06-06T11:00:00", value: 28 },
+    ],
+  },
 ];
 
 afterEach(() => {
@@ -15,42 +29,30 @@ afterEach(() => {
 });
 
 describe("Graph", () => {
-  it("should render graph title", () => {
-    render(<Graph />);
-
-    expect(screen.getByText(/fluxo de veículos por hora/i)).toBeTruthy();
+  it("renderiza o título", () => {
+    render(<Graph title="Fluxo de veículos" series={mockSeries} />);
+    expect(screen.getByText(/fluxo de veículos/i)).toBeTruthy();
   });
 
-  it("should render loading message when data is empty", () => {
-    render(<Graph data={[]} />);
-
-    expect(screen.getByText(/carregando dados/i)).toBeTruthy();
+  it("renderiza os itens da legenda", () => {
+    render(<Graph series={mockSeries} />);
+    expect(screen.getByText("Entradas")).toBeTruthy();
+    expect(screen.getByText("Saídas")).toBeTruthy();
   });
 
-  it("should render the svg when data is provided", () => {
-    render(<Graph data={mockData} width={800} height={400} />);
+  it("exibe mensagem vazia quando não há séries", () => {
+    render(<Graph series={[]} />);
+    expect(screen.getByText(/sem dados para exibir/i)).toBeTruthy();
+  });
 
+  it("renderiza o svg quando há dados", () => {
+    render(<Graph series={mockSeries} width={800} height={400} />);
     const svg = document.querySelector("svg");
     expect(svg).not.toBeNull();
   });
 
-  it("should render the entry legend label", () => {
-    render(<Graph data={mockData} />);
-
-    expect(screen.getByText("Entradas")).toBeTruthy();
-  });
-
-  it("should render the exit legend label", () => {
-    render(<Graph data={mockData} />);
-
-    expect(screen.getByText("Saídas")).toBeTruthy();
-  });
-
-  it("should unmount without throwing", () => {
-    const { unmount } = render(
-      <Graph data={mockData} width={800} height={400} />,
-    );
-
+  it("desmonta sem lançar erro", () => {
+    const { unmount } = render(<Graph series={mockSeries} />);
     expect(() => unmount()).not.toThrow();
   });
 });

@@ -1,17 +1,44 @@
 import * as d3 from "d3";
-import type { IChartRenderer, ChartRenderParams } from "./IChartRenderer";
-import { getMaxValue } from "./utils";
+import type { ChartRenderParams, IChartRenderer } from "./IChartRenderer";
+import type { GraphPoint } from "./types";
+import { getDateDomain, getMaxValue } from "./utils";
+
+const DEFAULT_SERIES_COLORS = [
+  "var(--color-blue)",
+  "var(--color-dark-orange)",
+  "var(--color-teal)",
+  "var(--color-green)",
+  "var(--color-fuscia)",
+  "var(--color-dark-teal)",
+  "var(--color-light-blue)",
+  "var(--color-dark-fuscia)",
+];
+
+export function getColor(
+  defaultColor: string | undefined,
+  index: number,
+): string {
+  return (
+    // biome-ignore lint/style/noNonNullAssertion: we ensure this via the fallback array length
+    defaultColor ?? DEFAULT_SERIES_COLORS[index % DEFAULT_SERIES_COLORS.length]!
+  );
+}
 
 export class D3ChartRenderer implements IChartRenderer {
-  render({ svgElement, data, width, height }: ChartRenderParams): void {
+  render({ svgElement, series, width, height }: ChartRenderParams): void {
     const svg = d3.select(svgElement);
     svg.selectAll("*").remove();
 
-    const margin = { top: 40, right: 40, bottom: 40, left: 48 };
+    const margin = { top: 24, right: 24, bottom: 40, left: 48 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    const rawMax = getMaxValue(data);
+    const rawMax = getMaxValue(series);
+    const [domainStart, domainEnd] = getDateDomain(series);
+
+    if (series.length === 0 || domainStart.getTime() === domainEnd.getTime())
+      return;
+
     const maxValue = rawMax === 0 ? 10 : rawMax + 5;
     const roundedMax = Math.ceil(maxValue / 5) * 5;
 
@@ -20,10 +47,9 @@ export class D3ChartRenderer implements IChartRenderer {
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
     const xScale = d3
-      .scalePoint<string>()
-      .domain(data.map((d) => d.hour))
-      .range([0, innerWidth])
-      .padding(0.1);
+      .scaleTime()
+      .domain([domainStart, domainEnd])
+      .range([0, innerWidth]);
 
     const yScale = d3
       .scaleLinear()
@@ -42,81 +68,74 @@ export class D3ChartRenderer implements IChartRenderer {
       .attr("x2", innerWidth)
       .attr("y1", (d) => yScale(d))
       .attr("y2", (d) => yScale(d))
-      .attr("stroke", "var(--color-light-gray, #e5e7eb)")
+      .attr("stroke", "var(--color-light-gray)")
       .attr("stroke-dasharray", "4,4");
 
     // X axis
+    const timeFormatter = d3.timeFormat("%H:%M");
+
     g.append("g")
       .attr("transform", `translate(0,${innerHeight})`)
-      .call(d3.axisBottom(xScale).tickSize(0))
-      .call((axis) => axis.select(".domain").remove())
+      .call(
+        d3
+          .axisBottom(xScale)
+          .tickSize(0)
+          .tickFormat((tick) =>
+            timeFormatter(
+              tick instanceof Date ? tick : new Date(tick.valueOf()),
+            ),
+          ),
+      )
+      .call((selection) => selection.select(".domain").remove())
       .selectAll("text")
       .attr("dy", "1.2em")
-      .style("fill", "var(--color-gray, #6b7280)")
+      .style("fill", "var(--color-gray)")
       .style("font-size", "12px");
 
     // Y axis
+    const yFormatter = d3.format("d");
+
     g.append("g")
       .call(
         d3
           .axisLeft(yScale)
           .tickValues(yTicks)
           .tickSize(0)
-          .tickFormat(d3.format("d")),
+          .tickFormat(yFormatter),
       )
-      .call((axis) => axis.select(".domain").remove())
+      .call((selection) => selection.select(".domain").remove())
       .selectAll("text")
       .attr("dx", "-0.6em")
-      .style("fill", "var(--color-gray, #6b7280)")
+      .style("fill", "var(--color-gray)")
       .style("font-size", "12px");
 
-    // Entry line
-    const entryLine = d3
-      .line<(typeof data)[0]>()
-      .x((d) => xScale(d.hour)!)
-      .y((d) => yScale(d.entry))
-      .curve(d3.curveMonotoneX);
+    // Lines and dots per series
+    for (const [index, lineSeries] of series.entries()) {
+      const color = getColor(lineSeries.color, index);
 
-    g.append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "var(--color-blue)")
-      .attr("stroke-width", 2.5)
-      .attr("d", entryLine);
+      const line = d3
+        .line<GraphPoint>()
+        .x((point) => xScale(new Date(point.timestamp)))
+        .y((point) => yScale(point.value))
+        .curve(d3.curveMonotoneX);
 
-    // Exit line
-    const exitLine = d3
-      .line<(typeof data)[0]>()
-      .x((d) => xScale(d.hour)!)
-      .y((d) => yScale(d.exit))
-      .curve(d3.curveMonotoneX);
+      g.append("path")
+        .datum(lineSeries.points)
+        .attr("fill", "none")
+        .attr("stroke", color)
+        .attr("stroke-width", 2.5)
+        .attr("d", line);
 
-    g.append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "var(--color-dark-orange)")
-      .attr("stroke-width", 2.5)
-      .attr("d", exitLine);
-
-    // Dots — entries
-    g.selectAll(".dot-entry")
-      .data(data)
-      .join("circle")
-      .attr("class", "dot-entry")
-      .attr("cx", (d) => xScale(d.hour)!)
-      .attr("cy", (d) => yScale(d.entry))
-      .attr("r", 4)
-      .attr("fill", "var(--color-blue)");
-
-    // Dots — exits
-    g.selectAll(".dot-exit")
-      .data(data)
-      .join("circle")
-      .attr("class", "dot-exit")
-      .attr("cx", (d) => xScale(d.hour)!)
-      .attr("cy", (d) => yScale(d.exit))
-      .attr("r", 4)
-      .attr("fill", "var(--color-dark-orange)");
+      g.append("g")
+        .attr("class", "series-points")
+        .selectAll("circle")
+        .data(lineSeries.points)
+        .join("circle")
+        .attr("cx", (point) => xScale(new Date(point.timestamp)))
+        .attr("cy", (point) => yScale(point.value))
+        .attr("r", 4)
+        .attr("fill", color);
+    }
   }
 
   destroy(): void {
