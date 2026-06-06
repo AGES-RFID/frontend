@@ -1,11 +1,28 @@
-import { afterEach, describe, expect, it, spyOn } from "bun:test";
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  spyOn,
+} from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { act } from "react";
-import { MemoryRouter } from "react-router";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { authService } from "@/features/auth/AuthService";
+import * as authContextModule from "@/features/auth/context/AuthContext";
 import type { UserDto } from "@/features/users/dtos";
-import { Login } from "./login";
+
+const useAuthContextSpy = spyOn(authContextModule, "useAuthContext");
+
+const { Login } = await import("./login");
 
 function renderLogin() {
   const queryClient = new QueryClient({
@@ -21,8 +38,39 @@ function renderLogin() {
   );
 }
 
+function renderLoginWithRoutes(initialEntry = "/login") {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntry]}>
+        <Routes>
+          <Route path="/" element={<div>Home page</div>} />
+          <Route path="/admin/dashboard" element={<div>Admin dashboard</div>} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+}
+
 describe("Login component", () => {
+  beforeEach(() => {
+    useAuthContextSpy.mockReset();
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: undefined,
+      logout: async () => {},
+    });
+  });
+
   afterEach(cleanup);
+
+  afterAll(() => {
+    useAuthContextSpy.mockRestore();
+  });
 
   it("should render the email input", () => {
     renderLogin();
@@ -43,13 +91,6 @@ describe("Login component", () => {
     renderLogin();
     expect(
       screen.getByRole("button", { name: "Criar nova conta" }),
-    ).toBeInTheDocument();
-  });
-
-  it("should render the forgot password button", () => {
-    renderLogin();
-    expect(
-      screen.getByRole("button", { name: "Esqueci a senha" }),
     ).toBeInTheDocument();
   });
 
@@ -99,15 +140,34 @@ describe("Login component", () => {
 
   it("should trigger register navigation without throwing", async () => {
     renderLogin();
-    await act(async () => {
-      screen.getByRole("button", { name: "Criar nova conta" }).click();
+    screen.getByRole("button", { name: "Criar nova conta" }).click();
+  });
+
+  it("should redirect authenticated admin to admin dashboard", async () => {
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: { role: "admin" } as UserDto,
+      logout: async () => {},
+    });
+
+    renderLoginWithRoutes();
+
+    await waitFor(() => {
+      expect(screen.getByText("Admin dashboard")).toBeInTheDocument();
     });
   });
 
-  it("should trigger forgot password without throwing", async () => {
-    renderLogin();
-    await act(async () => {
-      screen.getByRole("button", { name: "Esqueci a senha" }).click();
+  it("should redirect authenticated customer to home", async () => {
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: { role: "customer" } as UserDto,
+      logout: async () => {},
+    });
+
+    renderLoginWithRoutes();
+
+    await waitFor(() => {
+      expect(screen.getByText("Home page")).toBeInTheDocument();
     });
   });
 
@@ -126,25 +186,17 @@ describe("Login component", () => {
 
     renderLogin();
 
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText("Digite seu email"), {
-        target: { value: "test@example.com" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Digite sua senha"), {
-        target: { value: "password123" },
-      });
+    fireEvent.change(screen.getByPlaceholderText("Digite seu email"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Digite sua senha"), {
+      target: { value: "password123" },
     });
 
-    await act(async () => {
-      const form = screen
-        .getByRole("button", { name: "Entrar" })
-        .closest("form");
-      if (form) fireEvent.submit(form);
-    });
+    const form = screen.getByRole("button", { name: "Entrar" }).closest("form");
+    if (form) fireEvent.submit(form);
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    });
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(loginSpy).toHaveBeenCalled();
     loginSpy.mockRestore();
@@ -157,25 +209,17 @@ describe("Login component", () => {
 
     renderLogin();
 
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText("Digite seu email"), {
-        target: { value: "wrong@example.com" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Digite sua senha"), {
-        target: { value: "wrongpass" },
-      });
+    fireEvent.change(screen.getByPlaceholderText("Digite seu email"), {
+      target: { value: "wrong@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Digite sua senha"), {
+      target: { value: "wrongpass" },
     });
 
-    await act(async () => {
-      const form = screen
-        .getByRole("button", { name: "Entrar" })
-        .closest("form");
-      if (form) fireEvent.submit(form);
-    });
+    const form = screen.getByRole("button", { name: "Entrar" }).closest("form");
+    if (form) fireEvent.submit(form);
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    });
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(loginSpy).toHaveBeenCalled();
     loginSpy.mockRestore();

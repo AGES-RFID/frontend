@@ -1,87 +1,104 @@
 import {
+  afterAll,
   afterEach,
   beforeEach,
   describe,
   expect,
   it,
-  mock,
   spyOn,
 } from "bun:test";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import * as ReactRouter from "react-router";
-import { MemoryRouter } from "react-router";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router";
+import * as authContextModule from "@/features/auth/context/AuthContext";
+import type { UserDto } from "@/features/users/dtos";
 import { CustomerLayout } from "./CustomerLayout";
 
-describe("CustomerLayout Component", () => {
-  const navigateMock = mock();
-  let navigateSpy: ReturnType<typeof spyOn>;
+const useAuthContextSpy = spyOn(authContextModule, "useAuthContext");
 
+function renderCustomerLayout(initialEntry = "/") {
+  return render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <Routes>
+        <Route path="/login" element={<div>Login page</div>} />
+        <Route path="/user/new" element={<div>Register page</div>} />
+        <Route element={<CustomerLayout />}>
+          <Route path="/" element={<div>Customer page</div>} />
+        </Route>
+      </Routes>
+    </MemoryRouter>,
+  );
+}
+
+describe("CustomerLayout", () => {
   beforeEach(() => {
-    navigateSpy = spyOn(ReactRouter, "useNavigate").mockReturnValue(
-      navigateMock,
-    );
+    useAuthContextSpy.mockReset();
   });
 
   afterEach(() => {
     cleanup();
-    localStorage.clear();
-    navigateMock.mockReset();
-    navigateSpy.mockRestore();
   });
 
-  it("should render the header and outlet wrapper", () => {
-    render(
-      <MemoryRouter>
-        <CustomerLayout />
-      </MemoryRouter>,
-    );
-
-    // Header has the logo image
-    expect(screen.getByAltText("Impinj")).toBeInTheDocument();
-    // Default action button when not logged in is "Entrar/Cadastrar"
-    expect(
-      screen.getByRole("button", { name: "Entrar/Cadastrar" }),
-    ).toBeInTheDocument();
+  afterAll(() => {
+    useAuthContextSpy.mockRestore();
   });
 
-  it("should detect logged in state from token and show Sair button", () => {
-    localStorage.setItem("rfid-auth-token", "some-valid-token");
+  it("renders customer content when user is authenticated", () => {
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: { role: "customer" } as UserDto,
+      logout: async () => {},
+    });
 
-    render(
-      <MemoryRouter>
-        <CustomerLayout />
-      </MemoryRouter>,
-    );
+    renderCustomerLayout();
 
-    expect(screen.getByRole("button", { name: "Sair" })).toBeInTheDocument();
+    expect(screen.getByText("Customer page")).toBeInTheDocument();
   });
 
-  it("should navigate to login when auth action is clicked and not logged in", () => {
-    render(
-      <MemoryRouter>
-        <CustomerLayout />
-      </MemoryRouter>,
-    );
+  it("does not redirect while loading", () => {
+    useAuthContextSpy.mockReturnValue({
+      isLoading: true,
+      currentUser: undefined,
+      logout: async () => {},
+    });
 
-    const authButton = screen.getByRole("button", { name: "Entrar/Cadastrar" });
-    fireEvent.click(authButton);
+    renderCustomerLayout();
 
-    expect(navigateMock).toHaveBeenCalledWith("/login");
+    expect(screen.queryByText("Login page")).not.toBeInTheDocument();
   });
 
-  it("should clear token and navigate to login when auth action is clicked and logged in", () => {
-    localStorage.setItem("rfid-auth-token", "some-valid-token");
+  it("redirects to login when user is not authenticated", async () => {
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: undefined,
+      logout: async () => {},
+    });
 
-    render(
-      <MemoryRouter>
-        <CustomerLayout />
-      </MemoryRouter>,
-    );
+    renderCustomerLayout();
 
-    const authButton = screen.getByRole("button", { name: "Sair" });
-    fireEvent.click(authButton);
+    await waitFor(() => {
+      expect(screen.getByText("Login page")).toBeInTheDocument();
+    });
+  });
 
-    expect(localStorage.getItem("rfid-auth-token")).toBeNull();
-    expect(navigateMock).toHaveBeenCalledWith("/login");
+  it("navigates to login when header auth action is clicked", async () => {
+    useAuthContextSpy.mockReturnValue({
+      isLoading: false,
+      currentUser: { role: "customer" } as UserDto,
+      logout: async () => {},
+    });
+
+    renderCustomerLayout();
+
+    fireEvent.click(screen.getByTestId("header-auth-button"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Login page")).toBeInTheDocument();
+    });
   });
 });

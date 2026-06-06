@@ -2,11 +2,11 @@ import { useState } from "react";
 import { BalanceCard } from "@/components/ui/balance-card";
 import { toast } from "@/components/ui/toast";
 import { useMe } from "@/features/auth/hooks/useMe";
+import { PricingTable } from "@/features/parking-prices/components/PricingTable";
 import { AddCreditModal } from "@/features/transactions/components/add-credit-modal";
 import { TransactionCard } from "@/features/transactions/components/TransactionCard";
 import { useCreateTransaction } from "@/features/transactions/hooks/useCreateTransaction";
 import { useMyTransactions } from "@/features/transactions/hooks/useMyTransactions";
-import { PricingTable } from "@/features/users/components/PricingTable";
 import { formatCurrency } from "@/utils/formatting";
 
 export function Payment() {

@@ -1,10 +1,9 @@
-import { describe, expect, it, spyOn } from "bun:test";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderHook, waitFor, cleanup } from "@testing-library/react";
+import { cleanup, renderHook, waitFor } from "@testing-library/react";
 import type { UserWithVehiclesDto } from "@/features/users/dtos";
 import { authService } from "../AuthService";
 import { useMe } from "./useMe";
-import { afterEach } from "bun:test";
 
 afterEach(() => {
   cleanup();

@@ -1,10 +1,11 @@
 import { HTTPError } from "ky";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/ui/header";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toast";
+import { useAuthContext } from "@/features/auth/context/AuthContext";
 import { loginSchema } from "@/features/auth/dtos";
 import { useLogin } from "@/features/auth/hooks";
 
@@ -13,9 +14,18 @@ export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
+  const { currentUser, isLoading: isAuthLoading } = useAuthContext();
 
   const loginMutation = useLogin();
   const isLoading = loginMutation.isPending;
+
+  useEffect(() => {
+    if (!isAuthLoading && currentUser) {
+      navigate(currentUser.role === "admin" ? "/admin/dashboard" : "/", {
+        replace: true,
+      });
+    }
+  }, [isAuthLoading, currentUser, navigate]);
 
   const validateEmail = (value: string) => {
     const result = loginSchema.shape.email.safeParse(value);
@@ -53,9 +63,9 @@ export function Login() {
     navigate("/user/new");
   };
 
-  const handleForgotPassword = () => {
-    navigate("/user/new");
-  };
+  if (isAuthLoading || currentUser) {
+    return null;
+  }
 
   return (
     <>
@@ -104,25 +114,6 @@ export function Login() {
                 width="100%"
               />
 
-              <div className="flex items-center justify-between gap-4">
-                <label className="flex items-center gap-2 text-gray text-sm">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-dark-gray text-dark-blue focus:ring-dark-blue"
-                  />
-                  Lembrar de mim
-                </label>
-
-                <Button
-                  type="button"
-                  variant="borderless"
-                  size="sm"
-                  onClick={handleForgotPassword}
-                >
-                  Esqueci a senha
-                </Button>
-              </div>
-
               <Button
                 type="submit"
                 size="md"
@@ -148,13 +139,6 @@ export function Login() {
                 Criar nova conta
               </Button>
             </form>
-
-            <div className="text-center">
-              <p className="text-gray text-xs">
-                Ao fazer login, você concorda com nossos termos de serviço e
-                política de privacidade.
-              </p>
-            </div>
           </section>
         </main>
       </div>

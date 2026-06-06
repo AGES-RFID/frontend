@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { parseNumber } from "@/utils/parseNumber";
 import { usePricing, useUpdatePricing } from "../hooks";
 
 interface EditValuesModalProps {
@@ -25,15 +26,15 @@ export function EditValuesModal({ isOpen, onClose }: EditValuesModalProps) {
   const { data: pricing } = usePricing();
   const { mutate: updatePricing, isPending } = useUpdatePricing();
 
-  const [toleranceMinutes, setToleranceMinutes] = useState<number>(15);
-  const [basePrice, setBasePrice] = useState<number>(15.0);
-  const [hourlyRate, setHourlyRate] = useState<number>(5.0);
+  const [toleranceMinutes, setToleranceMinutes] = useState("15");
+  const [basePrice, setBasePrice] = useState("15");
+  const [hourlyRate, setHourlyRate] = useState("5");
 
   useEffect(() => {
     if (pricing) {
-      setToleranceMinutes(pricing.toleranceMinutes);
-      setBasePrice(pricing.basePrice);
-      setHourlyRate(pricing.hourlyRate);
+      setToleranceMinutes(String(pricing.toleranceMinutes));
+      setBasePrice(String(pricing.basePrice));
+      setHourlyRate(String(pricing.hourlyRate));
     }
   }, [pricing]);
 
@@ -41,20 +42,22 @@ export function EditValuesModal({ isOpen, onClose }: EditValuesModalProps) {
     e.preventDefault();
     if (!pricing?.parkingPriceId) return;
 
+    const tolerance = parseNumber(toleranceMinutes);
+    const base = parseNumber(basePrice);
+    const hourly = parseNumber(hourlyRate);
+
+    if (tolerance === null || base === null || hourly === null) return;
+
     updatePricing(
       {
         parkingPriceId: pricing.parkingPriceId,
         updateDto: {
-          toleranceMinutes,
-          basePrice,
-          hourlyRate,
+          toleranceMinutes: tolerance,
+          basePrice: base,
+          hourlyRate: hourly,
         },
       },
-      {
-        onSuccess: () => {
-          onClose();
-        },
-      },
+      { onSuccess: onClose },
     );
   };
 
@@ -73,7 +76,7 @@ export function EditValuesModal({ isOpen, onClose }: EditValuesModalProps) {
             type="number"
             className="w-full rounded-md border border-gray-300 px-3 py-2"
             value={toleranceMinutes}
-            onChange={(e) => setToleranceMinutes(Number(e.target.value))}
+            onChange={(e) => setToleranceMinutes(e.target.value)}
             required
             min="0"
           />
@@ -92,7 +95,7 @@ export function EditValuesModal({ isOpen, onClose }: EditValuesModalProps) {
             step="0.01"
             className="w-full rounded-md border border-gray-300 px-3 py-2"
             value={basePrice}
-            onChange={(e) => setBasePrice(Number(e.target.value))}
+            onChange={(e) => setBasePrice(e.target.value)}
             required
             min="0"
           />
@@ -111,7 +114,7 @@ export function EditValuesModal({ isOpen, onClose }: EditValuesModalProps) {
             step="0.01"
             className="w-full rounded-md border border-gray-300 px-3 py-2"
             value={hourlyRate}
-            onChange={(e) => setHourlyRate(Number(e.target.value))}
+            onChange={(e) => setHourlyRate(e.target.value)}
             required
             min="0"
           />

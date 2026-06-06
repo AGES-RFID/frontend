@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { cn } from "@/utils/cn";
+import { Pencil } from "lucide-react";
+import { EditCapacityModal } from "@/features/vehicles/components/EditCapacityModal";
 
 type ParkingOccupancyCardProps = {
   title?: string;
   vehiclesCount: number;
   totalSpots: number;
   className?: string;
+  isEditable?: boolean;
+  onEditCapacity?: (newCapacity: number) => void;
 };
 
 function getProgressBarColor(rawPercentage: number) {
@@ -24,7 +29,11 @@ export function ParkingOccupancyCard({
   vehiclesCount,
   totalSpots,
   className,
+  isEditable = false,
+  onEditCapacity,
 }: Readonly<ParkingOccupancyCardProps>) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const safeTotalSpots = Math.max(totalSpots, 0);
 
   const rawPercentage =
@@ -34,6 +43,12 @@ export function ParkingOccupancyCard({
 
   const progressBarColor = getProgressBarColor(rawPercentage);
 
+  const handleConfirm = (newCapacity: number) => {
+    if (onEditCapacity) {
+      onEditCapacity(newCapacity);
+    }
+  };
+
   return (
     <section
       data-testid="parking-occupancy-card"
@@ -42,13 +57,26 @@ export function ParkingOccupancyCard({
         className,
       )}
     >
-      <h2
-        data-testid="parking-occupancy-title"
-        className="font-bold text-[32px] text-black"
-      >
-        {title}
-      </h2>
+      <div className="flex items-center justify-between">
+        <h2
+          data-testid="parking-occupancy-title"
+          className="font-bold text-[32px] text-black"
+        >
+          {title}
+        </h2>
 
+        {isEditable && (
+          <button
+            type="button"
+            data-testid="edit-capacity-button"
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center justify-center rounded-full p-2 text-dark-gray transition-all hover:bg-gray/10 hover:text-dark-gray"
+            title="Editar lotação"
+          >
+            <Pencil className="h-6 w-6" strokeWidth={2.5} />
+          </button>
+        )}
+      </div>
       <div className="mt-8 flex items-center gap-8">
         <div
           data-testid="parking-occupancy-progress-track"
@@ -63,7 +91,6 @@ export function ParkingOccupancyCard({
             }}
           />
         </div>
-
         <span
           data-testid="parking-occupancy-label"
           className="min-w-fit font-bold text-[56px] text-black leading-none"
@@ -71,6 +98,15 @@ export function ParkingOccupancyCard({
           {vehiclesCount}/{totalSpots}
         </span>
       </div>
+
+      {isEditable && (
+        <EditCapacityModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleConfirm}
+          currentCapacity={totalSpots}
+        />
+      )}
     </section>
   );
 }
