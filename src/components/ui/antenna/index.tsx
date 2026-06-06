@@ -2,19 +2,28 @@ import type * as React from "react";
 import { SatelliteDish, SquarePen } from "lucide-react";
 import { cn } from "@/utils/cn";
 
-export interface AntennaCardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface BaseAntennaCardProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onEdit"> {
   name: string;
   status: "On" | "Off";
   sensitivity: number | string;
   power: number | string;
-  editable?: boolean;
-  onEdit?: () => void;
   labels?: {
     status?: string;
     sensitivity?: string;
     power?: string;
   };
 }
+
+export type AntennaCardProps =
+  | (BaseAntennaCardProps & {
+      editable: true;
+      onEdit: () => void;
+    })
+  | (BaseAntennaCardProps & {
+      editable?: false;
+      onEdit?: never;
+    });
 
 const formatSensitivity = (value: number | string): string => {
   if (value === undefined || value === null || value === "") return "";
@@ -70,7 +79,12 @@ export function AntennaCard({
         <SatelliteDish className="h-16 w-16 text-dark-gray" strokeWidth={1.5} />
 
         {/* Glowing Indicator Circle with Micro-Animation */}
-        <span className="absolute -top-1.5 -right-0.5 flex h-4 w-4">
+        <span
+          className="absolute -top-1.5 -right-0.5 flex h-4 w-4"
+          aria-hidden="true"
+          data-testid="status-indicator"
+          data-status={status}
+        >
           <span
             className={cn(
               "absolute inline-flex h-full w-full animate-ping rounded-full opacity-60",

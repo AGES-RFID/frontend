@@ -75,32 +75,20 @@ describe("AntennaCard component", () => {
   });
 
   it("should apply correct status styles for 'On' state", () => {
-    const { container } = render(<AntennaCard {...defaultProps} status="On" />);
+    render(<AntennaCard {...defaultProps} status="On" />);
 
-    // Check if the ping and glowing elements have the correct green classes
-    const pingGlow = container.querySelector(".animate-ping");
-    expect(pingGlow?.className).toContain("bg-green");
-
-    const indicator = container.querySelector(
-      ".relative.inline-flex.rounded-full",
-    );
-    expect(indicator?.className).toContain("bg-green");
-    expect(indicator?.className).toContain("shadow-glow-green");
+    const indicator = screen.getByTestId("status-indicator");
+    expect(indicator.getAttribute("data-status")).toBe("On");
+    expect(indicator.innerHTML).toContain("bg-green");
+    expect(indicator.innerHTML).toContain("shadow-glow-green");
   });
 
   it("should apply correct status styles for 'Off' state", () => {
-    const { container } = render(
-      <AntennaCard {...defaultProps} status="Off" />,
-    );
+    render(<AntennaCard {...defaultProps} status="Off" />);
 
-    // Check if the ping and glowing elements have the correct red classes
-    const pingGlow = container.querySelector(".animate-ping");
-    expect(pingGlow?.className).toContain("bg-red");
-
-    const indicator = container.querySelector(
-      ".relative.inline-flex.rounded-full",
-    );
-    expect(indicator?.className).toContain("bg-red");
-    expect(indicator?.className).toContain("shadow-glow-red");
+    const indicator = screen.getByTestId("status-indicator");
+    expect(indicator.getAttribute("data-status")).toBe("Off");
+    expect(indicator.innerHTML).toContain("bg-red");
+    expect(indicator.innerHTML).toContain("shadow-glow-red");
   });
 });
