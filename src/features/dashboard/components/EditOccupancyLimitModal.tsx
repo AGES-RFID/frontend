@@ -44,6 +44,7 @@ export function EditOccupancyLimitModal({
             onChange={(e) => setMaxOccupancy(Number(e.target.value))}
             required
             min="1"
+            step="1"
           />
         </div>
 

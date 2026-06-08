@@ -154,21 +154,24 @@ describe("EditOccupancyLimitModal", () => {
   });
 
   it("resets to updated currentMaxOccupancy when reopened", () => {
+    const Wrapper = createWrapper();
     const { rerender } = render(
       <EditOccupancyLimitModal
         isOpen={false}
         onClose={() => {}}
         currentMaxOccupancy={100}
       />,
-      { wrapper: createWrapper() },
+      { wrapper: Wrapper },
     );
 
     rerender(
-      <EditOccupancyLimitModal
-        isOpen={true}
-        onClose={() => {}}
-        currentMaxOccupancy={200}
-      />,
+      <Wrapper>
+        <EditOccupancyLimitModal
+          isOpen={true}
+          onClose={() => {}}
+          currentMaxOccupancy={200}
+        />
+      </Wrapper>,
     );
 
     expect(screen.getByLabelText("Lotação máxima")).toHaveValue(200);
