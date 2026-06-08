@@ -1,11 +1,22 @@
 import "@testing-library/jest-dom";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, test } from "bun:test";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
 import { ParkingOccupancyCard } from ".";
 
 afterEach(() => {
   cleanup();
 });
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { mutations: { retry: false } },
+  });
+  return ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
 
 describe("ParkingOccupancyCard", () => {
   test("should render the default title", () => {
@@ -96,5 +107,63 @@ describe("ParkingOccupancyCard", () => {
 
     const progressBar = screen.getByTestId("parking-occupancy-progress-bar");
     expect(progressBar).toHaveStyle("width: 0%");
+  });
+
+  test("should not show edit button when isEditable is false", () => {
+    render(
+      <ParkingOccupancyCard
+        vehiclesCount={10}
+        totalSpots={100}
+        isEditable={false}
+      />,
+      { wrapper: createWrapper() },
+    );
+    expect(
+      screen.queryByTestId("parking-occupancy-edit-button"),
+    ).not.toBeInTheDocument();
+  });
+
+  test("should not show edit button when isEditable is not provided", () => {
+    render(<ParkingOccupancyCard vehiclesCount={10} totalSpots={100} />, {
+      wrapper: createWrapper(),
+    });
+    expect(
+      screen.queryByTestId("parking-occupancy-edit-button"),
+    ).not.toBeInTheDocument();
+  });
+
+  test("should show edit button when isEditable is true", () => {
+    render(
+      <ParkingOccupancyCard
+        vehiclesCount={10}
+        totalSpots={100}
+        isEditable={true}
+      />,
+      { wrapper: createWrapper() },
+    );
+    expect(
+      screen.getByTestId("parking-occupancy-edit-button"),
+    ).toBeInTheDocument();
+  });
+
+  test("should open modal when edit button is clicked", () => {
+    render(
+      <ParkingOccupancyCard
+        vehiclesCount={10}
+        totalSpots={100}
+        isEditable={true}
+      />,
+      { wrapper: createWrapper() },
+    );
+    fireEvent.click(screen.getByTestId("parking-occupancy-edit-button"));
+    expect(screen.getByText("Editar Lotação Máxima")).toBeInTheDocument();
+  });
+
+  test("should apply drop-shadow-lg class", () => {
+    render(<ParkingOccupancyCard vehiclesCount={10} totalSpots={100} />, {
+      wrapper: createWrapper(),
+    });
+    const card = screen.getByTestId("parking-occupancy-card");
+    expect(card.className).toContain("drop-shadow-lg");
   });
 });
