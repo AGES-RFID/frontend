@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 export const createTagSchema = z.object({
-  tagId: z.string().min(1),
+  tid: z.string().min(1),
+  epc: z.string().min(1),
 });
 
 export type CreateTagDto = z.infer<typeof createTagSchema>;

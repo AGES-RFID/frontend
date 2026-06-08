@@ -29,7 +29,9 @@ useDeactivateTagSpy.mockImplementation(
 const { TagDeactivateModal } = await import("./TagDeactivateModal");
 
 const mockTag: TagListItemDto = {
-  id: "tag-001",
+  tagId: "tag-001",
+  tid: "TID-001",
+  epc: "EPC-001",
   userName: "John Doe",
   plate: "ABC-1234",
   status: "IN_USE",

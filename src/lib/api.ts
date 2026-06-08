@@ -1,6 +1,7 @@
 import ky from "ky";
 import { env } from "@/config/env";
-import { TOKEN_KEY } from "@/features/auth/AuthService";
+
+export const TOKEN_KEY = "rfid-auth-token";
 
 export type ApiClient = typeof ky;
 

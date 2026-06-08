@@ -1,9 +1,9 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: Needed for array destructuring */
 import { beforeEach, describe, expect, it, mock } from "bun:test";
-import { type ApiClient, api } from "@/lib/api";
+import { type ApiClient, api, TOKEN_KEY } from "@/lib/api";
 import { jsonResponse } from "/test/utils/makeResponse";
 import type { UserDto } from "../users/dtos";
-import { AuthService, TOKEN_KEY } from "./AuthService";
+import { AuthService } from "./AuthService";
 import type { LoginDto } from "./dtos";
 
 const mockUser: UserDto = {
