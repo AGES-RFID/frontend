@@ -17,7 +17,7 @@ export class DashboardService {
   }
 
   async updateOccupancyLimit(dto: UpdateOccupancyLimitDto): Promise<void> {
-    await this.apiClient.put("system/occupancy-max", { json: dto }).json();
+    await this.apiClient.put("system/max-occupancy", { json: dto }).json();
   }
 }
 
