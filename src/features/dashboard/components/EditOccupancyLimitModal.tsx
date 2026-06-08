@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { useUpdateOccupancyLimit } from "../hooks";
@@ -16,6 +16,10 @@ export function EditOccupancyLimitModal({
 }: EditOccupancyLimitModalProps) {
   const [maxOccupancy, setMaxOccupancy] = useState<number>(currentMaxOccupancy);
   const { mutate: updateLimit, isPending } = useUpdateOccupancyLimit();
+
+  useEffect(() => {
+    if (isOpen) setMaxOccupancy(currentMaxOccupancy);
+  }, [isOpen, currentMaxOccupancy]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

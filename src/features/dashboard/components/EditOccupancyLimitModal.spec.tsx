@@ -152,4 +152,25 @@ describe("EditOccupancyLimitModal", () => {
 
     resolveUpdate();
   });
+
+  it("resets to updated currentMaxOccupancy when reopened", () => {
+    const { rerender } = render(
+      <EditOccupancyLimitModal
+        isOpen={false}
+        onClose={() => {}}
+        currentMaxOccupancy={100}
+      />,
+      { wrapper: createWrapper() },
+    );
+
+    rerender(
+      <EditOccupancyLimitModal
+        isOpen={true}
+        onClose={() => {}}
+        currentMaxOccupancy={200}
+      />,
+    );
+
+    expect(screen.getByLabelText("Lotação máxima")).toHaveValue(200);
+  });
 });
