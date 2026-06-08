@@ -159,6 +159,22 @@ describe("ParkingOccupancyCard", () => {
     expect(screen.getByText("Editar Lotação Máxima")).toBeInTheDocument();
   });
 
+  test("should close modal when cancel is clicked", () => {
+    render(
+      <ParkingOccupancyCard
+        vehiclesCount={10}
+        totalSpots={100}
+        isEditable={true}
+      />,
+      { wrapper: createWrapper() },
+    );
+    fireEvent.click(screen.getByTestId("parking-occupancy-edit-button"));
+    expect(screen.getByText("Editar Lotação Máxima")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+    expect(screen.queryByText("Editar Lotação Máxima")).not.toBeInTheDocument();
+  });
+
   test("should apply drop-shadow-lg class", () => {
     render(<ParkingOccupancyCard vehiclesCount={10} totalSpots={100} />, {
       wrapper: createWrapper(),
