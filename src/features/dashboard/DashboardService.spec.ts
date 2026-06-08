@@ -25,7 +25,7 @@ describe("DashboardService", () => {
     expect(result.occupancyPercentage).toBe(5.0);
   });
 
-  it("should call PUT system/occupancy-limit with the correct body", async () => {
+  it("should call PUT system/occupancy-max with the correct body", async () => {
     const apiClientMock = {
       put: mock(() => ({ json: () => Promise.resolve() })),
     };
@@ -34,7 +34,7 @@ describe("DashboardService", () => {
 
     await service.updateOccupancyLimit({ maxOccupancy: 150 });
 
-    expect(apiClientMock.put).toHaveBeenCalledWith("system/occupancy-limit", {
+    expect(apiClientMock.put).toHaveBeenCalledWith("system/occupancy-max", {
       json: { maxOccupancy: 150 },
     });
   });
