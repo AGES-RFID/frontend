@@ -78,4 +78,9 @@ describe("updateOccupancyLimitSchema", () => {
     const result = updateOccupancyLimitSchema.safeParse({});
     expect(result.success).toBe(false);
   });
+
+  it("should reject non-integer maxOccupancy", () => {
+    const result = updateOccupancyLimitSchema.safeParse({ maxOccupancy: 1.5 });
+    expect(result.success).toBe(false);
+  });
 });
