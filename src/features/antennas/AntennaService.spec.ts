@@ -22,4 +22,25 @@ describe("AntennaService", () => {
       },
     });
   });
+
+  it("should call GET /api/system/antennas and return a list of antennas", async () => {
+    const mockList = [
+      {
+        id: "antenna-1",
+        name: "Antena 1",
+        status: "On" as const,
+        sensibility: -50,
+        power: 28.0,
+      },
+    ];
+    const getMock = mock(() => ({ json: () => Promise.resolve(mockList) }));
+    const apiClientMock = { get: getMock };
+
+    // @ts-expect-error mock
+    const service = new AntennaService(apiClientMock);
+    const result = await service.getAntennas();
+
+    expect(getMock).toHaveBeenCalledWith("system/antennas");
+    expect(result).toEqual(mockList);
+  });
 });

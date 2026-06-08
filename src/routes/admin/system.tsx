@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AntennaCard } from "@/components/ui/antenna";
 import { AdjustAntennaModal } from "@/features/antennas/components/AdjustAntennaModal";
 import type { AntennaDto } from "@/features/antennas/dtos";
+import { useAntennas } from "@/features/antennas/hooks";
 import { EditValuesModal } from "@/features/parking-prices/components/EditValuesModal";
 import { PricingTable } from "@/features/parking-prices/components/PricingTable";
 
@@ -14,23 +15,7 @@ export function System() {
   );
   const [isAntennaModalOpen, setIsAntennaModalOpen] = useState(false);
 
-  // Mocked list of antennas for display and interaction
-  const mockAntennas: AntennaDto[] = [
-    {
-      id: "antenna-1",
-      name: "Antena 1 (Entrada)",
-      status: "On",
-      sensibility: -50,
-      power: 28.0,
-    },
-    {
-      id: "antenna-2",
-      name: "Antena 2 (Saída)",
-      status: "Off",
-      sensibility: -50,
-      power: 28.0,
-    },
-  ];
+  const { data: antennas = [], isLoading, error } = useAntennas();
 
   const handleEditAntenna = (antenna: AntennaDto) => {
     setSelectedAntenna(antenna);
@@ -66,21 +51,35 @@ export function System() {
             Status das Antenas
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {mockAntennas.map((antenna) => (
-              <AntennaCard
-                key={antenna.id}
-                name={antenna.name}
-                status={antenna.status}
-                sensitivity={
-                  antenna.sensibility !== null
-                    ? `${antenna.sensibility} dBm`
-                    : ""
-                }
-                power={antenna.power !== null ? `${antenna.power} dBm` : ""}
-                editable
-                onEdit={() => handleEditAntenna(antenna)}
-              />
-            ))}
+            {isLoading ? (
+              <p className="col-span-2 text-gray text-sm">
+                Carregando antenas...
+              </p>
+            ) : error ? (
+              <p className="col-span-2 text-red text-sm">
+                Erro ao carregar antenas.
+              </p>
+            ) : antennas.length === 0 ? (
+              <p className="col-span-2 text-gray text-sm">
+                Nenhuma antena cadastrada.
+              </p>
+            ) : (
+              antennas.map((antenna) => (
+                <AntennaCard
+                  key={antenna.id}
+                  name={antenna.name}
+                  status={antenna.status}
+                  sensitivity={
+                    antenna.sensibility !== null
+                      ? `${antenna.sensibility} dBm`
+                      : ""
+                  }
+                  power={antenna.power !== null ? `${antenna.power} dBm` : ""}
+                  editable
+                  onEdit={() => handleEditAntenna(antenna)}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>

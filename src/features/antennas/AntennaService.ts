@@ -8,6 +8,14 @@ export class AntennaService {
     this.apiClient = apiClient;
   }
 
+  async getAntennas(): Promise<AntennaDto[]> {
+    const response = await this.apiClient
+      .get("system/antennas")
+      .json<AntennaDto[]>();
+
+    return response;
+  }
+
   async updateAntenna(
     antennaId: string,
     updateDto: UpdateAntennaDto,
