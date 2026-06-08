@@ -46,7 +46,7 @@ export function Login() {
       { email, password },
       {
         onSuccess: () => {
-          navigate("/");
+          toast.success("Login efetuado com sucesso!");
         },
         onError: (error) => {
           if (error instanceof HTTPError && error.response.status === 401) {
