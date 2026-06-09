@@ -1,9 +1,12 @@
 import { useMemo } from "react";
 import { Table } from "@/components/ui/table";
 import type { TableColumn } from "@/components/ui/table/types";
-import { formatDateTime, formatCurrency } from "@/utils/formatting";
 import type { TransactionDto } from "@/features/transactions/dtos/transactionDto";
-import { formatPlate } from "@/utils/formatting";
+import {
+  formatCurrency,
+  formatDateTime,
+  formatPlate,
+} from "@/utils/formatting";
 
 interface RecentTransactions {
   transactions: TransactionDto[];

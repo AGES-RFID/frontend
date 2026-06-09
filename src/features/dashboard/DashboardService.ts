@@ -1,5 +1,9 @@
 import { type ApiClient, api } from "@/lib/api";
 import {
+  type DashboardMetricsDto,
+  dashboardMetricsSchema,
+} from "./dtos/dashboardMetricsDto";
+import {
   type OccupancyDto,
   type UpdateOccupancyLimitDto,
   occupancySchema,
@@ -10,6 +14,10 @@ export class DashboardService {
 
   constructor(apiClient: ApiClient) {
     this.apiClient = apiClient;
+  }
+
+  async getMetrics(): Promise<DashboardMetricsDto> {
+    return this.apiClient.get("dashboard/metrics").json(dashboardMetricsSchema);
   }
 
   async getOccupancy(): Promise<OccupancyDto> {

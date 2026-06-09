@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ErrorBoundary } from "./components/errors/ErrorBoundary";
 import { ToastViewport } from "./components/ui/toast";
+import { AuthContextProvider } from "./features/auth/context/AuthContext";
 import { Router } from "./router";
 
 export function App() {
@@ -11,7 +12,9 @@ export function App() {
       <ToastViewport />
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <Router />
+          <AuthContextProvider>
+            <Router />
+          </AuthContextProvider>
         </QueryClientProvider>
       </ErrorBoundary>
     </>

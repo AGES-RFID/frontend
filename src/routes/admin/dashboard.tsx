@@ -1,4 +1,9 @@
+import { MetricCard } from "@/features/dashboard/components/dashboardCard";
+import { useDashboardMetrics } from "@/features/dashboard/hooks/useDashboardMetrics";
+
 export function Dashboard() {
+  const { data: metrics } = useDashboardMetrics();
+
   return (
     <div className="p-8">
       <h1 className="mb-4 font-bold text-3xl text-dark-gray">Dashboard</h1>
@@ -6,30 +11,24 @@ export function Dashboard() {
         Bem-vindo ao painel principal do sistema IMPINJ
       </p>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-2 font-semibold text-dark-gray text-lg">
-            Veículos Ativos
-          </h3>
-          <p className="font-bold text-3xl text-blue">0</p>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-2 font-semibold text-dark-gray text-lg">
-            Usuários Cadastrados
-          </h3>
-          <p className="font-bold text-3xl text-teal">0</p>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-2 font-semibold text-dark-gray text-lg">
-            Etiquetas Emitidas
-          </h3>
-          <p className="font-bold text-3xl text-green">0</p>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-2 font-semibold text-dark-gray text-lg">
-            Cobranças Pendentes
-          </h3>
-          <p className="font-bold text-3xl text-yellow">0</p>
+      <div className="max-w-[704px]">
+        <div className="flex max-w-[704px] flex-col gap-4">
+          <MetricCard
+            topLabel="Horário com mais entradas"
+            bottomLabel={metrics?.peakEntryTime ?? "--:--"}
+            size="lg"
+          />
+          <MetricCard
+            topLabel="Entradas (Última Hora)"
+            bottomLabel={String(metrics?.entriesLastHour ?? 0)}
+            size="lg"
+          />
+
+          <MetricCard
+            topLabel="Saídas (Última Hora)"
+            bottomLabel={String(metrics?.exitsLastHour ?? 0)}
+            size="lg"
+          />
         </div>
       </div>
     </div>

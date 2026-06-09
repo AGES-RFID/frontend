@@ -1,15 +1,15 @@
-import { ButtonSidebar, type MenuItem } from "./sidebarButton/buttonSidebar";
-import impinjLogo from "../../../../public/impinj-logo.png";
 import {
-  LayoutDashboard,
   Car,
-  Users,
-  Radio,
   CreditCard,
-  Settings,
+  LayoutDashboard,
   LogOut,
+  Radio,
+  Settings,
+  Users,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router";
+import impinjLogo from "../../../../public/impinj-logo.png";
+import { ButtonSidebar, type MenuItem } from "./sidebarButton/buttonSidebar";
 
 const menuItems: MenuItem[] = [
   {
@@ -48,7 +48,11 @@ const MENU_ITEM_HEIGHT = 56;
 const MENU_ITEM_GAP = 16;
 const MENU_STEP = MENU_ITEM_HEIGHT + MENU_ITEM_GAP;
 
-export function SidebarDrawer() {
+type SidebarDrawerProps = {
+  onLogout?: () => void | Promise<void>;
+};
+
+export function SidebarDrawer({ onLogout }: SidebarDrawerProps = {}) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -95,6 +99,15 @@ export function SidebarDrawer() {
     }
   };
 
+  const handleLogoutClick = async () => {
+    if (onLogout) {
+      await onLogout();
+      return;
+    }
+
+    navigate("/login");
+  };
+
   return (
     <aside className="flex min-h-screen w-75 flex-col bg-dark-blue px-4 py-6">
       <button
@@ -135,7 +148,9 @@ export function SidebarDrawer() {
             label="SAIR"
             icon={<LogOut size={28} />}
             isActive={false}
-            onClick={() => navigate("/login")}
+            onClick={() => {
+              void handleLogoutClick();
+            }}
           />
         </div>
       </div>
