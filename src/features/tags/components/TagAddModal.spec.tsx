@@ -97,8 +97,12 @@ describe("TagAddModal component", () => {
     const epcInput = screen.getByLabelText("EPC") as HTMLInputElement;
 
     act(() => {
-      fireEvent.change(tidInput, { target: { value: "TID-001" } });
-      fireEvent.change(epcInput, { target: { value: "EPC-001" } });
+      fireEvent.change(tidInput, {
+        target: { value: "E20034120130000000000001" },
+      });
+      fireEvent.change(epcInput, {
+        target: { value: "300833B2DDD9014000000001" },
+      });
       fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
     });
 
@@ -127,22 +131,26 @@ describe("TagAddModal component", () => {
     renderModalWithClose(onClose);
 
     fireEvent.change(screen.getByLabelText("TID"), {
-      target: { value: "TID-001" },
+      target: { value: "E20034120130000000000001" },
     });
     fireEvent.change(screen.getByLabelText("EPC"), {
-      target: { value: "EPC-001" },
+      target: { value: "300833B2DDD9014000000001" },
     });
 
-    await fireEvent.submit(
-      screen.getByRole("button", { name: "Confirmar" }).closest("form")!,
-    );
+    const form = screen
+      .getByRole("button", { name: "Confirmar" })
+      .closest("form");
+    expect(form).not.toBeNull();
+    if (form) {
+      await fireEvent.submit(form);
+    }
 
     await createTagMock.mock.results[0]?.value;
 
     expect(createTagMock).toHaveBeenCalledTimes(1);
     expect(createTagMock.mock.calls[0]?.[0]).toEqual({
-      tid: "TID-001",
-      epc: "EPC-001",
+      tid: "E20034120130000000000001",
+      epc: "300833B2DDD9014000000001",
     });
     expect(toastSuccessSpy).toHaveBeenCalledWith(
       "Etiqueta adicionada com sucesso.",
@@ -157,15 +165,19 @@ describe("TagAddModal component", () => {
     renderModal();
 
     fireEvent.change(screen.getByLabelText("TID"), {
-      target: { value: "TID-001" },
+      target: { value: "E20034120130000000000001" },
     });
     fireEvent.change(screen.getByLabelText("EPC"), {
-      target: { value: "EPC-001" },
+      target: { value: "300833B2DDD9014000000001" },
     });
 
-    await fireEvent.submit(
-      screen.getByRole("button", { name: "Confirmar" }).closest("form")!,
-    );
+    const form = screen
+      .getByRole("button", { name: "Confirmar" })
+      .closest("form");
+    expect(form).not.toBeNull();
+    if (form) {
+      await fireEvent.submit(form);
+    }
 
     await createTagMock.mock.results[0]?.value.catch(() => undefined);
 

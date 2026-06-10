@@ -5,16 +5,16 @@ import { TagService } from "./TagService";
 
 const mockTag = {
   tagId: "tag-001",
-  tid: "TID-001",
-  epc: "EPC-001",
+  tid: "E20034120130000000000001",
+  epc: "300833B2DDD9014000000001",
   status: "AVAILABLE",
   vehicleId: null,
 };
 
 const mockTagListItem = {
   tagId: "tag-001",
-  tid: "TID-001",
-  epc: "EPC-001",
+  tid: "E20034120130000000000001",
+  epc: "300833B2DDD9014000000001",
   userName: "John Doe",
   plate: "ABC-1234",
   status: "AVAILABLE",
@@ -93,7 +93,10 @@ describe("TagService", () => {
     });
 
     it("should call POST /tags with the correct payload", async () => {
-      const createTagDto = { tid: "TID-999", epc: "EPC-999" };
+      const createTagDto = {
+        tid: "E20034120130000000000999",
+        epc: "300833B2DDD9014000000999",
+      };
       fetchMock.mockImplementationOnce(async () => jsonResponse(mockTag));
 
       await tagService.createTag(createTagDto);
@@ -111,8 +114,8 @@ describe("TagService", () => {
       fetchMock.mockImplementationOnce(async () => jsonResponse(mockTag));
 
       const result = await tagService.createTag({
-        tid: "TID-001",
-        epc: "EPC-001",
+        tid: "E20034120130000000000001",
+        epc: "300833B2DDD9014000000001",
       });
 
       expect(result.tagId).toBe("tag-001");
@@ -125,7 +128,10 @@ describe("TagService", () => {
       );
 
       expect(
-        tagService.createTag({ tid: "TID-001", epc: "EPC-001" }),
+        tagService.createTag({
+          tid: "E20034120130000000000001",
+          epc: "300833B2DDD9014000000001",
+        }),
       ).rejects.toBeDefined();
     });
   });

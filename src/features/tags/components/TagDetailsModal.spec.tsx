@@ -5,8 +5,8 @@ import { TagDetailsModal } from "./TagDetailsModal";
 
 const mockTag: TagListItemDto = {
   tagId: "tag-001",
-  tid: "TID-001",
-  epc: "EPC-001",
+  tid: "E20034120130000000000001",
+  epc: "300833B2DDD9014000000001",
   userName: "John Doe",
   plate: "ABC-1234",
   status: "AVAILABLE",
@@ -17,13 +17,13 @@ describe("TagDetailsModal component", () => {
 
   it("should not render content when tag is null", () => {
     render(<TagDetailsModal isOpen={true} onClose={mock()} tag={null} />);
-    expect(screen.queryByText("TID-001")).toBeNull();
+    expect(screen.queryByText("E20034120130000000000001")).toBeNull();
   });
 
   it("should render the tag TID and EPC", () => {
     render(<TagDetailsModal isOpen={true} onClose={mock()} tag={mockTag} />);
-    expect(screen.getByText("TID-001")).toBeDefined();
-    expect(screen.getByText("EPC-001")).toBeDefined();
+    expect(screen.getByText("E20034120130000000000001")).toBeDefined();
+    expect(screen.getByText("300833B2DDD9014000000001")).toBeDefined();
   });
 
   it("should render the tag owner name", () => {
@@ -61,6 +61,6 @@ describe("TagDetailsModal component", () => {
 
   it("should not render content when isOpen is false", () => {
     render(<TagDetailsModal isOpen={false} onClose={mock()} tag={mockTag} />);
-    expect(screen.queryByText("TID-001")).toBeNull();
+    expect(screen.queryByText("E20034120130000000000001")).toBeNull();
   });
 });
