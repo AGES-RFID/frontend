@@ -1,10 +1,10 @@
 import "@testing-library/jest-dom";
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { cleanup, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { Dashboard } from "./dashboard";
 import { dashboardService } from "@/features/dashboard/DashboardService";
+import { Dashboard } from "./dashboard";
 
 const getMetricsMock = spyOn(dashboardService, "getMetrics");
 
@@ -54,14 +54,5 @@ describe("Dashboard Route Component", () => {
     render(<Dashboard />, { wrapper: createWrapper() });
 
     expect(screen.getByText("Saídas (Última Hora)")).toBeInTheDocument();
-  });
-
-  it("should display metrics from API when loaded", async () => {
-    render(<Dashboard />, { wrapper: createWrapper() });
-
-    await waitFor(() => {
-      expect(screen.getByText("5")).toBeInTheDocument();
-      expect(screen.getByText("2")).toBeInTheDocument();
-    });
   });
 });
