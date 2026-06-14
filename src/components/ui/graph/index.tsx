@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { cn } from "@/utils/cn";
 import type { IChartRenderer } from "./IChartRenderer";
 import { D3ChartRenderer, getColor } from "./renderd3";
 import type { GraphData, GraphProps } from "./types";
@@ -8,6 +9,7 @@ export function Graph({
   series = [],
   width = 800,
   height = 400,
+  className,
 }: GraphProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const rendererRef = useRef<IChartRenderer | null>(null);
@@ -37,7 +39,7 @@ export function Graph({
   const hasData = series.some((line) => line.points.length > 0);
 
   return (
-    <div className="rounded-xl bg-white p-6 shadow-sm">
+    <div className={cn("rounded-xl bg-white p-6 drop-shadow-lg", className)}>
       <div className="mb-6 flex items-center justify-between gap-4">
         <h2 className="font-bold text-dark-gray text-xl">{title}</h2>
 

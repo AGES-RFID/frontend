@@ -5,7 +5,7 @@ export function AdminLayout() {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="relative flex min-h-screen bg-gray-50">
       <SidebarDrawer />
       <main key={location.pathname} className="admin-page-enter flex-1">
         <Outlet />

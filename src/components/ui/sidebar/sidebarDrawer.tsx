@@ -109,7 +109,7 @@ export function SidebarDrawer({ onLogout }: SidebarDrawerProps = {}) {
   };
 
   return (
-    <aside className="flex min-h-screen w-75 flex-col bg-dark-blue px-4 py-6">
+    <aside className="sticky top-0 flex h-screen w-75 flex-col bg-dark-blue px-4 py-6">
       <button
         type="button"
         onClick={() => navigate("/admin/dashboard")}

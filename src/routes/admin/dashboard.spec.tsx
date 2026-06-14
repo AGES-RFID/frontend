@@ -5,8 +5,10 @@ import { cleanup, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { dashboardService } from "@/features/dashboard/DashboardService";
 import { Dashboard } from "./dashboard";
+import { accessesService } from "@/features/accesses/AccessesService";
 
 const getMetricsMock = spyOn(dashboardService, "getMetrics");
+const getTimeseriesMock = spyOn(accessesService, "getTimeseries");
 
 const mockMetrics = {
   entriesLastHour: 5,
@@ -29,11 +31,26 @@ const createWrapper = () => {
 describe("Dashboard Route Component", () => {
   beforeEach(() => {
     getMetricsMock.mockResolvedValue(mockMetrics);
+    getTimeseriesMock.mockResolvedValue({
+      from: "2026-06-13T10:00:00Z",
+      to: "2026-06-14T10:00:00Z",
+      series: [
+        {
+          key: "entries",
+          points: [{ timestamp: "2026-06-13T10:00:00Z", count: 20 }],
+        },
+        {
+          key: "exits",
+          points: [{ timestamp: "2026-06-13T10:00:00Z", count: 15 }],
+        },
+      ],
+    });
   });
 
   afterEach(() => {
     cleanup();
     getMetricsMock.mockClear();
+    getTimeseriesMock.mockClear();
   });
 
   it("should render Dashboard page title", () => {
@@ -54,5 +71,12 @@ describe("Dashboard Route Component", () => {
     render(<Dashboard />, { wrapper: createWrapper() });
 
     expect(screen.getByText("Saídas (Última Hora)")).toBeInTheDocument();
+  });
+
+  it("should render graph legend with timeseries data", async () => {
+    render(<Dashboard />, { wrapper: createWrapper() });
+
+    expect(await screen.findByText("Entradas")).toBeInTheDocument();
+    expect(await screen.findByText("Saídas")).toBeInTheDocument();
   });
 });
