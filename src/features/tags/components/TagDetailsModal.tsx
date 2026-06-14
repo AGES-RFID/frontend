@@ -20,8 +20,12 @@ export function TagDetailsModal({
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <p className="text-gray text-xs uppercase tracking-wide">ID</p>
-              <p className="break-all font-medium text-dark-gray">{tag.id}</p>
+              <p className="text-gray text-xs uppercase tracking-wide">TID</p>
+              <p className="break-all font-medium text-dark-gray">{tag.tid}</p>
+            </div>
+            <div>
+              <p className="text-gray text-xs uppercase tracking-wide">EPC</p>
+              <p className="break-all font-medium text-dark-gray">{tag.epc}</p>
             </div>
             <div>
               <p className="text-gray text-xs uppercase tracking-wide">
