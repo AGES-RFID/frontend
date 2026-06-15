@@ -18,8 +18,8 @@ jobs:
     secrets:
       gitlab_token: ${{ secrets.GITLAB_TOKEN }}
 
-  validate-and-build:
-    name: CI & Build (Production)
+  continuous-integration:
+    name: Continuous Integration Production
     uses: AGES-RFID/cicd/.github/workflows/ci-bun.yml@main
     with:
       environment: "production"
@@ -27,9 +27,9 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  deploy-production:
-    name: CD Production
-    needs: [validate-and-build]
+  continuous-deployment:
+    name: Continuous Deployment Production
+    needs: [continuous-integration]
     uses: AGES-RFID/cicd/.github/workflows/cd-s3-cloudfront.yml@main
     with:
       environment: "production"
