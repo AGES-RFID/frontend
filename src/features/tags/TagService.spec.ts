@@ -5,12 +5,16 @@ import { TagService } from "./TagService";
 
 const mockTag = {
   tagId: "tag-001",
+  tid: "E20034120130000000000001",
+  epc: "300833B2DDD9014000000001",
   status: "AVAILABLE",
   vehicleId: null,
 };
 
 const mockTagListItem = {
-  id: "tag-001",
+  tagId: "tag-001",
+  tid: "E20034120130000000000001",
+  epc: "300833B2DDD9014000000001",
   userName: "John Doe",
   plate: "ABC-1234",
   status: "AVAILABLE",
@@ -48,7 +52,7 @@ describe("TagService", () => {
       const result = await tagService.listTags();
 
       expect(result).toHaveLength(1);
-      expect(result[0]?.id).toBe("tag-001");
+      expect(result[0]?.tagId).toBe("tag-001");
       expect(result[0]?.status).toBe("AVAILABLE");
     });
 
@@ -89,7 +93,10 @@ describe("TagService", () => {
     });
 
     it("should call POST /tags with the correct payload", async () => {
-      const createTagDto = { tagId: "tag-999" };
+      const createTagDto = {
+        tid: "E20034120130000000000999",
+        epc: "300833B2DDD9014000000999",
+      };
       fetchMock.mockImplementationOnce(async () => jsonResponse(mockTag));
 
       await tagService.createTag(createTagDto);
@@ -106,7 +113,10 @@ describe("TagService", () => {
     it("should return the created tag with correct data", async () => {
       fetchMock.mockImplementationOnce(async () => jsonResponse(mockTag));
 
-      const result = await tagService.createTag({ tagId: "tag-001" });
+      const result = await tagService.createTag({
+        tid: "E20034120130000000000001",
+        epc: "300833B2DDD9014000000001",
+      });
 
       expect(result.tagId).toBe("tag-001");
       expect(result.status).toBe("AVAILABLE");
@@ -117,7 +127,12 @@ describe("TagService", () => {
         jsonResponse({ invalid: true }),
       );
 
-      expect(tagService.createTag({ tagId: "tag-001" })).rejects.toBeDefined();
+      expect(
+        tagService.createTag({
+          tid: "E20034120130000000000001",
+          epc: "300833B2DDD9014000000001",
+        }),
+      ).rejects.toBeDefined();
     });
   });
 

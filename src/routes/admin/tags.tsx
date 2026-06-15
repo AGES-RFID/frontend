@@ -33,8 +33,14 @@ export function Tags() {
   const columns = useMemo<TableColumn<TagListItemDto>[]>(
     () => [
       {
-        key: "id",
-        title: "ID",
+        key: "tid",
+        title: "TID",
+        className: "w-48 whitespace-nowrap",
+        sortable: true,
+      },
+      {
+        key: "epc",
+        title: "EPC",
         className: "w-48 whitespace-nowrap",
         sortable: true,
       },
@@ -100,7 +106,7 @@ export function Tags() {
         actions={actions}
         loading={isLoading}
         paginationPageSize={10}
-        searchPlaceholder="Pesquisar por ID, proprietário ou placa"
+        searchPlaceholder="Pesquisar por TID, EPC, proprietário ou placa"
         emptyMessage="Nenhuma etiqueta cadastrada ainda."
         searchNotFoundMessage="Nenhuma etiqueta encontrada para esta busca."
         onRowClick={(tag) => open("details", tag)}

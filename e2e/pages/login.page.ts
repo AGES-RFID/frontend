@@ -1,4 +1,3 @@
-// frontend/e2e/pages/login.page.ts
 import { expect, type Locator, type Page } from "@playwright/test";
 
 export class LoginPage {

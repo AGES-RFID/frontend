@@ -12,6 +12,7 @@ coveragePathIgnorePatterns = [
     "**/*.spec.ts",
     "**/features/**/hooks/*.ts"
 ]
+coverageSkip = ["e2e/**", "node_modules/**"]
 
 [resolve]
 alias = { "@" = "./src" }

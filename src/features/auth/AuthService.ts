@@ -1,5 +1,5 @@
 import { isHTTPError } from "ky";
-import { type ApiClient, api } from "@/lib/api";
+import { type ApiClient, api, TOKEN_KEY } from "@/lib/api";
 import {
   type UserWithVehiclesDto,
   userWithVehiclesSchema,
@@ -9,8 +9,6 @@ import {
   authResponseSchema,
   type LoginDto,
 } from "./dtos";
-
-export const TOKEN_KEY = "rfid-auth-token";
 
 export class AuthService {
   private readonly apiClient: ApiClient;

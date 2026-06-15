@@ -3,16 +3,29 @@ import {
   type DashboardMetricsDto,
   dashboardMetricsSchema,
 } from "./dtos/dashboardMetricsDto";
+import {
+  type OccupancyDto,
+  type UpdateOccupancyLimitDto,
+  occupancySchema,
+} from "./dtos/occupancyDto";
 
 export class DashboardService {
-  private apiClient: Pick<ApiClient, "get">;
+  private apiClient: ApiClient;
 
-  constructor(apiClient: Pick<ApiClient, "get">) {
+  constructor(apiClient: ApiClient) {
     this.apiClient = apiClient;
   }
 
   async getMetrics(): Promise<DashboardMetricsDto> {
     return this.apiClient.get("dashboard/metrics").json(dashboardMetricsSchema);
+  }
+
+  async getOccupancy(): Promise<OccupancyDto> {
+    return this.apiClient.get("dashboard/occupancy").json(occupancySchema);
+  }
+
+  async updateOccupancyLimit(dto: UpdateOccupancyLimitDto): Promise<void> {
+    await this.apiClient.put("system/max-occupancy", { json: dto }).json();
   }
 }
 

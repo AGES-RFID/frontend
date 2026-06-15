@@ -17,15 +17,9 @@ export const test = baseTest.extend<E2EFixtures>({
   orchestrator: async ({ request, context }, use) => {
     const orchestrator = new ApiOrchestrator(request);
 
-    // Carrega o token da sessão salva pelo globalSetup.
-    // Se o projeto não tiver storageState (ex: chromium-auth), isso não vai
-    // encontrar o token e vai lançar erro somente se algum método autenticado
-    // for chamado — o que é o comportamento correto.
     try {
       await orchestrator.loadTokenFromContext(context);
-    } catch {
-      // Projeto sem storageState (testes de auth puro) — ignorar silenciosamente
-    }
+    } catch {}
 
     await use(orchestrator);
   },
