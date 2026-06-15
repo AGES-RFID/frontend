@@ -16,4 +16,5 @@ export type GraphProps = {
   series?: GraphSeries[];
   width?: number;
   height?: number;
+  className?: string;
 };
