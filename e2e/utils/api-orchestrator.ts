@@ -4,6 +4,7 @@ export class ApiOrchestrator {
   private readonly request: APIRequestContext;
   private readonly apiUrl: string;
   private adminToken: string | null = null;
+  private adminId: string | null = null;
   private epcToTidMap = new Map<string, string>();
 
   constructor(request: APIRequestContext) {
@@ -46,6 +47,10 @@ export class ApiOrchestrator {
       if (response.ok()) {
         const json = await response.json();
         this.adminToken = json.token;
+
+        if (json.user?.id) {
+          this.adminId = json.user.id;
+        }
       }
     }
     return {
@@ -56,8 +61,28 @@ export class ApiOrchestrator {
     };
   }
 
+  private async getAdminId(): Promise<string> {
+    if (this.adminId) return this.adminId;
+
+    const headers = await this.getAuthHeaders();
+    const response = await this.request.get(`${this.apiUrl}/auth/me`, {
+      headers,
+    });
+
+    if (response.ok()) {
+      const json = await response.json();
+      this.adminId = json.id;
+      return this.adminId!;
+    }
+
+    throw new Error(
+      `[API Setup] Failed to fetch /auth/me. Status: ${response.status()}`,
+    );
+  }
+
   async setupActiveVehicleWithTag(plate: string, epc: string): Promise<string> {
     const headers = await this.getAuthHeaders();
+    const ownerId = await this.getAdminId();
 
     const vehicleResponse = await this.request.post(`${this.apiUrl}/vehicles`, {
       headers,
@@ -65,17 +90,20 @@ export class ApiOrchestrator {
         plate,
         model: "E2E Test Vehicle",
         brand: "Toyota",
+        ownerId: ownerId,
       },
     });
 
     if (!vehicleResponse.ok()) {
+      const errText = await vehicleResponse.text();
       throw new Error(
-        `[API Setup] Vehicle creation failed (${vehicleResponse.status()})`,
+        `[API Setup] Vehicle creation failed (${vehicleResponse.status()}): ${errText}`,
       );
     }
 
     const vehicleData = await vehicleResponse.json();
-    const vehicleId = vehicleData.vehicleId;
+
+    const vehicleId = vehicleData.vehicleId ?? vehicleData.id;
 
     const uniqueTid = `TID${Date.now()}${Math.floor(Math.random() * 100)}`;
 
@@ -90,13 +118,14 @@ export class ApiOrchestrator {
     });
 
     if (!tagResponse.ok()) {
+      const errText = await tagResponse.text();
       throw new Error(
-        `[API Setup] Tag creation failed (${tagResponse.status()})`,
+        `[API Setup] Tag creation failed (${tagResponse.status()}): ${errText}`,
       );
     }
 
     const tagData = await tagResponse.json();
-    const tagId = tagData.tagId;
+    const tagId = tagData.tagId ?? tagData.id;
 
     const assignResponse = await this.request.patch(
       `${this.apiUrl}/tags/${tagId}/assign-vehicle`,
@@ -109,8 +138,9 @@ export class ApiOrchestrator {
     );
 
     if (!assignResponse.ok()) {
+      const errText = await assignResponse.text();
       throw new Error(
-        `[API Setup] Tag assignment failed (${assignResponse.status()})`,
+        `[API Setup] Tag assignment failed (${assignResponse.status()}): ${errText}`,
       );
     }
 
