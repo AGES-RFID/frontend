@@ -11,6 +11,7 @@ const mockMetrics: DashboardMetricsDto = {
   entriesLastHour: 10,
   exitsLastHour: 5,
   peakEntryTime: "14:00",
+  peakHourEntries: 10,
 };
 
 describe("useDashboardMetrics hook", () => {

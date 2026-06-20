@@ -13,6 +13,7 @@ describe("DashboardService", () => {
           entriesLastHour: 8,
           exitsLastHour: 3,
           peakEntryTime: "09:00",
+          peakHourEntries: 8,
         }),
       );
     });
@@ -28,6 +29,7 @@ describe("DashboardService", () => {
       entriesLastHour: 8,
       exitsLastHour: 3,
       peakEntryTime: "09:00",
+      peakHourEntries: 8,
     });
   });
 
