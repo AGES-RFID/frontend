@@ -38,4 +38,5 @@ jobs:
     uses: AGES-RFID/cicd/.github/workflows/e2e-tests.yml@main
     with:
       target_url: ${{ needs.continuous-deployment.outputs.frontend_url }}
+      environment_name: "staging"
     secrets: inherit

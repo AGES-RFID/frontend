@@ -10,20 +10,19 @@ export class ApiOrchestrator {
   constructor(request: APIRequestContext) {
     this.request = request;
     const baseEnvUrl = process.env.PUBLIC_API_URL ?? "http://localhost:5000";
-    this.apiUrl =
-      baseEnvUrl.endsWith("/api") || baseEnvUrl.endsWith("/api/")
-        ? baseEnvUrl
-        : `${baseEnvUrl.replace(/\/$/, "")}/api`;
+
+    const cleanBaseUrl = baseEnvUrl.replace(/\/$/, "");
+    this.apiUrl = cleanBaseUrl.endsWith("/api")
+      ? cleanBaseUrl
+      : `${cleanBaseUrl}/api`;
   }
 
   async loadTokenFromContext(context: BrowserContext): Promise<void> {
     const state = await context.storageState();
-
     for (const origin of state.origins) {
       const tokenItem = origin.localStorage.find(
         (item) => item.name === "rfid-auth-token",
       );
-
       if (tokenItem) {
         this.adminToken = tokenItem.value.replace(/^"|"$/g, "");
         return;
@@ -44,15 +43,23 @@ export class ApiOrchestrator {
       const response = await this.request.post(`${this.apiUrl}/auth/login`, {
         data: { email: "admin@email.com", password: "password" },
       });
+
       if (response.ok()) {
         const json = await response.json();
-        this.adminToken = json.token;
-
-        if (json.user?.id) {
-          this.adminId = json.user.id;
+        this.adminToken = json.token || json.Token;
+        const userObj = json.user || json.User;
+        if (userObj) {
+          this.adminId =
+            userObj.id || userObj.Id || userObj.userId || userObj.UserId;
         }
+      } else {
+        const err = await response.text();
+        console.error(
+          `[API Setup] Falha no Login Automático. URL: ${this.apiUrl}/auth/login | Status: ${response.status()} - Body: ${err}`,
+        );
       }
     }
+
     return {
       "Content-Type": "application/json",
       ...(this.adminToken
@@ -71,12 +78,13 @@ export class ApiOrchestrator {
 
     if (response.ok()) {
       const json = await response.json();
-      this.adminId = json.id;
+      this.adminId = json.id || json.Id || json.userId || json.UserId;
       return this.adminId!;
     }
 
+    const errText = await response.text();
     throw new Error(
-      `[API Setup] Failed to fetch /auth/me. Status: ${response.status()}`,
+      `[API Setup] Failed to fetch /auth/me. URL: ${this.apiUrl}/auth/me | Status: ${response.status()}. Body: ${errText}`,
     );
   }
 
@@ -102,11 +110,9 @@ export class ApiOrchestrator {
     }
 
     const vehicleData = await vehicleResponse.json();
-
-    const vehicleId = vehicleData.vehicleId ?? vehicleData.id;
+    const vehicleId = vehicleData.vehicleId ?? vehicleData.id ?? vehicleData.Id;
 
     const uniqueTid = `TID${Date.now()}${Math.floor(Math.random() * 100)}`;
-
     this.epcToTidMap.set(epc, uniqueTid);
 
     const tagResponse = await this.request.post(`${this.apiUrl}/tags`, {
@@ -125,15 +131,13 @@ export class ApiOrchestrator {
     }
 
     const tagData = await tagResponse.json();
-    const tagId = tagData.tagId ?? tagData.id;
+    const tagId = tagData.tagId ?? tagData.id ?? tagData.Id;
 
     const assignResponse = await this.request.patch(
       `${this.apiUrl}/tags/${tagId}/assign-vehicle`,
       {
         headers,
-        data: {
-          vehicleId,
-        },
+        data: { vehicleId },
       },
     );
 
