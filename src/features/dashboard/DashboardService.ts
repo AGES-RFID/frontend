@@ -20,6 +20,10 @@ export class DashboardService {
     return this.apiClient.get("dashboard/metrics").json(dashboardMetricsSchema);
   }
 
+  async getDashboard(): Promise<DashboardMetricsDto> {
+    return this.apiClient.get("dashboard").json(dashboardMetricsSchema);
+  }
+
   async getOccupancy(): Promise<OccupancyDto> {
     return this.apiClient.get("dashboard/occupancy").json(occupancySchema);
   }

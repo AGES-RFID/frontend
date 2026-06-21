@@ -14,6 +14,11 @@ const mockMetrics = {
   entriesLastHour: 5,
   exitsLastHour: 2,
   peakEntryTime: "10:00",
+  peakHourEntries: 5,
+  currentOccupancy: 2,
+  maxOccupancy: 100,
+  accesses: [],
+  updatedAt: "2026-06-20T20:00:00Z",
 };
 
 const createWrapper = () => {
