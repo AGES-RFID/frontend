@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/utils/cn";
 import type { IChartRenderer } from "./IChartRenderer";
 import { D3ChartRenderer, getColor } from "./renderd3";
@@ -7,12 +7,14 @@ import type { GraphData, GraphProps } from "./types";
 export function Graph({
   title = "Gráfico de linhas",
   series = [],
-  width = 800,
+  width: propWidth,
   height = 400,
   className,
 }: GraphProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<IChartRenderer | null>(null);
+  const [measuredWidth, setMeasuredWidth] = useState(0);
 
   useEffect(() => {
     if (!rendererRef.current) {
@@ -26,7 +28,28 @@ export function Graph({
   }, []);
 
   useEffect(() => {
-    if (!svgRef.current || series.length === 0) return;
+    const el = containerRef.current;
+    if (!el) return;
+
+    const measure = () => {
+      const style = getComputedStyle(el);
+      const paddingX =
+        parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+      setMeasuredWidth(el.clientWidth - paddingX);
+    };
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const width = propWidth ?? measuredWidth;
+
+  useEffect(() => {
+    if (!svgRef.current || series.length === 0 || width === 0) return;
 
     rendererRef.current?.render({
       svgElement: svgRef.current,
@@ -39,7 +62,10 @@ export function Graph({
   const hasData = series.some((line) => line.points.length > 0);
 
   return (
-    <div className={cn("rounded-xl bg-white p-6 drop-shadow-lg", className)}>
+    <div
+      ref={containerRef}
+      className={cn("rounded-xl bg-white p-6 drop-shadow-lg", className)}
+    >
       <div className="mb-6 flex items-center justify-between gap-4">
         <h2 className="font-bold text-dark-gray text-xl">{title}</h2>
 
@@ -66,7 +92,7 @@ export function Graph({
           Sem dados para exibir.
         </div>
       ) : (
-        <svg ref={svgRef} width={width} height={height} />
+        <svg ref={svgRef} width="100%" height={height} />
       )}
     </div>
   );

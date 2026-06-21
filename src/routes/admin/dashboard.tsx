@@ -63,11 +63,9 @@ export function Dashboard() {
       />
 
       <Graph
-        className="col-span-3"
+        className="col-span-2"
         title="Fluxo de veículos por hora"
         series={vehicleFlowSeries}
-        width={900}
-        height={400}
       />
     </div>
   );
