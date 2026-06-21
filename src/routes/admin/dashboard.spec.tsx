@@ -3,12 +3,16 @@ import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
+import { accessesService } from "@/features/accesses/AccessesService";
+import { antennaService } from "@/features/antennas/AntennaService";
 import { dashboardService } from "@/features/dashboard/DashboardService";
 import { Dashboard } from "./dashboard";
-import { accessesService } from "@/features/accesses/AccessesService";
 
 const getMetricsMock = spyOn(dashboardService, "getMetrics");
+const getOccupancyMock = spyOn(dashboardService, "getOccupancy");
 const getTimeseriesMock = spyOn(accessesService, "getTimeseries");
+const getAccessesMock = spyOn(accessesService, "getAccesses");
+const getAntennasMock = spyOn(antennaService, "getAntennas");
 
 const mockMetrics = {
   entriesLastHour: 5,
@@ -36,6 +40,12 @@ const createWrapper = () => {
 describe("Dashboard Route Component", () => {
   beforeEach(() => {
     getMetricsMock.mockResolvedValue(mockMetrics);
+    getOccupancyMock.mockResolvedValue({
+      currentOccupancy: 2,
+      maxOccupancy: 100,
+      occupancyPercentage: 2,
+      vehicles: [],
+    });
     getTimeseriesMock.mockResolvedValue({
       from: "2026-06-13T10:00:00Z",
       to: "2026-06-14T10:00:00Z",
@@ -50,20 +60,47 @@ describe("Dashboard Route Component", () => {
         },
       ],
     });
+    getAccessesMock.mockResolvedValue([
+      {
+        accessId: "access-1",
+        tagId: "TAG-001",
+        type: "entry",
+        timestamp: new Date(Date.now() - 120 * 60_000).toISOString(),
+        plate: "ABCD1234",
+        value: null,
+      },
+      {
+        accessId: "access-2",
+        tagId: "TAG-002",
+        type: "exit",
+        timestamp: new Date(Date.now() - 60 * 60_000).toISOString(),
+        plate: "WXYZ9876",
+        value: 20,
+      },
+    ]);
+    getAntennasMock.mockResolvedValue([
+      {
+        id: "antenna-1",
+        name: "Antena 1",
+        status: "On",
+        sensibility: -50,
+        power: 28,
+      },
+    ]);
   });
 
   afterEach(() => {
     cleanup();
     getMetricsMock.mockClear();
+    getOccupancyMock.mockClear();
     getTimeseriesMock.mockClear();
+    getAccessesMock.mockClear();
+    getAntennasMock.mockClear();
   });
 
   it("should render Dashboard page title", () => {
     render(<Dashboard />, { wrapper: createWrapper() });
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
-    expect(
-      screen.getByText("Bem-vindo ao painel principal do sistema IMPINJ"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Monitoramento em tempo real")).toBeInTheDocument();
   });
 
   it("should render entries metric card", () => {
@@ -78,10 +115,32 @@ describe("Dashboard Route Component", () => {
     expect(screen.getByText("Saídas (Última Hora)")).toBeInTheDocument();
   });
 
+  it("should render parking occupancy component with backend data", async () => {
+    render(<Dashboard />, { wrapper: createWrapper() });
+
+    expect(await screen.findByText("Lotação do estacionamento")).toBeTruthy();
+    expect(await screen.findByText("2/100")).toBeTruthy();
+  });
+
   it("should render graph legend with timeseries data", async () => {
     render(<Dashboard />, { wrapper: createWrapper() });
 
     expect(await screen.findByText("Entradas")).toBeInTheDocument();
     expect(await screen.findByText("Saídas")).toBeInTheDocument();
+  });
+
+  it("should render antennas with backend data", async () => {
+    render(<Dashboard />, { wrapper: createWrapper() });
+
+    expect(await screen.findByText("Antenas")).toBeInTheDocument();
+    expect(await screen.findByText("Antena 1")).toBeInTheDocument();
+  });
+
+  it("should render permanence table from latest entry accesses", async () => {
+    render(<Dashboard />, { wrapper: createWrapper() });
+
+    expect(await screen.findByText("Etiqueta RFID")).toBeInTheDocument();
+    expect(await screen.findByText("TAG-001")).toBeInTheDocument();
+    expect(screen.queryByText("TAG-002")).not.toBeInTheDocument();
   });
 });

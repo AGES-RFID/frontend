@@ -1,51 +1,68 @@
-import { afterEach, describe, expect, it, mock } from "bun:test";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  spyOn,
+} from "bun:test";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   cleanup,
+  fireEvent,
   render,
   screen,
-  fireEvent,
   waitFor,
 } from "@testing-library/react";
+import type { ReactNode } from "react";
+import { antennaService } from "../AntennaService";
 import type { AntennaDto } from "../dtos";
+import { AdjustAntennaModal } from "./AdjustAntennaModal";
 
-const mutateAsyncMock = mock();
-let isPendingMock = false;
-
-const mockUseUpdateAntenna = mock(() => ({
-  mutateAsync: mutateAsyncMock,
-  isPending: isPendingMock,
-}));
-
-mock.module("../hooks", () => ({
-  useUpdateAntenna: mockUseUpdateAntenna,
-}));
-
-// Import after mocking the module
-const { AdjustAntennaModal } = await import("./AdjustAntennaModal");
+const updateAntennaSpy = spyOn(antennaService, "updateAntenna");
 
 const mockAntenna: AntennaDto = {
   id: "antenna-001",
   name: "Antena 1",
-  status: "On" as const,
+  status: "On",
   sensibility: -50,
   power: 28.0,
 };
 
 describe("AdjustAntennaModal component", () => {
-  afterEach(() => {
-    cleanup();
-    mutateAsyncMock.mockReset();
-    isPendingMock = false;
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        mutations: { retry: false },
+        queries: { retry: false },
+      },
+    });
+    updateAntennaSpy.mockClear();
+    updateAntennaSpy.mockResolvedValue(mockAntenna);
   });
 
-  it("should render correctly when open", () => {
+  afterEach(() => {
+    cleanup();
+    queryClient.clear();
+  });
+
+  const renderWithClient = (ui: ReactNode) =>
     render(
+      <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
+    );
+
+  it("should render correctly when open", () => {
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={mock()}
         antenna={mockAntenna}
       />,
     );
+
     expect(screen.getByText("Ajustar Antena")).toBeInTheDocument();
     expect(screen.getByLabelText("Status da antena")).toBeInTheDocument();
     expect(screen.getByLabelText("Sensibilidade (dBm)")).toBeInTheDocument();
@@ -53,24 +70,26 @@ describe("AdjustAntennaModal component", () => {
   });
 
   it("should not render when closed", () => {
-    render(
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={false}
         onClose={mock()}
         antenna={mockAntenna}
       />,
     );
+
     expect(screen.queryByText("Ajustar Antena")).toBeNull();
   });
 
   it("should fill fields with antenna data", () => {
-    render(
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={mock()}
         antenna={mockAntenna}
       />,
     );
+
     const statusCheckbox = screen.getByLabelText(
       "Status da antena",
     ) as HTMLInputElement;
@@ -94,13 +113,14 @@ describe("AdjustAntennaModal component", () => {
       power: 28.0,
     } as unknown as AntennaDto;
 
-    render(
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={mock()}
         antenna={incompleteAntenna}
       />,
     );
+
     const statusCheckbox = screen.getByLabelText(
       "Status da antena",
     ) as HTMLInputElement;
@@ -116,13 +136,14 @@ describe("AdjustAntennaModal component", () => {
       power: null,
     } as unknown as AntennaDto;
 
-    render(
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={mock()}
         antenna={incompleteAntenna}
       />,
     );
+
     const sensibilityInput = screen.getByLabelText(
       "Sensibilidade (dBm)",
     ) as HTMLInputElement;
@@ -135,13 +156,14 @@ describe("AdjustAntennaModal component", () => {
   });
 
   it("should allow clearing numeric inputs", () => {
-    render(
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={mock()}
         antenna={mockAntenna}
       />,
     );
+
     const sensibilityInput = screen.getByLabelText(
       "Sensibilidade (dBm)",
     ) as HTMLInputElement;
@@ -158,8 +180,8 @@ describe("AdjustAntennaModal component", () => {
 
   it("should call mutateAsync with correct payload on submit", async () => {
     const onClose = mock();
-    mutateAsyncMock.mockResolvedValueOnce({});
-    render(
+
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={onClose}
@@ -176,24 +198,20 @@ describe("AdjustAntennaModal component", () => {
 
     fireEvent.change(sensibilityInput, { target: { value: "-45" } });
     fireEvent.change(powerInput, { target: { value: "30.5" } });
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar" }));
 
-    const submitBtn = screen.getByRole("button", { name: "Confirmar" });
-    fireEvent.click(submitBtn);
-
-    expect(mutateAsyncMock).toHaveBeenCalledWith({
-      antennaId: "antenna-001",
-      updateDto: {
+    await waitFor(() =>
+      expect(updateAntennaSpy).toHaveBeenCalledWith("antenna-001", {
         status: "On",
         sensibility: -45,
         power: 30.5,
-      },
-    });
+      }),
+    );
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 
   it("should send null when inputs are empty", async () => {
-    mutateAsyncMock.mockResolvedValueOnce({});
-    render(
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={mock()}
@@ -210,104 +228,109 @@ describe("AdjustAntennaModal component", () => {
 
     fireEvent.change(sensibilityInput, { target: { value: "" } });
     fireEvent.change(powerInput, { target: { value: "" } });
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar" }));
 
-    const submitBtn = screen.getByRole("button", { name: "Confirmar" });
-    fireEvent.click(submitBtn);
-
-    expect(mutateAsyncMock).toHaveBeenCalledWith({
-      antennaId: "antenna-001",
-      updateDto: {
+    await waitFor(() =>
+      expect(updateAntennaSpy).toHaveBeenCalledWith("antenna-001", {
         status: "On",
         sensibility: null,
         power: null,
-      },
-    });
+      }),
+    );
   });
 
   it("should call onClose when Cancelar is clicked", () => {
     const onClose = mock();
-    render(
+
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={onClose}
         antenna={mockAntenna}
       />,
     );
-    const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
-    fireEvent.click(cancelBtn);
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
     expect(onClose).toHaveBeenCalled();
   });
 
-  it("should show Confirmando... and disable button when pending", () => {
-    isPendingMock = true;
-    render(
+  it("should show Confirmando... and disable button while submitting", async () => {
+    updateAntennaSpy.mockImplementationOnce(
+      () => new Promise<AntennaDto>(() => {}),
+    );
+
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={mock()}
         antenna={mockAntenna}
       />,
     );
-    const confirmBtn = screen.getByRole("button", {
+
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar" }));
+
+    const confirmBtn = (await screen.findByRole("button", {
       name: "Confirmando...",
-    }) as HTMLButtonElement;
+    })) as HTMLButtonElement;
     expect(confirmBtn).toBeInTheDocument();
     expect(confirmBtn.disabled).toBe(true);
   });
 
   it("should not submit and show toast error when sensibility is out of range", () => {
-    render(
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={mock()}
         antenna={mockAntenna}
       />,
     );
+
     const sensibilityInput = screen.getByLabelText(
       "Sensibilidade (dBm)",
     ) as HTMLInputElement;
 
-    fireEvent.change(sensibilityInput, { target: { value: "-95" } }); // out of range
-    const submitBtn = screen.getByRole("button", { name: "Confirmar" });
-    fireEvent.click(submitBtn);
+    fireEvent.change(sensibilityInput, { target: { value: "-95" } });
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar" }));
 
-    expect(mutateAsyncMock).not.toHaveBeenCalled();
+    expect(updateAntennaSpy).not.toHaveBeenCalled();
   });
 
   it("should not submit and show toast error when power is out of range", () => {
-    render(
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={mock()}
         antenna={mockAntenna}
       />,
     );
+
     const powerInput = screen.getByLabelText(
       "Potência (dBm)",
     ) as HTMLInputElement;
 
-    fireEvent.change(powerInput, { target: { value: "35" } }); // out of range
-    const submitBtn = screen.getByRole("button", { name: "Confirmar" });
-    fireEvent.click(submitBtn);
+    fireEvent.change(powerInput, { target: { value: "35" } });
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar" }));
 
-    expect(mutateAsyncMock).not.toHaveBeenCalled();
+    expect(updateAntennaSpy).not.toHaveBeenCalled();
   });
 
   it("should limit input length to 4 characters", () => {
-    render(
+    renderWithClient(
       <AdjustAntennaModal
         isOpen={true}
         onClose={mock()}
         antenna={mockAntenna}
       />,
     );
+
     const sensibilityInput = screen.getByLabelText(
       "Sensibilidade (dBm)",
     ) as HTMLInputElement;
 
-    fireEvent.change(sensibilityInput, { target: { value: "-1000" } }); // 5 characters
-    expect(sensibilityInput.value).toBe("-50"); // should keep previous value since it was rejected by length check
+    fireEvent.change(sensibilityInput, { target: { value: "-1000" } });
+    expect(sensibilityInput.value).toBe("-50");
 
-    fireEvent.change(sensibilityInput, { target: { value: "-93" } }); // 3 characters
+    fireEvent.change(sensibilityInput, { target: { value: "-93" } });
     expect(sensibilityInput.value).toBe("-93");
   });
 });
