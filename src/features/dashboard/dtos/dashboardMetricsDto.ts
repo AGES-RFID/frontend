@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { accessDtoSchema } from "@/features/accesses/dtos/accessDto";
 
 export const dashboardMetricsSchema = z.object({
   entriesLastHour: z.number(),
@@ -7,7 +8,7 @@ export const dashboardMetricsSchema = z.object({
   peakHourEntries: z.number(),
   currentOccupancy: z.number(),
   maxOccupancy: z.number(),
-  accesses: z.array(z.any()),
+  accesses: z.array(accessDtoSchema),
   updatedAt: z.string(),
 });
 
