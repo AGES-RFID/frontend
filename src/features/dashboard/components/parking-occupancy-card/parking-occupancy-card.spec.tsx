@@ -67,39 +67,39 @@ describe("ParkingOccupancyCard", () => {
     expect(progressBar).toHaveStyle("width: 100%");
   });
 
-  test("should use the default color below 75%", () => {
+  test("should use the default class below 75%", () => {
     render(<ParkingOccupancyCard vehiclesCount={74} totalSpots={100} />);
 
     const progressBar = screen.getByTestId("parking-occupancy-progress-bar");
-    expect(progressBar).toHaveStyle("background-color: #0C7C86");
+    expect(progressBar.className).toContain("bg-teal");
   });
 
-  test("should use the default color at exactly 75%", () => {
+  test("should use the default class at exactly 75%", () => {
     render(<ParkingOccupancyCard vehiclesCount={75} totalSpots={100} />);
 
     const progressBar = screen.getByTestId("parking-occupancy-progress-bar");
-    expect(progressBar).toHaveStyle("background-color: #0C7C86");
+    expect(progressBar.className).toContain("bg-teal");
   });
 
-  test("should use yellow above 75%", () => {
+  test("should use yellow class above 75%", () => {
     render(<ParkingOccupancyCard vehiclesCount={76} totalSpots={100} />);
 
     const progressBar = screen.getByTestId("parking-occupancy-progress-bar");
-    expect(progressBar).toHaveStyle("background-color: #facc15");
+    expect(progressBar.className).toContain("bg-yellow");
   });
 
-  test("should use yellow at exactly 90%", () => {
+  test("should use yellow class at exactly 90%", () => {
     render(<ParkingOccupancyCard vehiclesCount={90} totalSpots={100} />);
 
     const progressBar = screen.getByTestId("parking-occupancy-progress-bar");
-    expect(progressBar).toHaveStyle("background-color: #facc15");
+    expect(progressBar.className).toContain("bg-yellow");
   });
 
-  test("should use red above 90%", () => {
+  test("should use red class above 90%", () => {
     render(<ParkingOccupancyCard vehiclesCount={91} totalSpots={100} />);
 
     const progressBar = screen.getByTestId("parking-occupancy-progress-bar");
-    expect(progressBar).toHaveStyle("background-color: #ef4444");
+    expect(progressBar.className).toContain("bg-red");
   });
 
   test("should render 0% width when total spots is 0", () => {
