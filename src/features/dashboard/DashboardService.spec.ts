@@ -14,6 +14,10 @@ describe("DashboardService", () => {
           exitsLastHour: 3,
           peakEntryTime: "09:00",
           peakHourEntries: 8,
+          currentOccupancy: 0,
+          maxOccupancy: 100,
+          accesses: [],
+          updatedAt: "2026-06-20T20:00:00Z",
         }),
       );
     });
@@ -30,6 +34,47 @@ describe("DashboardService", () => {
       exitsLastHour: 3,
       peakEntryTime: "09:00",
       peakHourEntries: 8,
+      currentOccupancy: 0,
+      maxOccupancy: 100,
+      accesses: [],
+      updatedAt: "2026-06-20T20:00:00Z",
+    });
+  });
+
+  it("should call GET dashboard and return consolidated data", async () => {
+    let observedRequest: Request | undefined;
+    const fetchMock = mock((input: RequestInfo | URL, init?: RequestInit) => {
+      observedRequest = new Request(input, init);
+      return Promise.resolve(
+        jsonResponse({
+          entriesLastHour: 5,
+          exitsLastHour: 2,
+          peakEntryTime: "14:00",
+          peakHourEntries: 12,
+          currentOccupancy: 3,
+          maxOccupancy: 100,
+          accesses: [],
+          updatedAt: "2026-06-20T20:00:00Z",
+        }),
+      );
+    });
+    const apiMock = api.extend({ fetch: fetchMock });
+
+    const service = new DashboardService(apiMock);
+    const result = await service.getDashboard();
+
+    if (!observedRequest) throw new Error("Request was not called");
+    expect(observedRequest.url).toContain("/dashboard");
+    expect(observedRequest.method).toBe("GET");
+    expect(result).toEqual({
+      entriesLastHour: 5,
+      exitsLastHour: 2,
+      peakEntryTime: "14:00",
+      peakHourEntries: 12,
+      currentOccupancy: 3,
+      maxOccupancy: 100,
+      accesses: [],
+      updatedAt: "2026-06-20T20:00:00Z",
     });
   });
 
