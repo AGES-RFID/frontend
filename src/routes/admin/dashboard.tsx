@@ -6,6 +6,7 @@ import { useAccessTimeseries } from "@/features/accesses/hooks/useAccessTimeseri
 import { AdjustAntennaModal } from "@/features/antennas/components/AdjustAntennaModal";
 import type { AntennaDto } from "@/features/antennas/dtos";
 import { MetricCard } from "@/features/dashboard/components/dashboardCard";
+import { SystemHealthCard } from "@/features/dashboard/components/SystemHealthCard";
 import { ParkingOccupancyCard } from "@/features/dashboard/components/parking-occupancy-card";
 import { useDashboard } from "@/features/dashboard/hooks/useDashboard";
 
@@ -100,9 +101,7 @@ export function Dashboard() {
         series={vehicleFlowSeries}
       />
 
-      <div className="col-span-3 flex flex-col justify-between gap-2 rounded-md bg-white p-6 drop-shadow-lg">
-        a
-      </div>
+      <SystemHealthCard className="col-span-3" />
 
       <div className="col-span-3 flex flex-col gap-6 rounded-md bg-white p-6 drop-shadow-lg">
         {antennas.map((antenna) => (
