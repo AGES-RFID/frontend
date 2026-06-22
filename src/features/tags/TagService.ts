@@ -1,5 +1,7 @@
 import { type ApiClient, api } from "@/lib/api";
 import {
+  bulkCreateTagsResultSchema,
+  type BulkCreateTagsResultDto,
   type CreateTagDto,
   type TagDto,
   type TagListItemDto,
@@ -20,6 +22,15 @@ export class TagService {
 
   async createTag(createTagDto: CreateTagDto): Promise<TagDto> {
     return this.apiClient.post("tags", { json: createTagDto }).json(tagSchema);
+  }
+
+  async bulkCreateTags(file: File): Promise<BulkCreateTagsResultDto> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return this.apiClient
+      .post("tags/bulk", { body: formData })
+      .json(bulkCreateTagsResultSchema);
   }
 
   async deactivateTag(tagId: string): Promise<TagDto> {

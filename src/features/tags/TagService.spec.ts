@@ -136,6 +136,40 @@ describe("TagService", () => {
     });
   });
 
+  describe("bulkCreateTags", () => {
+    let fetchMock = mock();
+    let apiMock: ApiClient;
+    let tagService: TagService;
+
+    beforeEach(() => {
+      fetchMock = mock();
+      apiMock = api.extend({ fetch: fetchMock });
+      tagService = new TagService(apiMock);
+    });
+
+    it("should call POST /tags/bulk with multipart form data", async () => {
+      fetchMock.mockImplementationOnce(async () =>
+        jsonResponse({
+          createdCount: 1,
+          errorCount: 0,
+          createdTags: [mockTag],
+          errors: [],
+        }),
+      );
+      const file = new File(["tid,epc\nTID1,EPC1"], "tags.csv", {
+        type: "text/csv",
+      });
+
+      await tagService.bulkCreateTags(file);
+
+      const [request] = fetchMock.mock.calls[0] ?? [];
+      if (!request) throw new Error("Expected a request to be sent");
+      expect(request.url).toContain("/tags/bulk");
+      expect(request.method).toBe("POST");
+      expect(await request.clone().formData()).toBeInstanceOf(FormData);
+    });
+  });
+
   describe("deactivateTag", () => {
     let fetchMock = mock();
     let apiMock: ApiClient;
