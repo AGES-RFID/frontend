@@ -6,13 +6,15 @@ import { useAccessTimeseries } from "@/features/accesses/hooks/useAccessTimeseri
 import { AdjustAntennaModal } from "@/features/antennas/components/AdjustAntennaModal";
 import type { AntennaDto } from "@/features/antennas/dtos";
 import { MetricCard } from "@/features/dashboard/components/dashboardCard";
-import { SystemHealthCard } from "@/features/dashboard/components/SystemHealthCard";
 import { ParkingOccupancyCard } from "@/features/dashboard/components/parking-occupancy-card";
 import { useDashboard } from "@/features/dashboard/hooks/useDashboard";
+import { usePermanence } from "@/features/dashboard/hooks/usePermanence";
+import { PermanenceTable } from "@/features/vehicles/components/permanenceTable";
 
 export function Dashboard() {
   const { data: metrics } = useDashboard();
   const { data: timeseries } = useAccessTimeseries();
+  const { data: permanenceVehicles } = usePermanence();
   const antennas = [
     {
       id: "1",
@@ -61,6 +63,12 @@ export function Dashboard() {
 
   return (
     <div className="grid grid-cols-12 gap-4 p-8">
+      <AdjustAntennaModal
+        isOpen={isAntennaModalOpen}
+        onClose={() => setIsAntennaModalOpen(false)}
+        antenna={selectedAntenna}
+      />
+
       <header className="col-span-full">
         <h1 className="mb-4 font-bold text-3xl text-dark-gray">Dashboard</h1>
         <p className="mb-6 text-gray">
@@ -96,14 +104,13 @@ export function Dashboard() {
       />
 
       <Graph
-        className="col-span-6"
+        className="col-span-8"
         title="Fluxo de veículos por hora"
         series={vehicleFlowSeries}
+        height={250}
       />
 
-      <SystemHealthCard className="col-span-3" />
-
-      <div className="col-span-3 flex flex-col gap-6 rounded-md bg-white p-6 drop-shadow-lg">
+      <div className="col-span-4 row-span-2 flex flex-col gap-6 rounded-md bg-white p-6 drop-shadow-lg">
         {antennas.map((antenna) => (
           <AntennaCard
             editable
@@ -117,10 +124,9 @@ export function Dashboard() {
         ))}
       </div>
 
-      <AdjustAntennaModal
-        isOpen={isAntennaModalOpen}
-        onClose={() => setIsAntennaModalOpen(false)}
-        antenna={selectedAntenna}
+      <PermanenceTable
+        className="col-span-8"
+        vehicles={permanenceVehicles ?? []}
       />
     </div>
   );

@@ -141,3 +141,56 @@ describe("DashboardService", () => {
     ).rejects.toThrow("Forbidden");
   });
 });
+
+it("should call GET dashboard/permanence and return parsed data", async () => {
+  const mockResponse = [
+    {
+      rfidTag: "EPC-001",
+      plate: "ABC-1234",
+      minutesParked: 120,
+    },
+  ];
+  const apiClientMock = {
+    get: mock(() => ({
+      json: () => Promise.resolve(mockResponse),
+    })),
+  };
+  // @ts-expect-error
+  const service = new DashboardService(apiClientMock);
+
+  const result = await service.getPermanence();
+
+  expect(apiClientMock.get).toHaveBeenCalledWith("dashboard/permanence");
+  expect(result).toHaveLength(1);
+  expect(result[0]?.rfidTag).toBe("EPC-001");
+  expect(result[0]?.plate).toBe("ABC-1234");
+  expect(result[0]?.minutesParked).toBe(120);
+  expect(result).toEqual(mockResponse);
+});
+
+it("should propagate errors from getPermanence", async () => {
+  const apiClientMock = {
+    get: mock(() => ({
+      json: () => Promise.reject(new Error("Network error")),
+    })),
+  };
+  // @ts-expect-error
+  const service = new DashboardService(apiClientMock);
+
+  await expect(service.getPermanence()).rejects.toThrow("Network error");
+});
+
+it("should return empty array when no permanence data", async () => {
+  const apiClientMock = {
+    get: mock(() => ({
+      json: () => Promise.resolve([]),
+    })),
+  };
+  // @ts-expect-error
+  const service = new DashboardService(apiClientMock);
+
+  const result = await service.getPermanence();
+
+  expect(apiClientMock.get).toHaveBeenCalledWith("dashboard/permanence");
+  expect(result).toEqual([]);
+});

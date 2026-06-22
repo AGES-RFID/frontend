@@ -1,13 +1,15 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Table } from "@/components/ui/table";
-import { formatPlate, formatPermanenceTime } from "@/utils/formatting";
+import { cn } from "@/utils/cn";
+import { formatPermanenceTime, formatPlate } from "@/utils/formatting";
 import type { PermanenceDto } from "../dtos/permanenceDto";
 
 interface PermanenceTableProps {
   readonly vehicles: PermanenceDto[];
+  readonly className?: string;
 }
 
-export function PermanenceTable({ vehicles }: PermanenceTableProps) {
+export function PermanenceTable({ vehicles, className }: PermanenceTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
@@ -47,7 +49,7 @@ export function PermanenceTable({ vehicles }: PermanenceTableProps) {
   ];
 
   return (
-    <div className="w-full">
+    <div className={cn("w-full", className)}>
       <div className="overflow-hidden rounded-t-lg border border-light-gray">
         <Table
           columns={columns}

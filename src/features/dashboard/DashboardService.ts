@@ -8,6 +8,10 @@ import {
   type UpdateOccupancyLimitDto,
   occupancySchema,
 } from "./dtos/occupancyDto";
+import {
+  type PermanenceDto,
+  permanenceSchema,
+} from "@/features/vehicles/dtos/permanenceDto";
 
 export class DashboardService {
   private apiClient: ApiClient;
@@ -28,6 +32,11 @@ export class DashboardService {
     return this.apiClient.get("dashboard/occupancy").json(occupancySchema);
   }
 
+  async getPermanence(): Promise<PermanenceDto[]> {
+    return this.apiClient
+      .get("dashboard/permanence")
+      .json(permanenceSchema.array());
+  }
   async updateOccupancyLimit(dto: UpdateOccupancyLimitDto): Promise<void> {
     await this.apiClient.put("system/max-occupancy", { json: dto }).json();
   }
