@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { toast } from "@/components/ui/toast";
-import { useUpdateAntenna } from "../hooks";
 import type { AntennaDto } from "../dtos";
+import { useUpdateAntenna } from "../hooks";
 
 interface AdjustAntennaModalProps {
   isOpen: boolean;
@@ -82,7 +82,7 @@ export function AdjustAntennaModal({
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error("Erro ao salvar no servidor (simulação: fechando modal).");
+      toast.error("Erro ao ajustar antena.");
       onClose();
     }
   };
@@ -92,7 +92,7 @@ export function AdjustAntennaModal({
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* Toggle Status */}
         <div className="flex flex-col gap-1.5">
-          <span className="font-medium text-[14px] text-dark-gray leading-5">
+          <span className="font-medium text-dark-gray text-sm leading-5">
             Status
           </span>
           <label className="relative inline-flex cursor-pointer items-center">
@@ -105,7 +105,7 @@ export function AdjustAntennaModal({
               onChange={(e) => setStatus(e.target.checked ? "On" : "Off")}
               className="peer sr-only"
             />
-            <div className="peer h-6 w-11 rounded-full bg-light-gray/40 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green peer-checked:after:translate-x-full peer-focus:outline-none" />
+            <div className="peer h-6 w-11 rounded-full bg-light-gray/40 after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green peer-checked:after:translate-x-full peer-focus:outline-none" />
             <span className="ml-2 font-medium text-dark-gray text-sm">
               {status === "On" ? "Ligado (On)" : "Desligado (Off)"}
             </span>
