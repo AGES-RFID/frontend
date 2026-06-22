@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toast";
 import { useAuthContext } from "@/features/auth/context/AuthContext";
-import { loginSchema } from "@/features/auth/dtos";
+import { type AuthResponseDto, loginSchema } from "@/features/auth/dtos";
 import { useLogin } from "@/features/auth/hooks";
 
 export function Login() {
@@ -44,8 +44,10 @@ export function Login() {
     loginMutation.mutate(
       { email, password },
       {
-        onSuccess: () => {
-          navigate("/");
+        onSuccess: (data: AuthResponseDto) => {
+          const redirectTo =
+            data.user.role === "admin" ? "/admin/dashboard" : "/";
+          navigate(redirectTo);
         },
         onError: (error) => {
           if (error instanceof HTTPError && error.response.status === 401) {
