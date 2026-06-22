@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
-import { Header } from "@/components/ui/header";
 import { toast } from "@/components/ui/toast";
 import {
   UserForm,
@@ -23,10 +22,6 @@ export function NewUser() {
     mutationFn: async (payload: PublicCreateUserPayload) =>
       api.post("users", { json: payload }).json(),
   });
-
-  const handleAuthAction = () => {
-    navigate("/login");
-  };
 
   const handleCreateUser = (formData: UserFormValues) => {
     const payload: PublicCreateUserPayload = {
@@ -54,8 +49,6 @@ export function NewUser() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header onAuthAction={handleAuthAction} />
-
       <main className="mx-auto max-w-6xl px-6 py-12">
         <header className="mb-10 text-center">
           <h1 className="font-bold text-4xl text-dark-blue">Cadastro</h1>

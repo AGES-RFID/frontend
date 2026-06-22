@@ -2,7 +2,6 @@ import { HTTPError } from "ky";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
-import { Header } from "@/components/ui/header";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toast";
 import { useAuthContext } from "@/features/auth/context/AuthContext";
@@ -68,80 +67,76 @@ export function Login() {
   }
 
   return (
-    <>
-      <Header type="logo" />
+    <div className="flex min-h-[calc(100vh-108px)] items-center justify-center bg-gray-100 px-6 py-10 text-gray-900">
+      <main className="w-full max-w-140 rounded-2xl bg-white p-8">
+        <section className="space-y-8">
+          <div className="border-gray border-b pb-4">
+            <h1 className="font-bold text-3xl text-dark-blue">Login</h1>
+            <p className="mt-2 text-gray text-sm">
+              Acesse sua conta para continuar.
+            </p>
+          </div>
 
-      <div className="flex min-h-[calc(100vh-108px)] items-center justify-center bg-gray-100 px-6 py-10 text-gray-900">
-        <main className="w-full max-w-140 rounded-2xl bg-white p-8">
-          <section className="space-y-8">
-            <div className="border-gray border-b pb-4">
-              <h1 className="font-bold text-3xl text-dark-blue">Login</h1>
-              <p className="mt-2 text-gray text-sm">
-                Acesse sua conta para continuar.
-              </p>
-            </div>
-
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              <div className="space-y-1">
-                <Input
-                  id="email"
-                  type="email"
-                  name="email"
-                  label="Email"
-                  placeholder="Digite seu email"
-                  value={email}
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                    if (emailError) validateEmail(event.target.value);
-                  }}
-                  onBlur={() => validateEmail(email)}
-                  required
-                  width="100%"
-                />
-                {emailError && <p className="text-red text-xs">{emailError}</p>}
-              </div>
-
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-1">
               <Input
-                id="password"
-                type="password"
-                name="password"
-                label="Senha"
-                placeholder="Digite sua senha"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                id="email"
+                type="email"
+                name="email"
+                label="Email"
+                placeholder="Digite seu email"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  if (emailError) validateEmail(event.target.value);
+                }}
+                onBlur={() => validateEmail(email)}
                 required
-                showPasswordToggle
                 width="100%"
               />
+              {emailError && <p className="text-red text-xs">{emailError}</p>}
+            </div>
 
-              <Button
-                type="submit"
-                size="md"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? "Entrando..." : "Entrar"}
-              </Button>
+            <Input
+              id="password"
+              type="password"
+              name="password"
+              label="Senha"
+              placeholder="Digite sua senha"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              showPasswordToggle
+              width="100%"
+            />
 
-              <div className="flex items-center gap-4">
-                <div className="h-px flex-1 bg-light-gray" />
-                <span className="text-gray text-sm">OU</span>
-                <div className="h-px flex-1 bg-light-gray" />
-              </div>
+            <Button
+              type="submit"
+              size="md"
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? "Entrando..." : "Entrar"}
+            </Button>
 
-              <Button
-                type="button"
-                variant="secondary"
-                size="md"
-                className="w-full"
-                onClick={handleRegister}
-              >
-                Criar nova conta
-              </Button>
-            </form>
-          </section>
-        </main>
-      </div>
-    </>
+            <div className="flex items-center gap-4">
+              <div className="h-px flex-1 bg-light-gray" />
+              <span className="text-gray text-sm">OU</span>
+              <div className="h-px flex-1 bg-light-gray" />
+            </div>
+
+            <Button
+              type="button"
+              variant="secondary"
+              size="md"
+              className="w-full"
+              onClick={handleRegister}
+            >
+              Criar nova conta
+            </Button>
+          </form>
+        </section>
+      </main>
+    </div>
   );
 }
