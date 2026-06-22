@@ -1,6 +1,7 @@
+import { Pencil, SatelliteDish } from "lucide-react";
 import type * as React from "react";
-import { SatelliteDish, SquarePen } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { Button } from "../button";
 
 interface BaseAntennaCardProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onEdit"> {
@@ -69,7 +70,7 @@ export function AntennaCard({
   return (
     <div
       className={cn(
-        "relative flex w-full max-w-sm items-start gap-4 rounded-xl border border-very-light-gray/40 bg-white p-4 shadow-xs transition-shadow duration-200 hover:shadow-sm",
+        "relative flex w-full max-w-sm items-start gap-4",
         className,
       )}
       {...props}
@@ -126,14 +127,16 @@ export function AntennaCard({
 
       {/* Optional Edit Icon at Top-Right */}
       {editable && (
-        <button
+        <Button
           type="button"
           onClick={onEdit}
-          className="absolute top-4 right-4 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-dark-gray transition-all duration-150 hover:bg-dark-blue/5 hover:text-dark-blue active:scale-95"
+          icon
+          size="sm"
+          variant="borderless"
           aria-label={`Editar ${name}`}
         >
-          <SquarePen className="h-5 w-5" strokeWidth={1.5} />
-        </button>
+          <Pencil className="size-4" strokeWidth={1.5} />
+        </Button>
       )}
     </div>
   );

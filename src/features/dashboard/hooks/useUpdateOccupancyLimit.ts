@@ -9,6 +9,7 @@ export function useUpdateOccupancyLimit() {
     mutationFn: (dto) => dashboardService.updateOccupancyLimit(dto),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["occupancy"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
