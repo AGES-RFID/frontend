@@ -5,6 +5,7 @@ import { Graph } from "@/components/ui/graph";
 import { useAccessTimeseries } from "@/features/accesses/hooks/useAccessTimeseries";
 import { AdjustAntennaModal } from "@/features/antennas/components/AdjustAntennaModal";
 import type { AntennaDto } from "@/features/antennas/dtos";
+import { useAntennas } from "@/features/antennas/hooks";
 import { MetricCard } from "@/features/dashboard/components/dashboardCard";
 import { ParkingOccupancyCard } from "@/features/dashboard/components/parking-occupancy-card";
 import { useDashboard } from "@/features/dashboard/hooks/useDashboard";
@@ -15,22 +16,7 @@ export function Dashboard() {
   const { data: metrics } = useDashboard();
   const { data: timeseries } = useAccessTimeseries();
   const { data: permanenceVehicles } = usePermanence();
-  const antennas = [
-    {
-      id: "1",
-      name: "Antena 1 (entrada)",
-      power: 20,
-      sensibility: 35,
-      status: "On",
-    },
-    {
-      id: "2",
-      name: "Antena 2 (saída)",
-      power: 10,
-      sensibility: 5,
-      status: "Off",
-    },
-  ] satisfies AntennaDto[];
+  const { data: antennas = [], isLoading: isLoadingAntennas } = useAntennas();
 
   const [selectedAntenna, setSelectedAntenna] = useState<AntennaDto | null>(
     null,
@@ -111,17 +97,21 @@ export function Dashboard() {
       />
 
       <div className="col-span-4 row-span-2 flex flex-col gap-6 rounded-md bg-white p-6 drop-shadow-lg">
-        {antennas.map((antenna) => (
-          <AntennaCard
-            editable
-            onEdit={() => handleEditAntenna(antenna)}
-            key={antenna.id}
-            name={antenna.name}
-            power={antenna.power}
-            sensitivity={antenna.sensibility}
-            status={antenna.status}
-          />
-        ))}
+        {isLoadingAntennas ? (
+          <p className="text-gray text-sm">Carregando antenas...</p>
+        ) : (
+          antennas.map((antenna) => (
+            <AntennaCard
+              editable
+              onEdit={() => handleEditAntenna(antenna)}
+              key={antenna.id}
+              name={antenna.name}
+              power={antenna.power ?? ""}
+              sensitivity={antenna.sensibility ?? ""}
+              status={antenna.status}
+            />
+          ))
+        )}
       </div>
 
       <PermanenceTable
