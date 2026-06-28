@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import { AdminLayout } from "./layouts/AdminLayout.tsx";
 import { CustomerLayout } from "./layouts/CustomerLayout.tsx";
+import { PublicLayout } from "./layouts/PublicLayout.tsx";
 import { AdminNewUser } from "./routes/admin/adminNewUser.tsx";
 import { Dashboard } from "./routes/admin/dashboard.tsx";
 import { Payments } from "./routes/admin/payments.tsx";
@@ -40,11 +41,13 @@ export function Router() {
           <Route path="/user/profile" element={<Profile />} />
         </Route>
 
-        <Route path="/user/new" element={<NewUser />} />
-        <Route path="/user/:userId/edit" element={<EditUser />} />
+        {/* Public Routes */}
+        <Route element={<PublicLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/user/new" element={<NewUser />} />
+        </Route>
 
-        {/* Auth Routes */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/user/:userId/edit" element={<EditUser />} />
       </Routes>
     </BrowserRouter>
   );
