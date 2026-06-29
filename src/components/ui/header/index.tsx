@@ -1,4 +1,4 @@
-import { House, LayoutDashboard, LogOut, User, Wallet } from "lucide-react";
+import { House, LogOut, User, Wallet } from "lucide-react";
 import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { cn } from "@/utils/cn";
@@ -56,28 +56,6 @@ function AuthButton({
       {!isLogged && <LogOut className="h-6 w-6 shrink-0" />}
       <span>{label}</span>
       {isLogged && <LogOut className="h-6 w-6 shrink-0" />}
-    </button>
-  );
-}
-
-function AdminButton({ onClick }: { onClick?: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="Admin"
-      data-testid="header-admin-button"
-      className={cn(
-        "inline-flex items-center gap-3.5 whitespace-nowrap px-6 py-3",
-        "font-['Roboto'] font-semibold text-[18px] text-white leading-none",
-        "rounded-[100px] border-2 border-white",
-        "transition-all duration-200 ease-in-out",
-        "hover:bg-white/15 active:scale-95 active:bg-white/25",
-        "cursor-pointer",
-      )}
-    >
-      <LayoutDashboard className="h-6 w-6 shrink-0" />
-      <span>Admin</span>
     </button>
   );
 }
@@ -191,10 +169,6 @@ export function Header({
             />
           ))}
         </nav>
-      </div>
-
-      <div className="flex shrink-0 justify-end pr-4">
-        <AdminButton onClick={() => navigate("/admin/dashboard")} />
       </div>
 
       {/*
