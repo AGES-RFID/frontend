@@ -6,9 +6,12 @@ import type { ReactNode } from "react";
 import { dashboardService } from "@/features/dashboard/DashboardService";
 import { Dashboard } from "./dashboard";
 import { accessesService } from "@/features/accesses/AccessesService";
+import { antennaService } from "@/features/antennas/AntennaService";
 
 const getDashboardMock = spyOn(dashboardService, "getDashboard");
+const getPermanenceMock = spyOn(dashboardService, "getPermanence");
 const getTimeseriesMock = spyOn(accessesService, "getTimeseries");
+const getAntennasMock = spyOn(antennaService, "getAntennas");
 
 const mockMetrics = {
   entriesLastHour: 5,
@@ -36,6 +39,7 @@ const createWrapper = () => {
 describe("Dashboard Route Component", () => {
   beforeEach(() => {
     getDashboardMock.mockResolvedValue(mockMetrics);
+    getPermanenceMock.mockResolvedValue([]);
     getTimeseriesMock.mockResolvedValue({
       from: "2026-06-13T10:00:00Z",
       to: "2026-06-14T10:00:00Z",
@@ -50,12 +54,30 @@ describe("Dashboard Route Component", () => {
         },
       ],
     });
+    getAntennasMock.mockResolvedValue([
+      {
+        id: "00000000-0000-0000-0000-000000000001",
+        name: "Antena 1",
+        power: 20,
+        sensibility: -35,
+        status: "On",
+      },
+      {
+        id: "00000000-0000-0000-0000-000000000002",
+        name: "Antena 2",
+        power: 10,
+        sensibility: -50,
+        status: "Off",
+      },
+    ]);
   });
 
   afterEach(() => {
     cleanup();
     getDashboardMock.mockClear();
+    getPermanenceMock.mockClear();
     getTimeseriesMock.mockClear();
+    getAntennasMock.mockClear();
   });
 
   it("should render Dashboard page title", () => {
@@ -98,19 +120,20 @@ describe("Dashboard Route Component", () => {
     expect(occupancyLabel.textContent).toContain("100");
   });
 
-  it("should render antenna cards with names and statuses", () => {
+  it("should render antenna cards with names and statuses from the API", async () => {
     render(<Dashboard />, { wrapper: createWrapper() });
-    expect(screen.getByText("Antena 1 (entrada)")).toBeInTheDocument();
-    expect(screen.getByText("Antena 2 (saída)")).toBeInTheDocument();
-    const indicators = screen.getAllByTestId("status-indicator");
+    expect(await screen.findByText("Antena 1")).toBeInTheDocument();
+    expect(await screen.findByText("Antena 2")).toBeInTheDocument();
+    expect(getAntennasMock).toHaveBeenCalled();
+    const indicators = await screen.findAllByTestId("status-indicator");
     expect(indicators).toHaveLength(2);
   });
 
-  it("should open antenna adjustment modal when edit button is clicked", () => {
+  it("should open antenna adjustment modal when edit button is clicked", async () => {
     render(<Dashboard />, { wrapper: createWrapper() });
 
     expect(
-      screen.getByRole("button", { name: /Editar Antena 1/ }),
+      await screen.findByRole("button", { name: /Editar Antena 1/ }),
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Editar Antena 1/ }));
 

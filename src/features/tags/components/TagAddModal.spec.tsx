@@ -20,7 +20,9 @@ import { toast } from "@/components/ui/toast";
 import * as tagHooks from "../hooks";
 
 const createTagMock = mock();
+const bulkCreateTagsMock = mock();
 const useCreateTagSpy = spyOn(tagHooks, "useCreateTag");
+const useBulkCreateTagsSpy = spyOn(tagHooks, "useBulkCreateTags");
 const toastSuccessSpy = spyOn(toast, "success");
 const toastErrorSpy = spyOn(toast, "error");
 
@@ -28,6 +30,13 @@ useCreateTagSpy.mockImplementation(
   () =>
     ({
       mutateAsync: createTagMock,
+      isPending: false,
+    }) as never,
+);
+useBulkCreateTagsSpy.mockImplementation(
+  () =>
+    ({
+      mutateAsync: bulkCreateTagsMock,
       isPending: false,
     }) as never,
 );
@@ -45,12 +54,20 @@ function renderModalWithClose(onClose: () => void, isOpen = true) {
 describe("TagAddModal component", () => {
   beforeEach(() => {
     createTagMock.mockClear();
+    bulkCreateTagsMock.mockClear();
     toastSuccessSpy.mockClear();
     toastErrorSpy.mockClear();
     useCreateTagSpy.mockImplementation(
       () =>
         ({
           mutateAsync: createTagMock,
+          isPending: false,
+        }) as never,
+    );
+    useBulkCreateTagsSpy.mockImplementation(
+      () =>
+        ({
+          mutateAsync: bulkCreateTagsMock,
           isPending: false,
         }) as never,
     );
@@ -62,6 +79,7 @@ describe("TagAddModal component", () => {
 
   afterAll(() => {
     useCreateTagSpy.mockRestore();
+    useBulkCreateTagsSpy.mockRestore();
     toastSuccessSpy.mockRestore();
     toastErrorSpy.mockRestore();
   });
@@ -81,6 +99,8 @@ describe("TagAddModal component", () => {
 
     expect(screen.getByLabelText("TID")).toBeInTheDocument();
     expect(screen.getByLabelText("EPC")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Manual" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "CSV" })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Cancelar" }),
     ).toBeInTheDocument();
@@ -142,7 +162,9 @@ describe("TagAddModal component", () => {
       .closest("form");
     expect(form).not.toBeNull();
     if (form) {
-      await fireEvent.submit(form);
+      await act(async () => {
+        fireEvent.submit(form);
+      });
     }
 
     await createTagMock.mock.results[0]?.value;
@@ -156,6 +178,80 @@ describe("TagAddModal component", () => {
       "Etiqueta adicionada com sucesso.",
     );
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("should import tags from a CSV file", async () => {
+    bulkCreateTagsMock.mockImplementationOnce(async () =>
+      Promise.resolve({
+        createdCount: 2,
+        errorCount: 0,
+        createdTags: [],
+        errors: [],
+      }),
+    );
+    const onClose = mock();
+    renderModalWithClose(onClose);
+
+    fireEvent.click(screen.getByRole("button", { name: "CSV" }));
+    const file = new File(["tid,epc\nTID1,EPC1"], "tags.csv", {
+      type: "text/csv",
+    });
+    fireEvent.change(screen.getByLabelText("Arquivo CSV"), {
+      target: { files: [file] },
+    });
+
+    const form = screen
+      .getByRole("button", { name: "Confirmar" })
+      .closest("form");
+    expect(form).not.toBeNull();
+    if (form) {
+      await act(async () => {
+        fireEvent.submit(form);
+      });
+    }
+
+    await bulkCreateTagsMock.mock.results[0]?.value;
+
+    expect(bulkCreateTagsMock).toHaveBeenCalledWith(file);
+    expect(toastSuccessSpy).toHaveBeenCalledWith(
+      "2 etiqueta(s) importada(s) com sucesso.",
+    );
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("should accept a CSV file by drag and drop", async () => {
+    renderModal();
+
+    fireEvent.click(screen.getByRole("button", { name: "CSV" }));
+    const file = new File(["tid,epc\nTID1,EPC1"], "tags.csv", {
+      type: "text/csv",
+    });
+
+    fireEvent.drop(screen.getByText("Arquivo CSV"), {
+      dataTransfer: { files: [file] },
+    });
+
+    expect(screen.getByText("tags.csv")).toBeInTheDocument();
+    expect(await screen.findByText("TID1")).toBeInTheDocument();
+  });
+
+  it("should show a preview of valid CSV tags", async () => {
+    renderModal();
+
+    fireEvent.click(screen.getByRole("button", { name: "CSV" }));
+    const file = new File(["tid,epc\nTID1,EPC1\nTID2,EPC2"], "tags.csv", {
+      type: "text/csv",
+    });
+
+    fireEvent.change(screen.getByLabelText("Arquivo CSV"), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByText("Preview das tags")).toBeInTheDocument();
+    expect(screen.getByText("TID1")).toBeInTheDocument();
+    expect(screen.getByText("EPC1")).toBeInTheDocument();
+    expect(screen.getByText("TID2")).toBeInTheDocument();
+    expect(screen.getByText("EPC2")).toBeInTheDocument();
   });
 
   it("should show an error when submission fails", async () => {
@@ -176,7 +272,9 @@ describe("TagAddModal component", () => {
       .closest("form");
     expect(form).not.toBeNull();
     if (form) {
-      await fireEvent.submit(form);
+      await act(async () => {
+        fireEvent.submit(form);
+      });
     }
 
     await createTagMock.mock.results[0]?.value.catch(() => undefined);
